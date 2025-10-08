@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from datetime import datetime
+import uuid
+from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
 from enum import Enum
 
@@ -7,6 +9,10 @@ class MessageType(str, Enum):
     TOKEN_VERIFY_RESPONSE = "token.verify.response"
     TOKEN_REFRESH_REQUEST = "token.refresh.request"
     TOKEN_REFRESH_RESPONSE = "token.refresh.response"
+    # User events
+    USER_CREATED = "user.created"
+    USER_UPDATED = "user.updated"
+    USER_DELETED = "user.deleted"
 
 class BaseMessage(BaseModel):
     message_type: MessageType
@@ -30,3 +36,11 @@ class TokenRefreshResponseMessage(BaseModel):
     access_token: Optional[str] = None
     refresh_token: Optional[str] = None
     error: Optional[str] = None
+
+# User event messages
+class UserCreatedMessage(BaseModel):
+    user_id: uuid.UUID
+    username: str
+    email: EmailStr
+    password: str  # Пароль в открытом виде для хеширования
+    created_at: datetime
