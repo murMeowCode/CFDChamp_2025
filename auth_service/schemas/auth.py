@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+import uuid
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 class TokenPair(BaseModel):
     access_token: str
@@ -35,3 +36,17 @@ class LoginResponse(BaseModel):
     success: bool
     tokens: Optional[TokenPair] = None
     error: Optional[str] = None
+
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: uuid.UUID
+    username: str
+    email: str
+    last_login: Optional[datetime]
+    
+    class Config:
+        from_attributes = True
