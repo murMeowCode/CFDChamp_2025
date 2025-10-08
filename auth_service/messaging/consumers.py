@@ -1,12 +1,14 @@
 import aio_pika
 import json
-from shared.messaging.base import RabbitMQBase
-from schemas.messaging import (
+from shared.common.messaging.base import RabbitMQBase
+from app.schemas.messaging import (
     BaseMessage, MessageType, 
-    TokenVerifyMessage, TokenRefreshMessage
+    TokenVerifyMessage, TokenRefreshMessage,
+    TokenVerifyResponseMessage, TokenRefreshResponseMessage,
+    UserCreatedMessage, UserUpdatedMessage, UserDeletedMessage
 )
-from services.auth_service import AuthService
-from messaging.producers import AuthProducer
+from app.services.auth_service import AuthService
+from app.messaging.producers import AuthProducer
 
 class AuthConsumer(RabbitMQBase):
     def __init__(self, rabbitmq_url: str, auth_service: AuthService, producer: AuthProducer):
@@ -25,23 +27,44 @@ class AuthConsumer(RabbitMQBase):
             durable=True
         )
 
-        # Очередь для верификации токенов
+        # Очереди для auth запросов
         verify_queue = await self.channel.declare_queue(
             name="auth.verify.request",
             durable=True
         )
         await verify_queue.bind(exchange, routing_key="auth.verify.request")
         
-        # Очередь для обновления токенов
         refresh_queue = await self.channel.declare_queue(
             name="auth.refresh.request", 
             durable=True
         )
         await refresh_queue.bind(exchange, routing_key="auth.refresh.request")
 
+        # Очереди для событий пользователей
+        user_created_queue = await self.channel.declare_queue(
+            name="auth.user.created",
+            durable=True
+        )
+        await user_created_queue.bind(exchange, routing_key="user.event.created")
+        
+        user_updated_queue = await self.channel.declare_queue(
+            name="auth.user.updated",
+            durable=True
+        )
+        await user_updated_queue.bind(exchange, routing_key="user.event.updated")
+        
+        user_deleted_queue = await self.channel.declare_queue(
+            name="auth.user.deleted",
+            durable=True
+        )
+        await user_deleted_queue.bind(exchange, routing_key="user.event.deleted")
+
         # Начинаем слушать очереди
         await verify_queue.consume(self._handle_verify_request)
         await refresh_queue.consume(self._handle_refresh_request)
+        await user_created_queue.consume(self._handle_user_created)
+        await user_updated_queue.consume(self._handle_user_updated)
+        await user_deleted_queue.consume(self._handle_user_deleted)
 
     async def _handle_verify_request(self, message: aio_pika.IncomingMessage):
         """Обработка запроса верификации токена"""
@@ -94,3 +117,45 @@ class AuthConsumer(RabbitMQBase):
                     
             except Exception as e:
                 print(f"Error processing refresh request: {e}")
+
+    async def _handle_user_created(self, message: aio_pika.IncomingMessage):
+        """Обработка создания пользователя"""
+        async with message.process():
+            try:
+                body = json.loads(message.body.decode())
+                user_data = UserCreatedMessage(**body)
+                
+                result = await self.auth_service.handle_user_created(user_data)
+                if not result["success"]:
+                    print(f"Error creating user: {result['error']}")
+                    
+            except Exception as e:
+                print(f"Error processing user created event: {e}")
+
+    async def _handle_user_updated(self, message: aio_pika.IncomingMessage):
+        """Обработка обновления пользователя"""
+        async with message.process():
+            try:
+                body = json.loads(message.body.decode())
+                user_data = UserUpdatedMessage(**body)
+                
+                result = await self.auth_service.handle_user_updated(user_data)
+                if not result["success"]:
+                    print(f"Error updating user: {result['error']}")
+                    
+            except Exception as e:
+                print(f"Error processing user updated event: {e}")
+
+    async def _handle_user_deleted(self, message: aio_pika.IncomingMessage):
+        """Обработка удаления пользователя"""
+        async with message.process():
+            try:
+                body = json.loads(message.body.decode())
+                user_data = UserDeletedMessage(**body)
+                
+                result = await self.auth_service.handle_user_deleted(user_data)
+                if not result["success"]:
+                    print(f"Error deleting user: {result['error']}")
+                    
+            except Exception as e:
+                print(f"Error processing user deleted event: {e}")
