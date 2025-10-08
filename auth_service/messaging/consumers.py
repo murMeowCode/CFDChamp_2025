@@ -3,8 +3,7 @@ import json
 from shared.messaging.base import RabbitMQBase
 from schemas.messaging import (
     BaseMessage, MessageType, 
-    TokenVerifyMessage, TokenRefreshMessage,
-    TokenVerifyResponseMessage, TokenRefreshResponseMessage
+    TokenVerifyMessage, TokenRefreshMessage
 )
 from services.auth_service import AuthService
 from messaging.producers import AuthProducer

@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.core.config import settings
-from app.core.database import init_db, get_db
-from app.api.v1.endpoints import auth
-from app.services.auth_service import AuthService
-from app.services.token_service import TokenService
-from app.messaging.producers import AuthProducer
-from app.messaging.consumers import AuthConsumer
+from shared.config.base import settings
+from shared.database.database import init_db, get_db
+from api.endpoints import auth
+from services.auth_service import AuthService
+from services.token_service import TokenService
+from messaging.producers import AuthProducer
+from messaging.consumers import AuthConsumer
 import logging
 
 logging.basicConfig(level=logging.INFO)

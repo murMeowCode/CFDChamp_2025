@@ -1,7 +1,5 @@
-from typing import Optional
-import aio_pika
-from app.services.token_service import TokenService
-from app.schemas.messaging import (
+from services.token_service import TokenService
+from schemas.messaging import (
     TokenVerifyMessage, 
     TokenVerifyResponseMessage,
     TokenRefreshMessage,

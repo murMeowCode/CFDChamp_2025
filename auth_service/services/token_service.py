@@ -2,9 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from datetime import datetime, timedelta
 import uuid
-from app.models.token import RefreshToken
-from app.core.security import create_access_token, create_refresh_token, verify_token
-from app.core.config import settings
+from models.token import RefreshToken
+from core.security import create_access_token, create_refresh_token, verify_token
+from shared.config.base import settings
 
 class TokenService:
     def __init__(self, db: AsyncSession):

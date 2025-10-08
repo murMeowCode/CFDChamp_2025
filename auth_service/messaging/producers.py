@@ -1,6 +1,4 @@
 import aio_pika
-import json
-from typing import Optional
 from shared.messaging.base import RabbitMQBase
 from schemas.messaging import BaseMessage, MessageType
 

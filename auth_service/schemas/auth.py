@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-import uuid
 
 class TokenPair(BaseModel):
     access_token: str

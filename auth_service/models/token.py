@@ -1,8 +1,8 @@
-from sqlalchemy import Column, String, DateTime, Boolean, Text
+from sqlalchemy import Column, DateTime, Boolean, Text
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from datetime import datetime
-from app.core.database import Base
+from shared.database.database import Base
 
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
