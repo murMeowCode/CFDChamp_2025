@@ -46,7 +46,8 @@ class AuthService:
                 "username": message.username,
                 "email": message.email,
                 "password": hashed_password,  # Сохраняем хешированный пароль
-                "created_at": message.created_at
+                "created_at": message.created_at,
+                "role": message.role
             }
             
             await self.user_service.create_user_from_event(user_data)
