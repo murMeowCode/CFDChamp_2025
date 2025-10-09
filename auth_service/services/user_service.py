@@ -88,34 +88,3 @@ class UserService:
         if user:
             user.last_login = datetime.utcnow()
             await self.db.commit()
-
-    async def update_user_from_event(self, user_data: dict):
-        """Обновление пользователя из события"""
-        user = await self.get_user_by_id(user_data["user_id"])
-        if not user:
-            return None
-        
-        if "username" in user_data and user_data["username"]:
-            user.username = user_data["username"]
-        
-        if "email" in user_data and user_data["email"]:
-            user.email = user_data["email"]
-        
-        if "password" in user_data and user_data["password"]:
-            user.hashed_password = get_password_hash(user_data["password"])
-        
-        if "is_active" in user_data:
-            user.is_active = user_data["is_active"]
-        
-        user.updated_at = datetime.utcnow()
-        await self.db.commit()
-        await self.db.refresh(user)
-        
-        return user
-
-    async def delete_user(self, user_id: uuid.UUID):
-        """Удаление пользователя"""
-        user = await self.get_user_by_id(user_id)
-        if user:
-            await self.db.delete(user)
-            await self.db.commit()
