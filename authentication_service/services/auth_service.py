@@ -38,7 +38,7 @@ class AuthService:
         """Обработчик создания пользователя"""
         try:
             # Хешируем пароль перед сохранением
-            from core.security import get_password_hash
+            from authentication_service.core.security import get_password_hash
             hashed_password = get_password_hash(message.password)
             
             user_data = {
