@@ -43,5 +43,4 @@ class UserCreatedMessage(BaseModel):
     username: str
     email: EmailStr
     password: str  # Пароль в открытом виде для хеширования
-    created_at: datetime
     role: int

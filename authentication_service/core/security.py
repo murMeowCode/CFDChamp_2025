@@ -4,12 +4,19 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from shared.config.base import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
+    """Хеширование пароля с проверкой длины для bcrypt"""
+    # Если используете bcrypt - добавляем проверку длины
+    if "bcrypt" in pwd_context.schemes() and len(password.encode('utf-8')) > 72:
+        # Усекаем пароль до 72 байт
+        password = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
+    
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

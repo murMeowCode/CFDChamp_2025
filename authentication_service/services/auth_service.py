@@ -46,7 +46,6 @@ class AuthService:
                 "username": message.username,
                 "email": message.email,
                 "password": hashed_password,  # Сохраняем хешированный пароль
-                "created_at": message.created_at,
                 "role": message.role
             }
             

@@ -72,7 +72,6 @@ class UserService:
             username=user_data["username"],
             email=user_data["email"],
             hashed_password=user_data["password"],  # Пароль уже хеширован
-            created_at=user_data["created_at"],
             role=user_data["role"]
         )
         
