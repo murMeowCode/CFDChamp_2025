@@ -2,8 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import datetime, timedelta
 import uuid
-from models.token import RefreshToken
-from core.security import create_access_token, create_refresh_token, verify_token
+from authentication_service.models.token import RefreshToken
+from authentication_service.core.security import create_access_token, create_refresh_token, verify_token
 from shared.config.base import settings
 
 class TokenService:

@@ -8,12 +8,12 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from shared.config.base import settings
 from shared.database.database import AsyncSessionLocal
-from api.endpoints import auth
-from services.auth_service import AuthService
-from services.token_service import TokenService
-from services.user_service import UserService
-from messaging.producers import AuthProducer
-from messaging.consumers import AuthConsumer
+from authentication_service.api.endpoints import auth
+from authentication_service.services.auth_service import AuthService
+from authentication_service.services.token_service import TokenService
+from authentication_service.services.user_service import UserService
+from authentication_service.messaging.producers import AuthProducer
+from authentication_service.messaging.consumers import AuthConsumer
 import logging
 
 logging.basicConfig(level=logging.INFO)

@@ -1,14 +1,14 @@
 import aio_pika
 import json
 from shared.messaging.base import RabbitMQBase
-from schemas.messaging import (
+from authentication_service.schemas.messaging import (
     BaseMessage, MessageType, 
     TokenVerifyMessage, TokenRefreshMessage,
     TokenVerifyResponseMessage, TokenRefreshResponseMessage,
-    UserCreatedMessage, UserUpdatedMessage, UserDeletedMessage
+    UserCreatedMessage
 )
-from services.auth_service import AuthService
-from messaging.producers import AuthProducer
+from authentication_service.services.auth_service import AuthService
+from authentication_service.messaging.producers import AuthProducer
 
 class AuthConsumer(RabbitMQBase):
     def __init__(self, rabbitmq_url: str, auth_service: AuthService, producer: AuthProducer):
@@ -63,8 +63,6 @@ class AuthConsumer(RabbitMQBase):
         await verify_queue.consume(self._handle_verify_request)
         await refresh_queue.consume(self._handle_refresh_request)
         await user_created_queue.consume(self._handle_user_created)
-        await user_updated_queue.consume(self._handle_user_updated)
-        await user_deleted_queue.consume(self._handle_user_deleted)
 
     async def _handle_verify_request(self, message: aio_pika.IncomingMessage):
         """Обработка запроса верификации токена"""
