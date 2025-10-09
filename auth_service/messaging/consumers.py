@@ -1,14 +1,14 @@
 import aio_pika
 import json
-from shared.common.messaging.base import RabbitMQBase
-from app.schemas.messaging import (
+from shared.messaging.base import RabbitMQBase
+from schemas.messaging import (
     BaseMessage, MessageType, 
     TokenVerifyMessage, TokenRefreshMessage,
     TokenVerifyResponseMessage, TokenRefreshResponseMessage,
     UserCreatedMessage, UserUpdatedMessage, UserDeletedMessage
 )
-from app.services.auth_service import AuthService
-from app.messaging.producers import AuthProducer
+from services.auth_service import AuthService
+from messaging.producers import AuthProducer
 
 class AuthConsumer(RabbitMQBase):
     def __init__(self, rabbitmq_url: str, auth_service: AuthService, producer: AuthProducer):

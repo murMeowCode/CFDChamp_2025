@@ -7,7 +7,10 @@ from core.security import create_access_token, create_refresh_token, verify_toke
 from shared.config.base import settings
 
 class TokenService:
-    async def create_token_pair(self, db: AsyncSession, user_id: str, username: str) -> dict:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def create_token_pair(self, user_id: str, username: str) -> dict:
         """Создание пары access/refresh токенов"""
         
         # Создаем access token
@@ -27,9 +30,9 @@ class TokenService:
             expires_at=expires_at
         )
         
-        db.add(db_refresh_token)
-        await db.commit()
-        await db.refresh(db_refresh_token)
+        self.db.add(db_refresh_token)
+        await self.db.commit()
+        await self.db.refresh(db_refresh_token)
         
         return {
             "access_token": access_token,
@@ -52,7 +55,7 @@ class TokenService:
             "username": payload.get("username")
         }
 
-    async def refresh_tokens(self, db: AsyncSession, refresh_token: str) -> dict:
+    async def refresh_tokens(self, refresh_token: str) -> dict:
         """Обновление пары токенов"""
         
         # Проверяем refresh token
@@ -68,7 +71,7 @@ class TokenService:
             RefreshToken.token == refresh_token,
             RefreshToken.is_active == True
         )
-        result = await db.execute(stmt)
+        result = await self.db.execute(stmt)
         db_token = result.scalar_one_or_none()
         
         if not db_token or db_token.is_expired():
@@ -76,7 +79,7 @@ class TokenService:
         
         # Деактивируем старый refresh token
         db_token.is_active = False
-        await db.commit()
+        await self.db.commit()
         
         # Создаем новую пару токенов
         user_id = str(db_token.user_id)
@@ -87,12 +90,12 @@ class TokenService:
             "tokens": new_tokens
         }
 
-    async def cleanup_expired_tokens(self, db: AsyncSession):
+    async def cleanup_expired_tokens(self):
         """Очистка просроченных токенов"""
         from sqlalchemy import delete
         
         stmt = delete(RefreshToken).where(
             RefreshToken.expires_at < datetime.utcnow()
         )
-        await db.execute(stmt)
-        await db.commit()
+        await self.db.execute(stmt)
+        await self.db.commit()

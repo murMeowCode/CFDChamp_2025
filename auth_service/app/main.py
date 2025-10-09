@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from shared.config.base import settings
-from shared.database.database import get_db, AsyncSession
+from shared.database.database import AsyncSessionLocal, get_db, AsyncSession
 from api.endpoints import auth
 from services.auth_service import AuthService
 from services.token_service import TokenService
@@ -22,13 +22,12 @@ async def lifespan(app: FastAPI):
     producer = AuthProducer(settings.RABBITMQ_URL)
     await producer.connect()
     
-    # Сервисы без сессии
-    token_service = TokenService()
-    user_service = UserService()
-    auth_service = AuthService(token_service, user_service)
-    
-    consumer = AuthConsumer(settings.RABBITMQ_URL, auth_service, producer)
-    await consumer.connect()
+    async with AsyncSessionLocal() as db:
+        token_service = TokenService(db)
+        user_service = UserService(db)
+        auth_service = AuthService(token_service, user_service)
+        consumer = AuthConsumer(settings.RABBITMQ_URL, auth_service, producer)
+        await consumer.connect()
     
     yield
     
