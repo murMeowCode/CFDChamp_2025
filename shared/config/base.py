@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     
     # База данных
-    DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost/auth_service"
+    DATABASE_URL: str = "postgresql+asyncpg://test:test@127.0.0.1:5432/postgres"
     # RabbitMQ
     RABBITMQ_URL: str = "amqp://guest:guest@localhost:5672/"
     RABBITMQ_EXCHANGE: str = "auth_exchange"
