@@ -46,6 +46,7 @@ class UserResponse(BaseModel):
     id: uuid.UUID
     username: str
     email: str
+    role: str
     last_login: Optional[datetime]
     
     class Config:
