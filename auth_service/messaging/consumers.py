@@ -131,31 +131,3 @@ class AuthConsumer(RabbitMQBase):
                     
             except Exception as e:
                 print(f"Error processing user created event: {e}")
-
-    async def _handle_user_updated(self, message: aio_pika.IncomingMessage):
-        """Обработка обновления пользователя"""
-        async with message.process():
-            try:
-                body = json.loads(message.body.decode())
-                user_data = UserUpdatedMessage(**body)
-                
-                result = await self.auth_service.handle_user_updated(user_data)
-                if not result["success"]:
-                    print(f"Error updating user: {result['error']}")
-                    
-            except Exception as e:
-                print(f"Error processing user updated event: {e}")
-
-    async def _handle_user_deleted(self, message: aio_pika.IncomingMessage):
-        """Обработка удаления пользователя"""
-        async with message.process():
-            try:
-                body = json.loads(message.body.decode())
-                user_data = UserDeletedMessage(**body)
-                
-                result = await self.auth_service.handle_user_deleted(user_data)
-                if not result["success"]:
-                    print(f"Error deleting user: {result['error']}")
-                    
-            except Exception as e:
-                print(f"Error processing user deleted event: {e}")
