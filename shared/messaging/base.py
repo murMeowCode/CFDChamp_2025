@@ -1,6 +1,4 @@
 import aio_pika
-from typing import Any, Dict
-import json
 
 class RabbitMQBase:
     def __init__(self, rabbitmq_url: str):
