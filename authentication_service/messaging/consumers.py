@@ -46,18 +46,6 @@ class AuthConsumer(RabbitMQBase):
             durable=True
         )
         await user_created_queue.bind(exchange, routing_key="user.event.created")
-        
-        user_updated_queue = await self.channel.declare_queue(
-            name="auth.user.updated",
-            durable=True
-        )
-        await user_updated_queue.bind(exchange, routing_key="user.event.updated")
-        
-        user_deleted_queue = await self.channel.declare_queue(
-            name="auth.user.deleted",
-            durable=True
-        )
-        await user_deleted_queue.bind(exchange, routing_key="user.event.deleted")
 
         # Начинаем слушать очереди
         await verify_queue.consume(self._handle_verify_request)
