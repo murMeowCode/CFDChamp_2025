@@ -1,6 +1,8 @@
 import sys
 import os
 
+from profile_service.messaging.producers import AuthProducer
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from contextlib import asynccontextmanager
@@ -10,7 +12,7 @@ from shared.database.database import AsyncSessionLocal
 from profile_service.messaging.consumers import ProfileConsumer
 from profile_service.services.service import ProfileService
 from shared.config.base import settings
-import uvicorn
+
 
 app = FastAPI(
     title="Profile Service",
@@ -23,6 +25,9 @@ app.include_router(profile_router, prefix="/profiles")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+
+    auth_producer = AuthProducer(settings.RABBITMQ_URL)
+    await auth_producer.connect()
     
     # Инициализируем и запускаем RabbitMQ consumer
     async with AsyncSessionLocal() as db:
