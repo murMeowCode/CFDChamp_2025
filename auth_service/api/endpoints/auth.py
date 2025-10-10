@@ -1,11 +1,37 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from auth_service.core.globals import get_producer
+from auth_service.messaging.producers import AuthProducer
+from auth_service.services.registration_service import RegistrationService
 from shared.database.database import get_db
-from schemas.auth import LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse, UserResponse
+from shared.config.base import settings
+from schemas.auth import (LoginRequest, LoginResponse, RefreshTokenRequest,
+                          RefreshTokenResponse, UserRegister, UserRegisterResponse, UserResponse)
 from services.token_service import TokenService
 from services.user_service import UserService
 
 router = APIRouter()
+
+@router.post("/register", response_model=UserRegisterResponse)
+async def register(
+    user_data: UserRegister,
+    db: AsyncSession = Depends(get_db),
+    producer = Depends(get_producer)  # Используем глобальный producer
+):
+    """Регистрация нового пользователя"""
+    registration_service = RegistrationService(db, producer)
+    result = await registration_service.register_user(user_data)
+    
+    if not result["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result["error"]
+        )
+    
+    return UserRegisterResponse(
+        success=True,
+        user_id=result["user_id"]
+    )
 
 @router.post("/login", response_model=LoginResponse)
 async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_db)):

@@ -19,6 +19,8 @@ consumer = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     
+    global producer
+
     producer = AuthProducer(settings.RABBITMQ_URL)
     await producer.connect()
     
