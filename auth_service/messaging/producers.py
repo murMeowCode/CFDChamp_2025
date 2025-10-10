@@ -1,6 +1,6 @@
 import aio_pika
 from shared.messaging.base import RabbitMQBase
-from schemas.messaging import BaseMessage
+from schemas.messaging import BaseMessage, MessageType, UserCreatedMessage
 
 class AuthProducer(RabbitMQBase):
     def __init__(self, rabbitmq_url: str, exchange_name: str = "auth_exchange"):
@@ -35,4 +35,25 @@ class AuthProducer(RabbitMQBase):
         await self.exchange.publish(
             message=response_message,
             routing_key=reply_to
+        )
+
+    async def send_user_created_event(self, user_data: UserCreatedMessage):
+        """Отправка события создания пользователя"""
+        if not self.exchange:
+            await self.connect()
+
+        message = BaseMessage(
+            message_type=MessageType.USER_CREATED,
+            data=user_data.model_dump()
+        )
+
+        rabbitmq_message = aio_pika.Message(
+            body=message.model_dump_json().encode(),
+            content_type="application/json",
+            delivery_mode=aio_pika.DeliveryMode.PERSISTENT
+        )
+
+        await self.exchange.publish(
+            message=rabbitmq_message,
+            routing_key="user.event.created"
         )
