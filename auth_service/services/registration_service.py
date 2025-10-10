@@ -1,0 +1,54 @@
+from datetime import datetime
+import uuid
+from sqlalchemy.ext.asyncio import AsyncSession
+from auth_service.schemas.auth import UserRegister
+from auth_service.schemas.messaging import UserCreatedMessage
+from auth_service.services.user_service import UserService
+from auth_service.messaging.producers import AuthProducer
+
+class RegistrationService:
+    def __init__(self, db: AsyncSession, producer: AuthProducer):
+        self.db = db
+        self.producer = producer
+        self.user_service = UserService(db)
+
+    async def register_user(self, user_data: UserRegister):
+        """Регистрация нового пользователя"""
+        try:
+            # Создаем пользователя в auth базе
+            user = await self.user_service.create_user(user_data)
+            
+            # Подготавливаем данные для отправки в основной сервис
+            user_created_message = UserCreatedMessage(
+                user_id=user.id,
+                username=user.username,
+                email=user.email,
+                password=user_data.password,  # Отправляем исходный пароль для хеширования на той стороне
+                role=user_data.role,
+                first_name=user_data.first_name,
+                last_name=user_data.last_name,
+                middle_name=user_data.middle_name,
+                birth_date=user_data.birth_date,
+                phone=user_data.phone,
+                address=user_data.address,
+                created_at=datetime.utcnow()
+            )
+            
+            # Отправляем событие в RabbitMQ
+            await self.producer.send_user_created_event(user_created_message)
+            
+            return {
+                "success": True,
+                "user_id": user.id
+            }
+            
+        except ValueError as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Registration failed: {str(e)}"
+            }
