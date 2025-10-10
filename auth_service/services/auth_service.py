@@ -22,17 +22,6 @@ class AuthService:
             user_id=result.get("user_id"),
             error=result.get("error")
         )
-
-    async def refresh_token_handler(self, message: TokenRefreshMessage) -> TokenRefreshResponseMessage:
-        """Обработчик обновления токенов"""
-        result = await self.token_service.refresh_tokens(message.refresh_token)
-        
-        return TokenRefreshResponseMessage(
-            success=result["success"],
-            access_token=result.get("tokens", {}).get("access_token"),
-            refresh_token=result.get("tokens", {}).get("refresh_token"),
-            error=result.get("error")
-        )
     
     async def handle_user_created(self, message: UserCreatedMessage):
         """Обработчик создания пользователя"""
