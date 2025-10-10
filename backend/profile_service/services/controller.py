@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.services.service import ProfileService
@@ -15,6 +16,10 @@ class ProfileController:
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
         return ProfileResponse.model_validate(profile)
+    
+    async def get_all_profiles(self) -> List[ProfileResponse]:
+        profiles = await self.profile_service.get_all_profiles()
+        return [ProfileResponse.model_validate(profile) for profile in profiles]
     
     async def update_profile(self, user_id: uuid.UUID, profile_data: ProfileUpdate) -> ProfileResponse:
         profile = await self.profile_service.update_profile(user_id, profile_data)
