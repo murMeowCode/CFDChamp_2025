@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from auth_service.core.globals import get_producer
+from auth_service.app.main import get_producer
+from auth_service.messaging.producers import AuthProducer
 from auth_service.services.registration_service import RegistrationService
 from shared.database.database import get_db
 from auth_service.schemas.auth import (LoginRequest, LoginResponse, RefreshTokenRequest,
@@ -14,7 +15,7 @@ router = APIRouter()
 async def register(
     user_data: UserRegister,
     db: AsyncSession = Depends(get_db),
-    producer = Depends(get_producer)  # Используем глобальный producer
+    producer: AuthProducer = Depends(get_producer)  # Получаем из состояния приложения
 ):
     """Регистрация нового пользователя"""
     registration_service = RegistrationService(db, producer)

@@ -1,11 +1,9 @@
-"Основной файл приложения"
 import sys
 import os
 
-# Добавляем корневую директорию проекта в Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Request
 from contextlib import asynccontextmanager
 from shared.config.base import settings
 from shared.database.database import AsyncSessionLocal
@@ -20,17 +18,16 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-producer = None
-consumer = None
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    
-    global producer
-
+    # Инициализация RabbitMQ producer
     producer = AuthProducer(settings.RABBITMQ_URL)
     await producer.connect()
     
+    # Сохраняем producer в состоянии приложения
+    app.state.producer = producer
+    
+    # Инициализация RabbitMQ consumer
     async with AsyncSessionLocal() as db:
         token_service = TokenService(db)
         user_service = UserService(db)
@@ -38,10 +35,15 @@ async def lifespan(app: FastAPI):
         consumer = AuthConsumer(settings.RABBITMQ_URL, auth_service, producer)
         await consumer.connect()
     
+    logger.info("Auth Service started successfully")
+    
     yield
     
+    # Shutdown
     await producer.close()
     await consumer.close()
+    
+    logger.info("Auth Service stopped")
 
 app = FastAPI(
     title="Auth Service",
@@ -50,7 +52,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(auth.router,prefix="/auth", tags=["auth"])
+# Dependency для получения producer из состояния приложения
+async def get_producer(request: Request) -> AuthProducer:
+    return request.app.state.producer
+
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 @app.get("/health")
 async def health_check():
