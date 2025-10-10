@@ -24,16 +24,3 @@ class ProfileService:
             await self.db.commit()
             await self.db.refresh(profile)
         return profile
-    
-    async def create_or_update_profile(self, user_id: uuid.UUID, profile_data: ProfileUpdate) -> Profile:
-        """Создает или обновляет профиль (если нужно резервное решение)"""
-        profile = await self.get_profile_by_user_id(user_id)
-        if profile:
-            return await self.update_profile(user_id, profile_data)
-        else:
-            # Если вдруг потребуется создание
-            profile = Profile(user_id=user_id, **profile_data.dict(exclude_unset=True))
-            self.db.add(profile)
-            await self.db.commit()
-            await self.db.refresh(profile)
-            return profile
