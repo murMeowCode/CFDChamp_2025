@@ -8,6 +8,8 @@ class MessageType(str, Enum):
     TOKEN_VERIFY_REQUEST = "token.verify.request"
     TOKEN_VERIFY_RESPONSE = "token.verify.response"
 
+    USER_CREATED = "user.created.notification"
+
 class UserCreatedMessage(BaseModel):
     user_id: uuid.UUID
     username: str
