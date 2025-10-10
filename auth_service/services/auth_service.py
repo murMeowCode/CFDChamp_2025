@@ -1,6 +1,6 @@
-from services.token_service import TokenService
-from services.user_service import UserService
-from schemas.messaging import (
+from auth_service.services.token_service import TokenService
+from auth_service.services.user_service import UserService
+from auth_service.schemas.messaging import (
     TokenVerifyMessage, 
     TokenVerifyResponseMessage
 )

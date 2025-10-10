@@ -3,9 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import datetime
 import uuid
-from models.user import AuthUser
-from core.security import verify_password, get_password_hash
-from schemas.auth import UserCreate, UserResponse
+from auth_service.models.user import AuthUser
+from auth_service.core.security import verify_password, get_password_hash
+from auth_service.schemas.auth import UserCreate, UserResponse
 
 class UserService:
     def __init__(self, db: AsyncSession):

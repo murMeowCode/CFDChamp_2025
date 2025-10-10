@@ -1,5 +1,4 @@
 from datetime import datetime
-import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from auth_service.schemas.auth import UserRegister
 from auth_service.schemas.messaging import UserCreatedMessage

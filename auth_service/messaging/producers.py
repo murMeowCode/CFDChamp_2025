@@ -1,6 +1,6 @@
 import aio_pika
 from shared.messaging.base import RabbitMQBase
-from schemas.messaging import BaseMessage, MessageType, UserCreatedMessage
+from auth_service.schemas.messaging import BaseMessage, MessageType, UserCreatedMessage
 
 class AuthProducer(RabbitMQBase):
     def __init__(self, rabbitmq_url: str, exchange_name: str = "auth_exchange"):
