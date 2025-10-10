@@ -17,20 +17,21 @@ class ProfileConsumer(RabbitMQBase):
         
         # Используем существующий exchange
         exchange = await self.channel.declare_exchange(
-            name="auth_exchange",  # или какое имя используется
+            name="auth_exchange",
             type=aio_pika.ExchangeType.TOPIC,
             durable=True
         )
 
-        # Получаем ссылку на существующую очередь
+        # Объявляем очередь (если не существует - создаст, если существует - вернет ссылку)
         user_created_queue = await self.channel.declare_queue(
-            name="auth.user.created",  # используем существующее имя
+            name="auth.user.created",
             durable=True
         )
+        
+        # Привязываем очередь к exchange с нужным routing key
+        await user_created_queue.bind(exchange, routing_key="auth.user.created")
 
-        # Начинаем слушать существующую очередь
         await user_created_queue.consume(self._handle_user_created)
-
         logger.info("ProfileConsumer started listening for auth.user.created events")
 
     async def _handle_user_created(self, message: aio_pika.IncomingMessage):
