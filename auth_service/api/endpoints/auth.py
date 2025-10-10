@@ -78,17 +78,3 @@ async def refresh_tokens(refresh_data: RefreshTokenRequest, db: AsyncSession = D
         success=True,
         tokens=result["tokens"]
     )
-
-@router.post("/verify")
-async def verify_token(token: str, db: AsyncSession = Depends(get_db)):
-    """Прямая верификация токена (для тестирования)"""
-    token_service = TokenService(db)
-    result = await token_service.verify_access_token(token)
-    
-    if not result["valid"]:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=result["error"]
-        )
-    
-    return result
