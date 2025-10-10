@@ -27,7 +27,7 @@ async def update_my_profile(
     return await controller.update_profile(user_id, profile_data)
 
 # Эндпоинт для получения всех пользователей
-@router.get("/users", response_model=List[ProfileResponse])
+@router.get("/all", response_model=List[ProfileResponse])
 async def get_all_users(
     db: AsyncSession = Depends(get_db)
 ):

@@ -38,6 +38,7 @@ class TokenVerifyResponseMessage(BaseModel):
     valid: bool
     user_id: Optional[str] = None
     error: Optional[str] = None
+    role: int
 
 class TokenRefreshMessage(BaseModel):
     refresh_token: str
