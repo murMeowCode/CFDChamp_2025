@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.models.profile import Profile
-
+from profile_service.schemas.profile import ProfileUpdate
 
 class ProfileService:
     def __init__(self, db: AsyncSession):
