@@ -22,16 +22,13 @@ class ProfileConsumer(RabbitMQBase):
             durable=True
         )
 
-        # Создаем свою очередь для подписки на auth.user.created
+        # Получаем ссылку на существующую очередь
         user_created_queue = await self.channel.declare_queue(
-            name="profile_service.user.created",  # уникальное имя для нашего сервиса
+            name="auth.user.created",  # используем существующее имя
             durable=True
         )
-        
-        # Подписываемся на сообщения auth.user.created
-        await user_created_queue.bind(exchange, routing_key="auth.user.created")
 
-        # Начинаем слушать очередь
+        # Начинаем слушать существующую очередь
         await user_created_queue.consume(self._handle_user_created)
 
         logger.info("ProfileConsumer started listening for auth.user.created events")

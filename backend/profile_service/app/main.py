@@ -18,7 +18,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.include_router(profile_router, prefix="/api/v1")
+app.include_router(profile_router, prefix="/profiles")
 
 
 @asynccontextmanager

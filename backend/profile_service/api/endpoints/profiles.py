@@ -6,7 +6,7 @@ from shared.database.database import get_db
 import uuid
 from typing import List
 
-router = APIRouter(prefix="/profiles", tags=["profiles"])
+router = APIRouter()
 
 # Новый эндпоинт /me для текущего пользователя
 @router.get("/me", response_model=ProfileResponse)
