@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from auth_service.core.globals import get_producer
-from auth_service.messaging.producers import AuthProducer
 from auth_service.services.registration_service import RegistrationService
 from shared.database.database import get_db
-from shared.config.base import settings
 from schemas.auth import (LoginRequest, LoginResponse, RefreshTokenRequest,
                           RefreshTokenResponse, UserRegister, UserRegisterResponse, UserResponse)
 from services.token_service import TokenService
