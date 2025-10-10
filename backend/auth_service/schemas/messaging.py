@@ -47,12 +47,3 @@ class TokenRefreshResponseMessage(BaseModel):
     access_token: Optional[str] = None
     refresh_token: Optional[str] = None
     error: Optional[str] = None
-
-# User event messages
-class UserCreatedMessage(BaseModel):
-    user_id: uuid.UUID
-    username: str
-    email: EmailStr
-    password: str  # Пароль в открытом виде для хеширования
-    created_at: datetime
-    role: int
