@@ -15,8 +15,8 @@ from shared.config.base import settings
 from shared.database.database import Base
 
 # Импортируем модели
-from models.user import AuthUser
-from models.token import RefreshToken
+from auth_service.models.user import AuthUser
+from auth_service.models.token import RefreshToken
 
 config = context.config
 
