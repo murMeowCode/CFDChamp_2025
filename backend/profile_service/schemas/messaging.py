@@ -1,22 +1,15 @@
-from datetime import date, datetime
-import uuid
 from pydantic import BaseModel, EmailStr
-from typing import Optional, Dict, Any
+from uuid import UUID
+from datetime import datetime, date
+from typing import Optional
 from enum import Enum
 
-class MessageType(str, Enum):
-    TOKEN_VERIFY_REQUEST = "token.verify.request"
-    TOKEN_VERIFY_RESPONSE = "token.verify.response"
-
-    USER_CREATED = "user.created.notification"
-
 class UserCreatedMessage(BaseModel):
-    user_id: uuid.UUID
+    user_id: UUID
     username: str
     email: EmailStr
     password: str
     role: int
-    # Дополнительная информация для основного сервиса
     first_name: str
     last_name: str
     middle_name: Optional[str] = None
@@ -25,9 +18,13 @@ class UserCreatedMessage(BaseModel):
     address: Optional[str] = None
     created_at: datetime
 
+class MessageType(str, Enum):
+    TOKEN_VERIFY_REQUEST = "token_verify_request"
+    TOKEN_VERIFY_RESPONSE = "token_verify_response"
+
 class BaseMessage(BaseModel):
     message_type: MessageType
-    data: Dict[str, Any]
+    data: dict
     correlation_id: Optional[str] = None
     reply_to: Optional[str] = None
 
@@ -38,13 +35,4 @@ class TokenVerifyResponseMessage(BaseModel):
     valid: bool
     user_id: Optional[str] = None
     error: Optional[str] = None
-    role: int
-
-class TokenRefreshMessage(BaseModel):
-    refresh_token: str
-
-class TokenRefreshResponseMessage(BaseModel):
-    success: bool
-    access_token: Optional[str] = None
-    refresh_token: Optional[str] = None
-    error: Optional[str] = None
+    role: Optional[int] = None
