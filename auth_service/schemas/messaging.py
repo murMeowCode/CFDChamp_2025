@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 import uuid
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
@@ -7,12 +7,21 @@ from enum import Enum
 class MessageType(str, Enum):
     TOKEN_VERIFY_REQUEST = "token.verify.request"
     TOKEN_VERIFY_RESPONSE = "token.verify.response"
-    TOKEN_REFRESH_REQUEST = "token.refresh.request"
-    TOKEN_REFRESH_RESPONSE = "token.refresh.response"
-    # User events
-    USER_CREATED = "user.created"
-    USER_UPDATED = "user.updated"
-    USER_DELETED = "user.deleted"
+
+class UserCreatedMessage(BaseModel):
+    user_id: uuid.UUID
+    username: str
+    email: EmailStr
+    password: str
+    role: int
+    # Дополнительная информация для основного сервиса
+    first_name: str
+    last_name: str
+    middle_name: Optional[str] = None
+    birth_date: date
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    created_at: datetime
 
 class BaseMessage(BaseModel):
     message_type: MessageType

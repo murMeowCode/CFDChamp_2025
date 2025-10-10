@@ -1,7 +1,41 @@
-from datetime import datetime
+from datetime import date, datetime
 import uuid
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from typing import Optional
+
+class UserRegister(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    role: int
+    # Дополнительная информация для основного сервиса
+    first_name: str
+    last_name: str
+    middle_name: Optional[str] = None
+    birth_date: date
+    phone: Optional[str] = None
+    address: Optional[str] = None
+
+    @validator('username')
+    def username_alphanumeric(cls, v):
+        if not v.replace('_', '').isalnum():
+            raise ValueError('Username must be alphanumeric')
+        return v
+
+class UserRegisterResponse(BaseModel):
+    success: bool
+    user_id: Optional[uuid.UUID] = None
+    error: Optional[str] = None
+
+class UserResponse(BaseModel):
+    id: uuid.UUID
+    username: str
+    email: str
+    role: int
+    last_login: Optional[datetime]
+    
+    class Config:
+        from_attributes = True
 
 class TokenPair(BaseModel):
     access_token: str

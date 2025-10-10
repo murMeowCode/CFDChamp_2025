@@ -65,23 +65,6 @@ class UserService:
         
         return user
 
-    async def create_user_from_event(self, user_data: dict) -> AuthUser:
-        """Создание пользователя из события (уже с хешированным паролем)"""
-        user = AuthUser(
-            id=user_data["user_id"],
-            username=user_data["username"],
-            email=user_data["email"],
-            hashed_password=user_data["password"],  # Пароль уже хеширован
-            created_at=user_data["created_at"],
-            role=user_data["role"]
-        )
-        
-        self.db.add(user)
-        await self.db.commit()
-        await self.db.refresh(user)
-        
-        return user
-
     async def update_user_last_login(self, user_id: uuid.UUID):
         """Обновление времени последнего входа"""
         user = await self.get_user_by_id(user_id)
