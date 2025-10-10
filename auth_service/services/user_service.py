@@ -56,7 +56,8 @@ class UserService:
         user = AuthUser(
             username=user_data.username,
             email=user_data.email,
-            hashed_password=hashed_password
+            hashed_password=hashed_password,
+            role=user_data.role
         )
         
         self.db.add(user)
