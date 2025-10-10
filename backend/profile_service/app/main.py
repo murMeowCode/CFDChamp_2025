@@ -23,9 +23,6 @@ app.include_router(profile_router, prefix="/api/v1")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Создаем таблицы при старте
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     
     # Инициализируем и запускаем RabbitMQ consumer
     async with AsyncSessionLocal() as db:
