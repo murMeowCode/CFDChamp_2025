@@ -1,11 +1,16 @@
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from profile_service.api.endpoints.profiles import router as profile_router
 from shared.database.database import engine, Base, AsyncSessionLocal
 from profile_service.messaging.consumers import ProfileConsumer
 from profile_service.services.service import ProfileService
-import asyncio
+from shared.config.base import settings
 import uvicorn
-import os
 
 app = FastAPI(
     title="Profile Service",
@@ -15,11 +20,9 @@ app = FastAPI(
 
 app.include_router(profile_router, prefix="/api/v1")
 
-# RabbitMQ connection
-RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost/")
 
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     # Создаем таблицы при старте
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -27,21 +30,16 @@ async def startup_event():
     # Инициализируем и запускаем RabbitMQ consumer
     async with AsyncSessionLocal() as db:
         profile_service = ProfileService(db)
-        consumer = ProfileConsumer(RABBITMQ_URL, profile_service)
+        consumer = ProfileConsumer(settings.RABBITMQ_URL, profile_service)
         await consumer.connect()
         
-        # Сохраняем в app state
         app.state.consumer = consumer
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    # Закрываем соединения
-    if hasattr(app.state, 'consumer'):
-        await app.state.consumer.close()
+    yield
+
+    await consumer.close()
+
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "profile"}
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
