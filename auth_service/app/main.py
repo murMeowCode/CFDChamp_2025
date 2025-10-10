@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from shared.config.base import settings
 from shared.database.database import AsyncSessionLocal
