@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, DateTime, Integer
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from datetime import datetime
 from shared.database.database import Base
 
 class AuthUser(Base):
