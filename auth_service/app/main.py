@@ -52,10 +52,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Dependency для получения producer из состояния приложения
-async def get_producer(request: Request) -> AuthProducer:
-    return request.app.state.producer
-
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 @app.get("/health")

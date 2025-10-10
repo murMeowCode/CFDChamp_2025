@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from auth_service.app.main import get_producer
 from auth_service.messaging.producers import AuthProducer
 from auth_service.services.registration_service import RegistrationService
 from shared.database.database import get_db
@@ -10,6 +9,9 @@ from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
 
 router = APIRouter()
+
+async def get_producer(request: Request) -> AuthProducer:
+    return request.app.state.producer
 
 @router.post("/register", response_model=UserRegisterResponse)
 async def register(
