@@ -1,3 +1,10 @@
+"Основной файл приложения"
+import sys
+import os
+
+# Добавляем корневую директорию проекта в Python path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from shared.config.base import settings
@@ -43,7 +50,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(auth.router,"/auth", tags=["auth"])
+app.include_router(auth.router,prefix="/auth", tags=["auth"])
 
 @app.get("/health")
 async def health_check():
