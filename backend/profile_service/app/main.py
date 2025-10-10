@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from profile_service.api.endpoints.profiles import router as profile_router
-from shared.database.database import engine, Base, AsyncSessionLocal
+from shared.database.database import AsyncSessionLocal
 from profile_service.messaging.consumers import ProfileConsumer
 from profile_service.services.service import ProfileService
 from shared.config.base import settings
