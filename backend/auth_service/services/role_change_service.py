@@ -49,11 +49,11 @@ class RoleChangeService:
         
         return role_request
 
-    async def get_pending_requests(self, skip: int = 0, limit: int = 100) -> List[RoleChangeRequest]:
+    async def get_pending_requests(self) -> List[RoleChangeRequest]:
         """Получение списка pending заявок"""
         stmt = select(RoleChangeRequest).where(
             RoleChangeRequest.status == RoleChangeStatus.PENDING
-        ).offset(skip).limit(limit)
+        )
         
         result = await self.db.execute(stmt)
         return result.scalars().all()
