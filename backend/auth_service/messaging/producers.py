@@ -1,14 +1,17 @@
-import aio_pika
+"""продюсер адля сервиса"""#pylint: disable=E0401, W1203, W0718
 from shared.messaging.base import RabbitMQBase
 from auth_service.schemas.messaging import BaseMessage, MessageType, UserCreatedMessage
+import aio_pika
 
 class AuthProducer(RabbitMQBase):
+    """класс-продюсер"""
     def __init__(self, rabbitmq_url: str, exchange_name: str = "auth_exchange"):
         super().__init__(rabbitmq_url)
         self.exchange_name = exchange_name
         self.exchange = None
 
     async def connect(self):
+        """функция подключения к очереди"""
         await super().connect()
         self.exchange = await self.channel.declare_exchange(
             name=self.exchange_name,
@@ -17,8 +20,8 @@ class AuthProducer(RabbitMQBase):
         )
 
     async def send_response(
-        self, 
-        message: BaseMessage, 
+        self,
+        message: BaseMessage,
         reply_to: str,
         correlation_id: str
     ):

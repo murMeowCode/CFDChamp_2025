@@ -1,14 +1,14 @@
-# auth_service/api/role_change.py
+"""апи для изменения ролей"""#pylint: disable=E0401, C0412, W0707
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-import uuid
 
 from auth_service.models.user import AuthUser
 from shared.database.database import get_db
 from auth_service.services.role_change_service import RoleChangeService
 from auth_service.schemas.role_change import (
-    RoleChangeRequestCreate, 
-    RoleChangeRequestResponse, 
+    RoleChangeRequestCreate,
+    RoleChangeRequestResponse,
     RoleChangeRequestList
 )
 from auth_service.core.auth import get_current_user
@@ -24,10 +24,11 @@ async def create_role_change_request(
 ):
     """Создание заявки на изменение роли"""
     role_change_service = RoleChangeService(db)
-    
+
     try:
-        request = await role_change_service.create_role_change_request(current_user.id, request_data)
-        
+        request = await role_change_service.create_role_change_request(current_user.id,
+                                                                        request_data)
+
         return RoleChangeRequestResponse(
             id=request.id,
             user_id=request.user_id,
@@ -50,11 +51,11 @@ async def get_pending_requests(
     """Получение списка pending заявок (только для пользователей с достаточными правами)"""
     if current_user.role < REQUIRED_ROLE_FOR_REVIEW:
         raise HTTPException(status_code=403, detail="Insufficient permissions")
-    
+
     role_change_service = RoleChangeService(db)
-    
+
     requests = await role_change_service.get_pending_requests()
-    
+
     # Формируем ответ с username'ами
     response_requests = []
     for req in requests:
@@ -67,7 +68,7 @@ async def get_pending_requests(
             status=req.status,
             reason=req.reason,
         ))
-    
+
     return RoleChangeRequestList(
         requests=response_requests,
         total=len(response_requests)
@@ -81,15 +82,15 @@ async def approve_role_change_request(
 ):
     """Одобрение заявки на изменение роли"""
     role_change_service = RoleChangeService(db)
-    
+
     result = await role_change_service.approve_request(request_id, current_user.id)
-    
+
     if not result["success"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=result["error"]
         )
-    
+
     return {"success": True, "message": result["message"]}
 
 @router.post("/{request_id}/reject")
@@ -100,13 +101,13 @@ async def reject_role_change_request(
 ):
     """Отклонение заявки на изменение роли"""
     role_change_service = RoleChangeService(db)
-    
+
     result = await role_change_service.reject_request(request_id, current_user.id)
-    
+
     if not result["success"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=result["error"]
         )
-    
+
     return {"success": True, "message": result["message"]}

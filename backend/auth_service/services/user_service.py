@@ -1,13 +1,15 @@
+"""служба работы с сущностью пользователя"""#pylint: disable=E0611, E0401
+from datetime import datetime
+import uuid
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from datetime import datetime
-import uuid
 from auth_service.models.user import AuthUser
 from auth_service.core.security import verify_password, get_password_hash
-from auth_service.schemas.auth import UserCreate, UserResponse
+from auth_service.schemas.auth import UserCreate
 
 class UserService:
+    """класс службы"""
     def __init__(self, db: AsyncSession):
         self.db = db
 
@@ -34,10 +36,10 @@ class UserService:
         user = await self.get_user_by_username(username)
         if not user:
             return None
-        
+
         if not verify_password(password, user.hashed_password):
             return None
-        
+
         return user
 
     async def create_user(self, user_data: UserCreate) -> AuthUser:
@@ -46,11 +48,11 @@ class UserService:
         existing_user = await self.get_user_by_username(user_data.username)
         if existing_user:
             raise ValueError("User with this username already exists")
-        
+
         existing_email = await self.get_user_by_email(user_data.email)
         if existing_email:
             raise ValueError("User with this email already exists")
-        
+
         # Создаем пользователя
         hashed_password = get_password_hash(user_data.password)
         user = AuthUser(
@@ -59,11 +61,11 @@ class UserService:
             hashed_password=hashed_password,
             role=user_data.role
         )
-        
+
         self.db.add(user)
         await self.db.commit()
         await self.db.refresh(user)
-        
+
         return user
 
     async def update_user_last_login(self, user_id: uuid.UUID):

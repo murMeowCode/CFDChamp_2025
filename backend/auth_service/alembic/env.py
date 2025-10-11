@@ -1,22 +1,22 @@
+"""конфигурация для работы Alembic"""#pylint: disable=E0401, W0611, E1101
+import asyncio
+import sys
+import os
 from logging.config import fileConfig
+from shared.config.base import settings
+from shared.database.database import Base
+from auth_service.models.user import AuthUser
+from auth_service.models.token import RefreshToken
+from auth_service.models.role_change_request import RoleChangeRequest
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
-import asyncio
-import sys
-import os
+
 
 # Добавляем пути
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-
-from shared.config.base import settings
-from shared.database.database import Base
-
-# Импортируем модели
-from auth_service.models.user import AuthUser
-from auth_service.models.token import RefreshToken
 
 config = context.config
 
@@ -26,9 +26,11 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def get_url():
+    """получение адреса БД"""
     return settings.DATABASE_URL
 
 def run_migrations_offline() -> None:
+    """функция осуществления миграций"""
     url = get_url()
     context.configure(
         url=url,
@@ -41,12 +43,14 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 def do_run_migrations(connection: Connection) -> None:
+    """функция осуществления миграций"""
     context.configure(connection=connection, target_metadata=target_metadata)
 
     with context.begin_transaction():
         context.run_migrations()
 
 async def run_async_migrations() -> None:
+    """функция осуществления миграций"""
     configuration = config.get_section(config.config_ini_section) or {}
     configuration["sqlalchemy.url"] = get_url()
 

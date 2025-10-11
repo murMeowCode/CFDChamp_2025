@@ -1,3 +1,4 @@
+"""сервис регистрации"""#pylint: disable=E0611, E0401, W0718
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from auth_service.schemas.auth import UserRegister
@@ -6,6 +7,7 @@ from auth_service.services.user_service import UserService
 from auth_service.messaging.producers import AuthProducer
 
 class RegistrationService:
+    """класс сервиса регистрации"""
     def __init__(self, db: AsyncSession, producer: AuthProducer):
         self.db = db
         self.producer = producer
@@ -16,13 +18,13 @@ class RegistrationService:
         try:
             # Создаем пользователя в auth базе
             user = await self.user_service.create_user(user_data)
-            
+
             # Подготавливаем данные для отправки в основной сервис
             user_created_message = UserCreatedMessage(
                 user_id=user.id,
                 username=user.username,
                 email=user.email,
-                password=user_data.password,  # Отправляем исходный пароль для хеширования на той стороне
+                password=user_data.password,
                 role=user_data.role,
                 first_name=user_data.first_name,
                 last_name=user_data.last_name,
@@ -32,15 +34,15 @@ class RegistrationService:
                 address=user_data.address,
                 created_at=datetime.utcnow()
             )
-            
+
             # Отправляем событие в RabbitMQ
             await self.producer.send_user_created_event(user_created_message)
-            
+
             return {
                 "success": True,
                 "user_id": user.id
             }
-            
+
         except ValueError as e:
             return {
                 "success": False,
