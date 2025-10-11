@@ -3,7 +3,6 @@ from typing import List, Optional, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 import uuid
-from datetime import datetime
 
 from auth_service.models.user import AuthUser
 from auth_service.models.role_change_request import RoleChangeRequest
