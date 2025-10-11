@@ -1,12 +1,11 @@
 # auth_service/api/role_change.py
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
 from auth_service.models.user import AuthUser
 from shared.database.database import get_db
 from auth_service.services.role_change_service import RoleChangeService
-from auth_service.services.user_service import UserService
 from auth_service.schemas.role_change import (
     RoleChangeRequestCreate, 
     RoleChangeRequestResponse, 
@@ -28,10 +27,6 @@ async def create_role_change_request(
     
     try:
         request = await role_change_service.create_role_change_request(current_user.id, request_data)
-        
-        # Получаем username для ответа
-        user_service = UserService(db)
-        user = await user_service.get_user_by_id(current_user.id)
         
         return RoleChangeRequestResponse(
             id=request.id,
@@ -57,7 +52,6 @@ async def get_pending_requests(
         raise HTTPException(status_code=403, detail="Insufficient permissions")
     
     role_change_service = RoleChangeService(db)
-    user_service = UserService(db)
     
     requests = await role_change_service.get_pending_requests()
     
