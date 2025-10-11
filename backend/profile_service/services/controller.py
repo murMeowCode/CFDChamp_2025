@@ -1,27 +1,34 @@
+"""служба взаимодействия с профилем"""#pylint: disable=E0401, E0611
 from typing import List
+import uuid
 from fastapi import HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.services.service import ProfileService
 from profile_service.schemas.profile import ProfileResponse, ProfileUpdate
 from shared.database.database import get_db
-import uuid
+
 
 class ProfileController:
+    """класс-контроллер"""
     def __init__(self, db: AsyncSession = Depends(get_db)):
         self.db = db
         self.profile_service = ProfileService(db)
-    
+
     async def get_profile(self, user_id: uuid.UUID) -> ProfileResponse:
+        """получение профиля"""
         profile = await self.profile_service.get_profile_by_user_id(user_id)
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
         return ProfileResponse.model_validate(profile)
-    
+
     async def get_all_profiles(self) -> List[ProfileResponse]:
+        """получение всех профилей"""
         profiles = await self.profile_service.get_all_profiles()
         return [ProfileResponse.model_validate(profile) for profile in profiles]
-    
-    async def update_profile(self, user_id: uuid.UUID, profile_data: ProfileUpdate) -> ProfileResponse:
+
+    async def update_profile(self, user_id: uuid.UUID,
+                             profile_data: ProfileUpdate) -> ProfileResponse:
+        """обновление профиля"""
         profile = await self.profile_service.update_profile(user_id, profile_data)
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")

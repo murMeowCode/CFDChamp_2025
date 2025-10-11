@@ -1,20 +1,23 @@
-import aio_pika
+"""модуль прослушивания очереди"""#pylint: disable=E0401, E0611, W1203, W0718
 import json
+import logging
+import aio_pika
 from shared.messaging.base import RabbitMQBase
 from profile_service.schemas.messaging import UserCreatedMessage
 from profile_service.services.service import ProfileService
-import logging
 
 logger = logging.getLogger(__name__)
 
 class ProfileConsumer(RabbitMQBase):
+    """класс потребителя"""
     def __init__(self, rabbitmq_url: str, profile_service: ProfileService):
         super().__init__(rabbitmq_url)
         self.profile_service = profile_service
 
     async def connect(self):
+        """функция соединения с очередями"""
         await super().connect()
-        
+
         # Используем существующий exchange
         exchange = await self.channel.declare_exchange(
             name="auth_exchange",
@@ -27,7 +30,7 @@ class ProfileConsumer(RabbitMQBase):
             name="auth.user.created",
             durable=True
         )
-        
+
         # Привязываем очередь к exchange с нужным routing key
         await user_created_queue.bind(exchange, routing_key="auth.user.created")
 
@@ -40,7 +43,7 @@ class ProfileConsumer(RabbitMQBase):
             try:
                 data = json.loads(message.body.decode())
                 user_message = UserCreatedMessage(**data)
-                
+
                 logger.info(f"Received user created event for user_id: {user_message.user_id}")
 
                 # Создаем профиль из данных пользователя
