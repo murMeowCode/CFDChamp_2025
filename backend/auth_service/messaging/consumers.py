@@ -79,7 +79,8 @@ class AuthConsumer(RabbitMQBase):
                 verify_message = TokenVerifyMessage(**base_message.data)
                 logger.info("🔐 Processing token verification", extra={
                     "message_id": message_id,
-                    "token_prefix": verify_message.token[:10] + "..." if verify_message.token else "None"
+                    "token_prefix": verify_message.token[:10] + "..." if verify_message.token
+                    else "None"
                 })
 
                 response = await self.auth_service.verify_token_handler(verify_message)
