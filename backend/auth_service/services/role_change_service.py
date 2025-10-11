@@ -58,19 +58,6 @@ class RoleChangeService:
         result = await self.db.execute(stmt)
         return result.scalars().all()
 
-    async def get_request_by_id(self, request_id: uuid.UUID) -> Optional[RoleChangeRequest]:
-        """Получение заявки по ID"""
-        return await self.db.get(RoleChangeRequest, request_id)
-
-    async def get_user_requests(self, user_id: uuid.UUID) -> List[RoleChangeRequest]:
-        """Получение заявок пользователя"""
-        stmt = select(RoleChangeRequest).where(
-            RoleChangeRequest.user_id == user_id
-        ).order_by(RoleChangeRequest.created_at.desc())
-        
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
-
     async def approve_request(self, request_id: uuid.UUID) -> Dict:
         """Одобрение заявки на изменение роли"""
         role_request = await self.get_request_by_id(request_id)
