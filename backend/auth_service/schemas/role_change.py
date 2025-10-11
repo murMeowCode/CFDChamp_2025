@@ -17,15 +17,11 @@ class RoleChangeRequestCreate(BaseModel):
 class RoleChangeRequestResponse(BaseModel):
     id: uuid.UUID
     user_id: uuid.UUID
-    username: str
     current_role: int
     requested_role: int
     status: RoleChangeStatus
     reason: Optional[str]
-    created_at: datetime
-    reviewed_at: Optional[datetime]
-    reviewed_by: Optional[uuid.UUID]
-    reviewer_username: Optional[str]
+
     
     class Config:
         from_attributes = True
