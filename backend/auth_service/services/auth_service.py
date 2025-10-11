@@ -13,9 +13,13 @@ class AuthService:
     async def verify_token_handler(self, message: TokenVerifyMessage) -> TokenVerifyResponseMessage:
         """Обработчик верификации токена"""
         result = await self.token_service.verify_access_token(message.token)
-        
+
+        user = await self.user_service.get_user_by_id(result.get("user_id"))
+        role = user.role
+
         return TokenVerifyResponseMessage(
             valid=result["valid"],
             user_id=result.get("user_id"),
-            error=result.get("error")
+            error=result.get("error"),
+            role = role
         )
