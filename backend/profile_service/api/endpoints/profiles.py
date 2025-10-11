@@ -2,7 +2,7 @@
 from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from auth_service.messaging.producers import AuthProducer
+from shared.messaging.producers import AuthProducer
 from shared.utils.auth_utils import AuthDependency
 from shared.database.database import get_db
 from profile_service.services.controller import ProfileController
