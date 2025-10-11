@@ -14,6 +14,7 @@ from auth_service.schemas.role_change import (
 )
 from auth_service.core.auth import get_current_user
 
+REQUIRED_ROLE_FOR_REVIEW = 2
 router = APIRouter(prefix="/role-change", tags=["role-change"])
 
 @router.post("/request", status_code=status.HTTP_201_CREATED)
@@ -48,30 +49,22 @@ async def create_role_change_request(
 
 @router.get("/requests", response_model=RoleChangeRequestList)
 async def get_pending_requests(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
     db: AsyncSession = Depends(get_db),
     current_user: AuthUser = Depends(get_current_user)
 ):
     """Получение списка pending заявок (только для пользователей с достаточными правами)"""
-    # Здесь можно добавить проверку прав доступа
-    # if current_user.role < REQUIRED_ROLE_FOR_REVIEW:
-    #     raise HTTPException(status_code=403, detail="Insufficient permissions")
+    if current_user.role < REQUIRED_ROLE_FOR_REVIEW:
+        raise HTTPException(status_code=403, detail="Insufficient permissions")
     
     role_change_service = RoleChangeService(db)
     user_service = UserService(db)
     
-    requests = await role_change_service.get_pending_requests(skip, limit)
+    requests = await role_change_service.get_pending_requests()
     
     # Формируем ответ с username'ами
     response_requests = []
     for req in requests:
-        user = await user_service.get_user_by_id(req.user_id)
-        reviewer_username = None
-        if req.reviewed_by:
-            reviewer = await user_service.get_user_by_id(req.reviewed_by)
-            reviewer_username = reviewer.username if reviewer else None
-        
+
         response_requests.append(RoleChangeRequestResponse(
             id=req.id,
             user_id=req.user_id,
