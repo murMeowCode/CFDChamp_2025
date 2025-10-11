@@ -1,9 +1,11 @@
-from pydantic import BaseModel
+"""схемы работы с профилем"""
 from uuid import UUID
 from datetime import date
 from typing import Optional
+from pydantic import BaseModel
 
 class ProfileBase(BaseModel):
+    """базовая схема профиля"""
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     middle_name: Optional[str] = None
@@ -13,10 +15,12 @@ class ProfileBase(BaseModel):
     address: Optional[str] = None
 
 class ProfileUpdate(ProfileBase):
-    pass
+    """схема обновления профиля"""
 
 class ProfileResponse(ProfileBase):
+    """ответ на действие с профилем"""
     user_id: UUID
-    
+
     class Config:
+        """переход в режим ORM"""
         from_attributes = True
