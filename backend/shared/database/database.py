@@ -1,12 +1,15 @@
+"""базовая кофигурация для работы с БД"""#pylint: disable=E0401, E0611, R0903
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from shared.config.base import settings
-import logging
+
 
 logger = logging.getLogger(__name__)
 
 class Base(DeclarativeBase):
-    pass
+    """объявление базового класса БД"""
+
 
 # Создаем engine
 engine = create_async_engine(

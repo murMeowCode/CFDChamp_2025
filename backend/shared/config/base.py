@@ -1,7 +1,9 @@
+"""общие настройки сервисов"""#pylint: disable=R0903
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    
+    """класс настроек"""
+
     # База данных
     DATABASE_URL: str = "postgresql+asyncpg://test:test@127.0.0.1:5432/postgres"
     # RabbitMQ
@@ -12,8 +14,9 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    
+
     class Config:
+        """импорт из файла среды"""
         env_file = ".env"
 
 settings = Settings()

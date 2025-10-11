@@ -2,13 +2,14 @@
 import sys
 import os
 from contextlib import asynccontextmanager
-from profile_service.messaging.producers import AuthProducer
+from shared.messaging.producers import AuthProducer
+from shared.database.database import AsyncSessionLocal
+from shared.config.base import settings
 from profile_service.messaging.consumers import ProfileConsumer
 from profile_service.services.service import ProfileService
 from profile_service.api.endpoints.profiles import router as profile_router
 from fastapi import FastAPI
-from shared.database.database import AsyncSessionLocal
-from shared.config.base import settings
+
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
