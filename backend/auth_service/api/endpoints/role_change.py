@@ -15,7 +15,7 @@ from auth_service.schemas.role_change import (
 from auth_service.core.auth import get_current_user
 
 REQUIRED_ROLE_FOR_REVIEW = 2
-router = APIRouter(prefix="/role-change", tags=["role-change"])
+router = APIRouter()
 
 @router.post("/request", status_code=status.HTTP_201_CREATED)
 async def create_role_change_request(
