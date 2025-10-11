@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from shared.config.base import settings
 from shared.database.database import AsyncSessionLocal
-from auth_service.api.endpoints import auth
+from auth_service.api.endpoints import auth, role_change
 from auth_service.services.auth_service import AuthService
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
@@ -53,6 +53,7 @@ app = FastAPI(
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(role_change.router, prefix="/role-change", tags=["role-change"])
 
 @app.get("/health")
 async def health_check():
