@@ -1,11 +1,13 @@
+"""служба верификации токенов с возвращением роли"""#pylint: disable=E0611, E0401
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
 from auth_service.schemas.messaging import (
-    TokenVerifyMessage, 
+    TokenVerifyMessage,
     TokenVerifyResponseMessage
 )
 
 class AuthService:
+    """класс обработки сообщений верификации"""
     def __init__(self, token_service: TokenService, user_service: UserService):
         self.token_service = token_service
         self.user_service = user_service
