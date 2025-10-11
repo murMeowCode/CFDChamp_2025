@@ -1,18 +1,22 @@
-import aio_pika
+"""модуль прослушивания очереди"""#pylint: disable=E0401, E0611, W1203, W0718, W0201
 import json
 import uuid
+import logging
+import aio_pika
 from shared.messaging.base import RabbitMQBase
 from profile_service.schemas.messaging import BaseMessage, MessageType, TokenVerifyResponseMessage
-import logging
+
 
 logger = logging.getLogger(__name__)
 
 class AuthProducer(RabbitMQBase):
+    """класс продюсер"""
     def __init__(self, rabbitmq_url: str):
         super().__init__(rabbitmq_url)
         self.exchange_name = "auth_exchange"
 
     async def connect(self):
+        """функция соединения с очередью"""
         await super().connect()
         self.exchange = await self.channel.declare_exchange(
             name=self.exchange_name,
@@ -20,10 +24,10 @@ class AuthProducer(RabbitMQBase):
             durable=True
         )
 
-    async def verify_token(self, token: str, timeout: int = 5) -> TokenVerifyResponseMessage:
+    async def verify_token(self, token: str) -> TokenVerifyResponseMessage:
         """Отправляет запрос на верификацию токена и ждет ответ"""
         correlation_id = str(uuid.uuid4())
-        
+
         # Создаем временную очередь для ответа
         reply_queue = await self.channel.declare_queue(
             name=f"auth.verify.reply.{correlation_id}",
