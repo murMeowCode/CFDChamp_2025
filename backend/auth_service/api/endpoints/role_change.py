@@ -83,7 +83,12 @@ async def approve_role_change_request(
     """Одобрение заявки на изменение роли"""
     role_change_service = RoleChangeService(db)
 
-    result = await role_change_service.approve_request(request_id, current_user.id)
+    if current_user.role != 2:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
+
+    result = await role_change_service.approve_request(request_id)
 
     if not result["success"]:
         raise HTTPException(
@@ -102,7 +107,12 @@ async def reject_role_change_request(
     """Отклонение заявки на изменение роли"""
     role_change_service = RoleChangeService(db)
 
-    result = await role_change_service.reject_request(request_id, current_user.id)
+    if current_user.role != 2:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
+
+    result = await role_change_service.reject_request(request_id)
 
     if not result["success"]:
         raise HTTPException(
