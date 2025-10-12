@@ -1,7 +1,7 @@
 """служба верификации токенов с возвращением роли"""#pylint: disable=E0611, E0401
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
-from auth_service.schemas.messaging import (
+from shared.schemas.messaging import (
     TokenVerifyMessage,
     TokenVerifyResponseMessage
 )

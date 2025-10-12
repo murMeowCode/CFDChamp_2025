@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 import logging
 from shared.messaging.base import RabbitMQBase
-from auth_service.schemas.messaging import (
+from shared.schemas.messaging import (
     BaseMessage, MessageType,
     TokenVerifyMessage
 )

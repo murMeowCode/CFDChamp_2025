@@ -1,6 +1,6 @@
 """продюсер адля сервиса"""#pylint: disable=E0401, W1203, W0718
 from shared.messaging.base import RabbitMQBase
-from auth_service.schemas.messaging import BaseMessage, MessageType, UserCreatedMessage
+from shared.schemas.messaging import BaseMessage, MessageType, UserCreatedMessage
 import aio_pika
 
 class AuthProducer(RabbitMQBase):

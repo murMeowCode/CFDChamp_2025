@@ -48,10 +48,6 @@ class TokenData(BaseModel):
     user_id: str
     username: Optional[str] = None
 
-class TokenVerifyRequest(BaseModel):
-    """схема запроса на верификацию"""
-    token: str
-
 class RefreshTokenRequest(BaseModel):
     """запрос на перевыдачу токенов"""
     refresh_token: str
@@ -72,9 +68,3 @@ class LoginResponse(BaseModel):
     success: bool
     tokens: Optional[TokenPair] = None
     error: Optional[str] = None
-
-class UserCreate(BaseModel):
-    """схема создания пользователя"""
-    username: str
-    email: EmailStr
-    password: str

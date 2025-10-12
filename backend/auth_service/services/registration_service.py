@@ -1,8 +1,8 @@
 """сервис регистрации"""#pylint: disable=E0611, E0401, W0718
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
+from shared.schemas.messaging import UserCreatedMessage
 from auth_service.schemas.auth import UserRegister
-from auth_service.schemas.messaging import UserCreatedMessage
 from auth_service.services.user_service import UserService
 from auth_service.messaging.producers import AuthProducer
 
