@@ -1,4 +1,4 @@
-# profile_service/messaging/consumers.py
+"""модуль потребителя"""#pylint: disable=W1203, E0401, W0718
 import json
 import logging
 import aio_pika
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class ProfileConsumer(BaseConsumer):
     """Потребитель для обработки событий профилей"""
-    
+
     def __init__(self, rabbitmq_url: str, profile_service: ProfileService):
         super().__init__(rabbitmq_url, "auth_exchange")
         self.profile_service = profile_service
@@ -25,7 +25,7 @@ class ProfileConsumer(BaseConsumer):
         await user_created_queue.consume(
             lambda msg: self.process_message(msg, self._handle_user_created)
         )
-        
+
         logger.info("ProfileConsumer queues setup completed")
 
     async def _handle_user_created(self, message: aio_pika.IncomingMessage):

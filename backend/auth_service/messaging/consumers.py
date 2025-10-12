@@ -1,4 +1,4 @@
-# auth_service/messaging/consumers.py
+"""модуль потребителя"""#pylint: disable=W1203, E0401, W0718
 import json
 import logging
 from datetime import datetime
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AuthConsumer(BaseConsumer):
     """Потребитель для обработки событий аутентификации"""
-    
+
     def __init__(self, rabbitmq_url: str, auth_service: AuthService, producer: AuthProducer):
         super().__init__(rabbitmq_url, "auth_exchange")
         self.auth_service = auth_service
@@ -31,7 +31,7 @@ class AuthConsumer(BaseConsumer):
         await verify_queue.consume(
             lambda msg: self.process_message(msg, self._handle_verify_request)
         )
-        
+
         logger.info("AuthConsumer queues setup completed")
 
     async def _handle_verify_request(self, message: aio_pika.IncomingMessage):
