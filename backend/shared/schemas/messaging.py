@@ -24,6 +24,7 @@ class MessageType(str, Enum):
     """класс-перечисление типов сообщений"""
     TOKEN_VERIFY_REQUEST = "token_verify_request"
     TOKEN_VERIFY_RESPONSE = "token_verify_response"
+    USER_CREATED = "user.created.notification"
 
 class BaseMessage(BaseModel):
     """базовое сообщение из очереди"""
