@@ -5,19 +5,23 @@ from typing import Optional
 from enum import Enum
 from pydantic import BaseModel, EmailStr
 
-class UserCreatedMessage(BaseModel):
-    """схема получения уведомления о созданном пользователе"""
-    user_id: UUID
+class UserRegister(BaseModel):
+    """схема регистрации пользователя"""
     username: str
     email: EmailStr
     password: str
     role: int
+    # Дополнительная информация для основного сервиса
     first_name: str
     last_name: str
     middle_name: Optional[str] = None
     birth_date: date
     phone: Optional[str] = None
     address: Optional[str] = None
+
+class UserCreatedMessage(UserRegister):
+    """схема получения уведомления о созданном пользователе"""
+    user_id: UUID
     created_at: datetime
 
 class MessageType(str, Enum):

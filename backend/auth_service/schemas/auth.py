@@ -1,23 +1,8 @@
 """схемы для аутентификации"""
-from datetime import date, datetime
+from datetime import datetime
 import uuid
 from typing import Optional
-from pydantic import BaseModel, EmailStr
-
-class UserRegister(BaseModel):
-    """схема регистрации пользователя"""
-    username: str
-    email: EmailStr
-    password: str
-    role: int
-    # Дополнительная информация для основного сервиса
-    first_name: str
-    last_name: str
-    middle_name: Optional[str] = None
-    birth_date: date
-    phone: Optional[str] = None
-    address: Optional[str] = None
-
+from pydantic import BaseModel
 
 class UserRegisterResponse(BaseModel):
     """ответ апи на регистрацию"""
