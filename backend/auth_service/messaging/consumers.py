@@ -50,48 +50,17 @@ class AuthConsumer(RabbitMQBase):
 
         async with message.process():
             try:
-                # Логирование начала обработки
-                logger.info("🚀 START Processing verify request", extra={
-                    "message_id": message_id,
-                    "routing_key": message.routing_key,
-                    "reply_to": message.reply_to,
-                    "timestamp": start_time.isoformat()
-                })
-
                 # Декодирование сообщения
                 body = json.loads(message.body.decode())
-                logger.debug("📨 Message body decoded", extra={
-                    "message_id": message_id,
-                    "body_keys": list(body.keys()) if body else []
-                })
-
                 base_message = BaseMessage(**body)
 
                 if base_message.message_type != MessageType.TOKEN_VERIFY_REQUEST:
-                    logger.warning("⚠️ Unexpected message type", extra={
-                        "message_id": message_id,
-                        "expected": MessageType.TOKEN_VERIFY_REQUEST,
-                        "received": base_message.message_type
-                    })
                     return
 
                 # Обработка верификации токена
                 verify_message = TokenVerifyMessage(**base_message.data)
-                logger.info("🔐 Processing token verification", extra={
-                    "message_id": message_id,
-                    "token_prefix": verify_message.token[:10] + "..." if verify_message.token
-                    else "None"
-                })
 
                 response = await self.auth_service.verify_token_handler(verify_message)
-
-                # Логирование результата верификации
-                logger.info("✅ Token verification result", extra={
-                    "message_id": message_id,
-                    "valid": response.valid,
-                    "user_id": response.user_id,
-                    "has_error": bool(response.error)
-                })
 
                 # Подготовка и отправка ответа
                 response_message = BaseMessage(
@@ -105,21 +74,10 @@ class AuthConsumer(RabbitMQBase):
                         base_message.reply_to,
                         base_message.correlation_id
                     )
-                    logger.info("📤 Response sent", extra={
-                        "message_id": message_id,
-                        "reply_queue": base_message.reply_to,
-                        "response_type": MessageType.TOKEN_VERIFY_RESPONSE
-                    })
                 else:
                     logger.warning("⚠️ No reply queue specified", extra={"message_id": message_id})
 
-                # Логирование завершения обработки
-                processing_time = (datetime.utcnow() - start_time).total_seconds() * 1000
-                logger.info("🏁 END Processing completed", extra={
-                    "message_id": message_id,
-                    "processing_time_ms": round(processing_time, 2)
-                })
-
+                # Логирование завершения обработк
             except json.JSONDecodeError as e:
                 logger.error("❌ JSON decode failed", extra={
                     "message_id": message_id,
