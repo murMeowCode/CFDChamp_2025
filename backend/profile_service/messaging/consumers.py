@@ -3,7 +3,7 @@ import json
 import logging
 import aio_pika
 from shared.messaging.base import RabbitMQBase
-from profile_service.schemas.messaging import UserCreatedMessage
+from shared.schemas.messaging import UserCreatedMessage
 from profile_service.services.service import ProfileService
 
 logger = logging.getLogger(__name__)

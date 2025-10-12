@@ -4,7 +4,7 @@ import uuid
 import logging
 import aio_pika
 from shared.messaging.base import RabbitMQBase
-from profile_service.schemas.messaging import BaseMessage, MessageType, TokenVerifyResponseMessage
+from shared.schemas.messaging import BaseMessage, MessageType, TokenVerifyResponseMessage
 
 
 logger = logging.getLogger(__name__)
