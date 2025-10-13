@@ -56,7 +56,8 @@ class BaseProducer(RabbitMQBase):
         )
         logger.info(f"Response sent to {reply_to} with correlation_id {correlation_id}")
 
-    async def send_notification(self, notification_data: dict, routing_key: str = "notification.general"):
+    async def send_notification(self, notification_data: dict,
+                                routing_key: str = "notification.general"):
         """
         Отправка уведомления в mailing service
         
