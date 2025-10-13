@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from auth_service.models.user import AuthUser
 from auth_service.core.security import verify_password, get_password_hash
-from auth_service.schemas.auth import UserCreate
+from shared.schemas.messaging import UserCreatedMessage
 
 class UserService:
     """класс службы"""
@@ -42,7 +42,7 @@ class UserService:
 
         return user
 
-    async def create_user(self, user_data: UserCreate) -> AuthUser:
+    async def create_user(self, user_data: UserCreatedMessage) -> AuthUser:
         """Создание нового пользователя"""
         # Проверяем, нет ли уже пользователя с таким username или email
         existing_user = await self.get_user_by_username(user_data.username)

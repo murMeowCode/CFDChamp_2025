@@ -4,12 +4,12 @@ import logging
 from datetime import datetime
 import aio_pika
 from shared.messaging.consumers import BaseConsumer
+from shared.messaging.producers import AuthProducer
 from shared.schemas.messaging import (
     BaseMessage, MessageType,
     TokenVerifyMessage
 )
 from auth_service.services.auth_service import AuthService
-from auth_service.messaging.producers import AuthProducer
 
 logger = logging.getLogger(__name__)
 

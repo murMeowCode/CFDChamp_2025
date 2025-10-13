@@ -3,6 +3,9 @@ from contextlib import asynccontextmanager
 import sys
 import os
 import logging
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 from shared.config.base import settings
 from shared.database.database import AsyncSessionLocal
 from auth_service.api.endpoints import auth, role_change
@@ -12,8 +15,6 @@ from auth_service.services.user_service import UserService
 from auth_service.messaging.producers import UserProducer
 from auth_service.messaging.consumers import AuthConsumer
 from fastapi import FastAPI
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
