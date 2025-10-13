@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    #Email
+    RESEND_API_KEY: str
+    RESEND_FROM_EMAIL: str = "onboarding@resend.dev"
 
     class Config:
         """импорт из файла среды"""
