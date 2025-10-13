@@ -6,7 +6,7 @@ from shared.messaging.consumers import BaseConsumer
 from mailing_service.services.email_service import email_service
 from mailing_service.schemas.message import EmailData
 from mailing_service.services.message_service import MessageService
-from shared.database.database import async_session_maker
+from shared.database.database import AsyncSessionLocal
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class MailingConsumer(BaseConsumer):
             return
 
         # Создаем запись в базе данных
-        async with async_session_maker() as session:
+        async with AsyncSessionLocal() as session:
             message_service = MessageService(session)
 
             # Создаем запись сообщения
