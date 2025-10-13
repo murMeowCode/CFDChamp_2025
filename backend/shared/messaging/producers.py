@@ -107,6 +107,9 @@ class AuthProducer(BaseProducer):
         """Отправляет RPC-запрос на верификацию токена и ждет ответ"""
         correlation_id = str(uuid.uuid4())
 
+        if not self.channel:
+            await self.connect()
+
         # Создаем временную очередь для ответа
         reply_queue = await self.channel.declare_queue(
             name=f"auth.verify.reply.{correlation_id}",

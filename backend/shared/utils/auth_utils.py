@@ -3,6 +3,7 @@ from typing import Optional
 import uuid
 from fastapi import HTTPException, Depends, Header
 from shared.messaging.producers import AuthProducer
+from shared.config.base import settings
 
 class AuthDependency:
     """зависимость аутентификации"""
@@ -53,5 +54,5 @@ class AuthDependency:
 
 def get_auth_dependency() -> AuthDependency:
     """Фабрика для создания AuthDependency"""
-    producer = AuthProducer()  # Создаем producer с настройками
+    producer = AuthProducer(rabbitmq_url=settings.RABBITMQ_URL)  # Создаем producer с настройками
     return AuthDependency(producer)
