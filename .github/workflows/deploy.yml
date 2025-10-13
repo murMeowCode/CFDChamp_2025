@@ -22,7 +22,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          cd /deploy/CFDChamp_2025
+          cd ./deploy/CFDChamp_2025
           git pull origin main
           docker-compose down
           docker-compose build
