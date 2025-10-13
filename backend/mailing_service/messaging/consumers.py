@@ -170,7 +170,7 @@ class MailingConsumer(BaseConsumer):
             </body>
             </html>
             """
-        
+
         return f"""
         <!DOCTYPE html>
         <html>
