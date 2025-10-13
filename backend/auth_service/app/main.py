@@ -9,7 +9,7 @@ from auth_service.api.endpoints import auth, role_change
 from auth_service.services.auth_service import AuthService
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
-from auth_service.messaging.producers import AuthProducer
+
 from auth_service.messaging.consumers import AuthConsumer
 from fastapi import FastAPI
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """инициализация служб при запуске"""
     # Инициализация RabbitMQ producer
-    producer = AuthProducer(settings.RABBITMQ_URL)
+    producer = UserProducer(settings.RABBITMQ_URL)
     await producer.connect()
 
     # Сохраняем producer в состоянии приложения
