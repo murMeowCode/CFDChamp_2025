@@ -14,15 +14,6 @@ from fastapi import FastAPI
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-app = FastAPI(
-    title="Profile Service",
-    description="Service for managing user profiles",
-    version="1.0.0"
-)
-
-app.include_router(profile_router, prefix="/profiles")
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """функция инициализации"""
@@ -43,7 +34,15 @@ async def lifespan(app: FastAPI):
     await consumer.close()
 
 
+app = FastAPI(
+    title="Profile Service",
+    description="Service for managing user profiles",
+    lifespan=lifespan
+)
+
+app.include_router(profile_router, prefix="/profiles")
+
 @app.get("/health")
 async def health_check():
     """ручка проверки работоспособности"""
-    return {"status": "healthy", "service": "profile"}
+    return {"status": "healthy", "service": "profile_service"}

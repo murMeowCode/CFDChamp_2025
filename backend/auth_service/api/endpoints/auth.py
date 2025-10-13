@@ -1,18 +1,18 @@
 """апи для аутентификации""" #pylint: disable=E0401, C0412
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from auth_service.messaging.producers import AuthProducer
+from auth_service.messaging.producers import UserProducer
 from auth_service.services.registration_service import RegistrationService
-from shared.database.database import get_db
-from shared.schemas.messaging import UserRegister
 from auth_service.schemas.auth import (LoginRequest, LoginResponse, RefreshTokenRequest,
 RefreshTokenResponse, UserRegisterResponse, UserResponse)
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
+from shared.database.database import get_db
+from shared.schemas.messaging import UserRegister
 
 router = APIRouter()
 
-async def get_producer(request: Request) -> AuthProducer:
+async def get_producer(request: Request) -> UserProducer:
     """Функция для получения глобального продюсера"""
     return request.app.state.producer
 
@@ -20,7 +20,7 @@ async def get_producer(request: Request) -> AuthProducer:
 async def register(
     user_data: UserRegister,
     db: AsyncSession = Depends(get_db),
-    producer: AuthProducer = Depends(get_producer)  # Получаем из состояния приложения
+    producer: UserProducer = Depends(get_producer)  # Получаем из состояния приложения
 ):
     """Регистрация нового пользователя"""
     registration_service = RegistrationService(db, producer)

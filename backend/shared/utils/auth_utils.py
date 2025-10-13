@@ -50,3 +50,7 @@ class AuthDependency:
         if user.get("role", 0) != required_role:
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         return user
+
+def get_auth_dependency(producer: AuthProducer = Depends(lambda: AuthDependency.producer)):
+    """получение продюсера для проверки прав доступа"""
+    return AuthDependency(producer)

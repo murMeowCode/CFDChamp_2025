@@ -2,8 +2,7 @@
 from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from shared.messaging.producers import AuthProducer
-from shared.utils.auth_utils import AuthDependency
+from shared.utils.auth_utils import get_auth_dependency
 from shared.database.database import get_db
 from profile_service.services.controller import ProfileController
 from profile_service.schemas.profile import ProfileResponse, ProfileUpdate
@@ -11,10 +10,6 @@ from profile_service.schemas.profile import ProfileResponse, ProfileUpdate
 
 
 router = APIRouter()
-
-def get_auth_dependency(producer: AuthProducer = Depends(lambda: AuthDependency.producer)):
-    """получение продюсера для проверки прав доступа"""
-    return AuthDependency(producer)
 
 @router.get("/me", response_model=ProfileResponse)
 async def get_my_profile(
