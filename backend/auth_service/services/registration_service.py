@@ -37,6 +37,12 @@ class RegistrationService:
 
             # Отправляем событие в RabbitMQ
             await self.producer.send_user_created_event(user_created_message)
+            await self.producer.send_notification({
+                "type": "user_registered",
+                "username": user.username,
+                "user_email": user.email,
+                "user_id": user.id
+            })
 
             return {
                 "success": True,
