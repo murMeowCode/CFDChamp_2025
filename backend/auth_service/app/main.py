@@ -13,7 +13,7 @@ from auth_service.messaging.producers import UserProducer
 from auth_service.messaging.consumers import AuthConsumer
 from fastapi import FastAPI
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,5 +1,8 @@
 """общие настройки сервисов"""#pylint: disable=R0903
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Settings(BaseSettings):
     """класс настроек"""
