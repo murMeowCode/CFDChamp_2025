@@ -1,5 +1,5 @@
 """схемы для работы с сообщениями"""
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel
 
 # Base schemas
@@ -8,10 +8,6 @@ class MessageBase(BaseModel):
     subject: str
     content: str
     user_id: str
-
-class MessageUpdate(BaseModel):
-    """схема обновления статуса сообщения"""
-    is_read: Optional[bool] = None
 
 # Response schemas
 class MessageResponse(BaseModel):
@@ -30,8 +26,3 @@ class MessageListResponse(BaseModel):
     """список сообщений"""
     messages: List[MessageResponse]
     unread_count: int
-
-class StatusResponse(BaseModel):
-    """ответ на изменение статуса"""
-    status: str
-    message: str

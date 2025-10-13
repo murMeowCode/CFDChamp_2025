@@ -1,7 +1,7 @@
 """служба работы с сообщениями""" #pylint: disable=E0401,E1102
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select
 from mailing_service.models.message import Message
 
 
@@ -13,13 +13,11 @@ class MessageService:
     async def get_user_messages(
         self,
         user_id: str,
-        is_read: Optional[bool] = None
     ) -> List[Message]:
         """Получение сообщений пользователя с фильтрацией"""
         stmt = select(Message).where(Message.user_id == user_id)
 
-        if is_read is not None:
-            stmt = stmt.where(Message.is_read == is_read)
+        stmt = stmt.where(Message.is_read is False)
 
         result = await self.db.execute(stmt)
         return result.scalars().all()
@@ -41,20 +39,3 @@ class MessageService:
             await self.db.commit()
             await self.db.refresh(message)
         return message
-
-    async def get_user_stats(self, user_id: str) -> dict:
-        """Получение статистики сообщений пользователя"""
-        # Исправляем условие для unread сообщений
-        total_stmt = select(func.count(Message.id)).where(Message.user_id == user_id)
-        unread_stmt = select(func.count(Message.id)).where(
-            Message.user_id == user_id,
-            Message.is_read is False  # Используем == вместо is
-        )
-
-        total_result = await self.db.execute(total_stmt)
-        unread_result = await self.db.execute(unread_stmt)
-
-        return {
-            "total": total_result.scalar(),
-            "unread": unread_result.scalar()
-        }
