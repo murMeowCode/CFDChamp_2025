@@ -1,7 +1,13 @@
 """основной модуль сервиса""" #pylint: disable=E0401
 from contextlib import asynccontextmanager
 import logging
+import os
+import sys
 from fastapi import FastAPI
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+
 from mailing_service.api.endpoints.message import router as mailing_router
 from mailing_service.messaging.consumers import MailingConsumer
 from shared.config.base import settings

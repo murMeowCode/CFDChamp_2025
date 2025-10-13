@@ -2,6 +2,10 @@
 import sys
 import os
 from contextlib import asynccontextmanager
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+
 from shared.messaging.producers import AuthProducer
 from shared.database.database import AsyncSessionLocal
 from shared.config.base import settings
@@ -12,7 +16,7 @@ from fastapi import FastAPI
 
 
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

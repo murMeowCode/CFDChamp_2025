@@ -51,6 +51,7 @@ class AuthDependency:
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         return user
 
-def get_auth_dependency(producer: AuthProducer = Depends(lambda: AuthDependency.producer)):
-    """получение продюсера для проверки прав доступа"""
+def get_auth_dependency() -> AuthDependency:
+    """Фабрика для создания AuthDependency"""
+    producer = AuthProducer()  # Создаем producer с настройками
     return AuthDependency(producer)
