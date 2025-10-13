@@ -56,6 +56,46 @@ class BaseProducer(RabbitMQBase):
         )
         logger.info(f"Response sent to {reply_to} with correlation_id {correlation_id}")
 
+    async def send_notification(self, notification_data: dict, routing_key: str = "notification.general"):
+        """
+        Отправка уведомления в mailing service
+        
+        Args:
+            notification_data: Данные для уведомления
+            routing_key: Ключ маршрутизации (notification.*)
+        """
+        if not self.exchange:
+            await self.connect()
+
+        # Стандартизированный формат уведомления
+        notification_message = {
+            "type": notification_data.get("type", "general"),
+            "user_id": notification_data.get("user_id"),
+            "user_email": notification_data.get("user_email"),
+            "data": notification_data.get("data", {}),
+            "metadata": {
+                "message_id": str(uuid.uuid4()),
+                "timestamp": notification_data.get("timestamp"),
+                "source_service": self.__class__.__name__
+            }
+        }
+
+        # Создаем RabbitMQ сообщение
+        rabbitmq_message = aio_pika.Message(
+            body=json.dumps(notification_message).encode(),
+            content_type="application/json",
+            delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+            message_id=str(uuid.uuid4())
+        )
+
+        # Публикуем сообщение
+        await self.exchange.publish(
+            message=rabbitmq_message,
+            routing_key=routing_key
+        )
+
+        logger.info(f"Notification sent to {routing_key}: {notification_data.get('type')}")
+
 class AuthProducer(BaseProducer):
     """Продюсер для сервиса аутентификации с RPC-функциональностью"""
 
