@@ -2,13 +2,13 @@
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from shared.schemas.messaging import UserCreatedMessage
-from auth_service.schemas.auth import UserRegister
+from shared.schemas.messaging import UserRegister
 from auth_service.services.user_service import UserService
-from auth_service.messaging.producers import AuthProducer
+from auth_service.messaging.producers import UserProducer
 
 class RegistrationService:
     """класс сервиса регистрации"""
-    def __init__(self, db: AsyncSession, producer: AuthProducer):
+    def __init__(self, db: AsyncSession, producer: UserProducer):
         self.db = db
         self.producer = producer
         self.user_service = UserService(db)
