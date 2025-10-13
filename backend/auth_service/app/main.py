@@ -6,7 +6,6 @@ import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from fastapi import FastAPI
 from shared.config.base import settings
 from shared.database.database import AsyncSessionLocal
 from auth_service.api.endpoints import auth, role_change
@@ -15,6 +14,7 @@ from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
 from auth_service.messaging.producers import UserProducer
 from auth_service.messaging.consumers import AuthConsumer
+from fastapi import FastAPI
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

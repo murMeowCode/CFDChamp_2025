@@ -1,4 +1,4 @@
-"""общий модуль для продюсеров"""#pylint: disable=E0401, W1203
+"""общий модуль для продюсеров"""#pylint: disable=E0401, W1203, W0707
 import json
 import logging
 import uuid
