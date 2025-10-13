@@ -170,19 +170,19 @@ class MailingConsumer(BaseConsumer):
             </body>
             </html>
             """
-        else:
-            return f"""
-            <!DOCTYPE html>
-            <html>
-            <body style="font-family: Arial, sans-serif;">
-                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h2 style="color: #4F46E5;">Добро пожаловать, {username}!</h2>
-                    <p>Спасибо за регистрацию в CFDChamp.</p>
-                    <p>Начните знакомство с платформой прямо сейчас!</p>
-                </div>
-            </body>
-            </html>
-            """
+        
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <body style="font-family: Arial, sans-serif;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #4F46E5;">Добро пожаловать, {username}!</h2>
+                <p>Спасибо за регистрацию в CFDChamp.</p>
+                <p>Начните знакомство с платформой прямо сейчас!</p>
+            </div>
+        </body>
+        </html>
+        """
 
     def _create_custom_template(self, content: str) -> str:
         """Шаблон для кастомных уведомлений"""

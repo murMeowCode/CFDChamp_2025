@@ -9,7 +9,7 @@ from shared.config.base import settings
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     """функция инициализации"""
 
     mail_consumer = MailingConsumer(rabbitmq_url=settings.RABBITMQ_URL)
