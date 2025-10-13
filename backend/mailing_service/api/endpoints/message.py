@@ -18,12 +18,8 @@ async def get_user_messages(
     """Получение всех непрочитанных сообщений пользователя"""
     service = MessageService(db)
     messages = await service.get_user_messages(user_id)
-    stats = await service.get_user_stats(user_id)
 
-    return MessageListResponse(
-        messages=messages,
-        unread_count=stats["unread"]
-    )
+    return MessageListResponse(messages=messages)
 
 @router.patch("/users/{user_id}/messages/{message_id}/read", response_model=MessageResponse)
 async def mark_message_as_read(
