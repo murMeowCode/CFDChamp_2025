@@ -10,6 +10,19 @@ class MessageService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def create_message(self, user_id: str, subject: str, content: str) -> Message:
+        """Создание нового сообщения"""
+        message = Message(
+            user_id=user_id,
+            subject=subject,
+            content=content,
+            is_read=False  # По умолчанию непрочитанное
+        )
+        self.db.add(message)
+        await self.db.commit()
+        await self.db.refresh(message)
+        return message
+
     async def get_user_messages(
         self,
         user_id: str,

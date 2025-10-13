@@ -1,5 +1,5 @@
 """схемы для работы с сообщениями"""
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 # Base schemas
@@ -26,3 +26,10 @@ class MessageListResponse(BaseModel):
     """список сообщений"""
     messages: List[MessageResponse]
     unread_count: int
+
+class EmailData(BaseModel):
+    """схема электронного письма"""
+    to: List[str]
+    subject: str
+    html: str
+    from_email: Optional[str] = None
