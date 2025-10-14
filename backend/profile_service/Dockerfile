@@ -1,15 +1,15 @@
 FROM python:3.11-slim
 
-WORKDIR /app
+WORKDIR /profile_service
 
-RUN mkdir -p /app/shared
+RUN mkdir -p /profile_service/shared
 
-COPY shared/ /app/shared/
-COPY requirements.txt /app/
+COPY shared/ /profile_service/shared/
+COPY requirements.txt /profile_service/
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY profile_service/ /app/
+COPY profile_service/ /profile_service/
 
 EXPOSE 8000
 
