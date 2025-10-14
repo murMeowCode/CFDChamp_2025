@@ -11,14 +11,14 @@ class RoleChangeRequest(Base):
     __tablename__ = "role_change_requests"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("auth_users.id"), nullable=False)
+    username = Column(String, ForeignKey("auth_users.username"), nullable=False)
     requested_role = Column(Integer, nullable=False)
     current_role = Column(Integer, nullable=False)
     status = Column(String(20), default="pending")  # pending, approved, rejected
     reason = Column(Text, nullable=True)  # причина запроса
 
     # Relationships
-    user = relationship("AuthUser", foreign_keys=[user_id], backref="role_change_requests")
+    user = relationship("AuthUser", foreign_keys=[username], backref="role_change_requests")
 
     def __repr__(self):
-        return f"<RoleChangeRequest {self.user_id} -> {self.requested_role}>"
+        return f"<RoleChangeRequest {self.username} -> {self.requested_role}>"
