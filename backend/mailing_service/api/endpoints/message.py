@@ -24,7 +24,7 @@ async def get_my_messages(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Нет непрочитанных сообщений!")
 
-    return MessageListResponse(messages=messages)
+    return MessageListResponse(messages=messages,unread_count=len(messages))
 
 @router.patch("/me/messages/{message_id}/read", response_model=MessageResponse)
 async def mark_my_message_as_read(

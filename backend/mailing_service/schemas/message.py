@@ -1,5 +1,6 @@
 """схемы для работы с сообщениями"""
 from typing import List, Optional
+import uuid
 from pydantic import BaseModel
 
 # Base schemas
@@ -12,8 +13,8 @@ class MessageBase(BaseModel):
 # Response schemas
 class MessageResponse(BaseModel):
     """схема ответа"""
-    id: str
-    user_id: str
+    id: uuid.UUID
+    user_id: uuid.UUID
     subject: str
     content: str
     is_read: bool
