@@ -12,7 +12,7 @@ services:
       context: ./backend
       dockerfile: auth_service/Dockerfile
     depends_on:
-      - rabbitmq
+      - rabbit-mq
     networks:
       - prod-network
 
@@ -21,7 +21,7 @@ services:
       context: ./backend
       dockerfile: profile_service/Dockerfile
     depends_on:
-      - rabbitmq
+      - rabbit-mq
     networks:
       - prod-network
 
