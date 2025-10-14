@@ -25,100 +25,100 @@ class MessageService:
         await self.db.refresh(message)
         return message
 
-async def get_user_messages(
-    self,
-    user_id: str,
-) -> List[Message]:
-    """Получение сообщений пользователя с фильтрацией"""
-    logger.info(
-        "🟡 Начало получения сообщений пользователя",
-        extra={
-            "user_id": user_id,
-            "service": "MessageService",
-            "method": "get_user_messages"
-        }
-    )
-    
-    try:
-        # Логируем формирование запроса
-        logger.debug(
-            "🔍 Формирование SQL запроса для получения сообщений",
-            extra={
-                "user_id": user_id,
-                "filter_read": False  # Только непрочитанные
-            }
-        )
-        
-        # ВАЖНО: Исправляем условие - было неверно
-        stmt = select(Message).where(
-            Message.user_id == user_id,
-            Message.is_read == False  # Правильное условие
-        )
-
-        # Логируем сформированный запрос
-        logger.debug(
-            "📝 Сформированный SQL запрос",
-            extra={
-                "query": str(stmt),
-                "parameters": {"user_id": user_id}
-            }
-        )
-
-        # Выполняем запрос к БД
-        logger.info("⚡ Выполнение запроса к базе данных")
-        
-        result = await self.db.execute(stmt)
-        messages = result.scalars().all()
-        
-
-        # Логируем результаты запроса
+    async def get_user_messages(
+        self,
+        user_id: str,
+    ) -> List[Message]:
+        """Получение сообщений пользователя с фильтрацией"""
         logger.info(
-            "✅ Успешно получены сообщения из базы данных",
+            "🟡 Начало получения сообщений пользователя",
             extra={
                 "user_id": user_id,
-                "messages_count": len(messages),
-                "message_ids": [str(msg.id) for msg in messages] if messages else []
+                "service": "MessageService",
+                "method": "get_user_messages"
             }
         )
-
-        if not messages:
-            logger.warning(
-                "⚠️ Сообщения не найдены для пользователя",
-                extra={
-                    "user_id": user_id,
-                    "filter_applied": "only_unread"
-                }
-            )
-        else:
+        
+        try:
+            # Логируем формирование запроса
             logger.debug(
-                "📨 Детали найденных сообщений",
+                "🔍 Формирование SQL запроса для получения сообщений",
                 extra={
                     "user_id": user_id,
-                    "messages_details": [
-                        {
-                            "message_id": str(msg.id),
-                            "title": getattr(msg, 'title', 'N/A'),
-                            "is_read": getattr(msg, 'is_read', 'N/A'),
-                            "created_at": getattr(msg, 'created_at', 'N/A')
-                        } for msg in messages
-                    ]
+                    "filter_read": False  # Только непрочитанные
+                }
+            )
+            
+            # ВАЖНО: Исправляем условие - было неверно
+            stmt = select(Message).where(
+                Message.user_id == user_id,
+                Message.is_read == False  # Правильное условие
+            )
+
+            # Логируем сформированный запрос
+            logger.debug(
+                "📝 Сформированный SQL запрос",
+                extra={
+                    "query": str(stmt),
+                    "parameters": {"user_id": user_id}
                 }
             )
 
-        return messages
+            # Выполняем запрос к БД
+            logger.info("⚡ Выполнение запроса к базе данных")
+            
+            result = await self.db.execute(stmt)
+            messages = result.scalars().all()
+            
 
-    except Exception as e:
-        logger.error(
-            "❌ Ошибка при получении сообщений пользователя",
-            extra={
-                "user_id": user_id,
-                "error_type": type(e).__name__,
-                "error_message": str(e),
-                "service": "MessageService"
-            },
-            exc_info=True
-        )
-        raise
+            # Логируем результаты запроса
+            logger.info(
+                "✅ Успешно получены сообщения из базы данных",
+                extra={
+                    "user_id": user_id,
+                    "messages_count": len(messages),
+                    "message_ids": [str(msg.id) for msg in messages] if messages else []
+                }
+            )
+
+            if not messages:
+                logger.warning(
+                    "⚠️ Сообщения не найдены для пользователя",
+                    extra={
+                        "user_id": user_id,
+                        "filter_applied": "only_unread"
+                    }
+                )
+            else:
+                logger.debug(
+                    "📨 Детали найденных сообщений",
+                    extra={
+                        "user_id": user_id,
+                        "messages_details": [
+                            {
+                                "message_id": str(msg.id),
+                                "title": getattr(msg, 'title', 'N/A'),
+                                "is_read": getattr(msg, 'is_read', 'N/A'),
+                                "created_at": getattr(msg, 'created_at', 'N/A')
+                            } for msg in messages
+                        ]
+                    }
+                )
+
+            return messages
+
+        except Exception as e:
+            logger.error(
+                "❌ Ошибка при получении сообщений пользователя",
+                extra={
+                    "user_id": user_id,
+                    "error_type": type(e).__name__,
+                    "error_message": str(e),
+                    "service": "MessageService"
+                },
+                exc_info=True
+            )
+            raise
 
     async def get_message_by_id(self, message_id: str, user_id: str) -> Optional[Message]:
         """Получение конкретного сообщения по ID"""
