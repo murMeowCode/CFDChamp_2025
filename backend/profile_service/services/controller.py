@@ -23,7 +23,7 @@ class ProfileController:
             raise HTTPException(status_code=404, detail="Profile not found")
 
         # Обновляем avatar_url если нужно
-        if (profile.avatar_filename and 
+        if (profile.avatar_filename and
             not profile.avatar_filename.startswith(('http://', 'https://'))):
             profile.avatar_filename = await self.file_service.get_avatar_url(
                 profile.avatar_filename)
@@ -37,14 +37,14 @@ class ProfileController:
 
         # Обновляем avatar_url для всех профилей
         for profile in profiles:
-            if (profile.avatar_filename and 
+            if (profile.avatar_filename and
                 not profile.avatar_filename.startswith(('http://', 'https://'))):
                 profile.avatar_filename = await self.file_service.get_avatar_url(
                     profile.avatar_filename
                     )
                 await self.profile_service.update_avatar_url(
                     profile.user_id, profile.avatar_filename)
-        
+
         return [ProfileResponse.model_validate(profile) for profile in profiles]
 
     async def update_profile(self, user_id: uuid.UUID,
@@ -55,7 +55,7 @@ class ProfileController:
             raise HTTPException(status_code=404, detail="Profile not found")
 
         # Обновляем avatar_url если нужно
-        if (profile.avatar_filename and 
+        if (profile.avatar_filename and
             not profile.avatar_filename.startswith(('http://', 'https://'))):
             profile.avatar_filename = await self.file_service.get_avatar_url(
                 profile.avatar_filename

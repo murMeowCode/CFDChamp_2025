@@ -88,7 +88,7 @@ class FileService:
         try:
             # Ищем все файлы в папке пользователя
             objects = minio_client.list_objects(
-                settings.MINIO_AVATAR_BUCKET, 
+                settings.MINIO_AVATAR_BUCKET,
                 prefix=f"{user_id}/"
             )
 
@@ -114,7 +114,7 @@ class FileService:
             if settings.MINIO_SECURE:
                 return f"""https://{settings.MINIO_ENDPOINT}/
                     {settings.MINIO_AVATAR_BUCKET}/{filename}"""
-            
+
             return f"http://{settings.MINIO_ENDPOINT}/{settings.MINIO_AVATAR_BUCKET}/{filename}"
         except Exception as e:
             print(f"⚠️ Error generating avatar URL: {e}")
@@ -126,14 +126,14 @@ class FileService:
         try:
             # Ищем аватарку пользователя
             objects = minio_client.list_objects(
-                settings.MINIO_AVATAR_BUCKET, 
+                settings.MINIO_AVATAR_BUCKET,
                 prefix=f"{user_id}/"
             )
 
             for obj in objects:
                 if obj.object_name.startswith(f"{user_id}/avatar."):
                     return await FileService.get_avatar_url(obj.object_name)
-            
+
             return None
         except S3Error:
             return None
