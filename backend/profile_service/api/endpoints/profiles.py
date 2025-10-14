@@ -1,9 +1,7 @@
 """апи для работы с профилями"""#pylint: disable=E0401, E0611
 from typing import List
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from shared.utils.auth_utils import get_auth_dependency
-from shared.database.database import get_db
 from profile_service.services.controller import ProfileController, get_profile_controller
 from profile_service.schemas.profile import AvatarUploadResponse, ProfileResponse, ProfileUpdate
 
@@ -47,3 +45,14 @@ async def get_all_users(
 ):
     """Эндпоинт для получения всех пользователей (только для role=2)"""
     return await controller.get_all_profiles()
+
+@router.delete("/avatar", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_avatar(
+    user: dict = Depends(get_auth_dependency().get_current_user),
+    controller: ProfileController = Depends(get_profile_controller)
+):
+    """Удаление аватарки пользователя"""
+    success = await controller.delete_avatar(user["user_id"])
+    if not success:
+        raise HTTPException(status_code=404, detail="Avatar not found")
+    return None
