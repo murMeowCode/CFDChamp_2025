@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     MINIO_ACCESS_KEY: str
     MINIO_SECRET_KEY: str
     MINIO_SECURE : bool = False
+    MINIO_AVATAR_BUCKET: str = "avatars"
 
     class Config:
         """импорт из файла среды"""
