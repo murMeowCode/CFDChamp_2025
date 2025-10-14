@@ -5,13 +5,13 @@ from contextlib import asynccontextmanager
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-
 from shared.messaging.producers import AuthProducer
 from shared.database.database import AsyncSessionLocal
 from shared.config.base import settings
 from profile_service.messaging.consumers import ProfileConsumer
 from profile_service.services.service import ProfileService
 from profile_service.api.endpoints.profiles import router as profile_router
+from profile_service.services.file_service import FileService
 from fastapi import FastAPI
 
 
@@ -25,7 +25,9 @@ async def lifespan(app: FastAPI):
     auth_producer = AuthProducer(settings.RABBITMQ_URL)
     await auth_producer.connect()
 
-    # Инициализируем и запускаем RabbitMQ consumer
+    file_service = FileService()
+    await file_service.init_minio()
+
     async with AsyncSessionLocal() as db:
         profile_service = ProfileService(db)
         consumer = ProfileConsumer(settings.RABBITMQ_URL, profile_service)

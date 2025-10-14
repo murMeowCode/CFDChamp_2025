@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.models.profile import Profile
 from profile_service.schemas.profile import ProfileUpdate
+from profile_service.services.file_service import file_service
 
 
 class ProfileService:
@@ -17,24 +18,61 @@ class ProfileService:
         result = await self.db.execute(
             select(Profile).where(Profile.user_id == user_id)
         )
-        return result.scalar_one_or_none()
+
+        profile = result.scalar_one_or_none()
+
+        if profile and profile.avatar_filename:
+            profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
+
+        return profile
 
     async def get_all_profiles(self) -> List[Profile]:
         """получение всех профилей"""
         result = await self.db.execute(select(Profile))
-        return result.scalars().all()
 
-    async def update_profile(self, user_id: uuid.UUID,
-                             profile_data: ProfileUpdate) -> Profile:
+        profiles = result.scalars().all()
+
+        for profile in profiles:
+            if profile.avatar_filename:
+                profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
+
+        return profiles
+
+    async def update_profile(self, user_id: uuid.UUID, profile_data: ProfileUpdate) -> Profile:
         """функция обновления профиля"""
         profile = await self.get_profile_by_user_id(user_id)
         if profile:
-            update_data = profile_data.dict(exclude_unset=True)
+            update_data = profile_data.dict(exclude_unset=True, exclude={'avatar_url'})
             for field, value in update_data.items():
                 setattr(profile, field, value)
 
             await self.db.commit()
             await self.db.refresh(profile)
+
+            # Обновляем URL аватарки
+            if profile.avatar_filename:
+                profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
+
+        return profile
+
+    async def update_avatar(self, user_id: uuid.UUID, avatar_filename: str) -> Profile:
+        """Обновление аватарки пользователя"""
+        profile = await self.get_profile_by_user_id(user_id)
+        if not profile:
+            return None
+
+        # Удаляем старую аватарку если была
+        if profile.avatar_filename:
+            await file_service.delete_avatar(profile.avatar_filename)
+
+        # Обновляем имя файла
+        profile.avatar_filename = avatar_filename
+        await self.db.commit()
+        await self.db.refresh(profile)
+
+        # Добавляем URL
+        profile.avatar_url = await file_service.get_avatar_url(avatar_filename)
+
         return profile
 
     async def create_profile_from_message(self, profile_data: Dict[str, Any]) -> Profile:

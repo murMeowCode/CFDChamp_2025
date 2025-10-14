@@ -24,3 +24,8 @@ class ProfileResponse(ProfileBase):
     class Config:
         """переход в режим ORM"""
         from_attributes = True
+
+class AvatarUploadResponse(BaseModel):
+    """Ответ после загрузки аватарки"""
+    avatar_url: str
+    filename: str

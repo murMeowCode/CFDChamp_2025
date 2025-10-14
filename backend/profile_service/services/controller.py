@@ -1,10 +1,11 @@
 """служба взаимодействия с профилем"""#pylint: disable=E0401, E0611
 from typing import List
 import uuid
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.services.service import ProfileService
-from profile_service.schemas.profile import ProfileResponse, ProfileUpdate
+from profile_service.schemas.profile import AvatarUploadResponse, ProfileResponse, ProfileUpdate
+from profile_service.services.file_service import file_service
 from shared.database.database import get_db
 
 
@@ -33,3 +34,18 @@ class ProfileController:
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
         return ProfileResponse.model_validate(profile)
+
+    async def upload_avatar(self, user_id: uuid.UUID, file: UploadFile) -> AvatarUploadResponse:
+        """Загрузка аватарки пользователя"""
+        # Загружаем файл в MinIO
+        filename = await file_service.upload_avatar(user_id, file)
+
+        # Обновляем профиль
+        profile = await self.profile_service.update_avatar(user_id, filename)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+
+        return AvatarUploadResponse(
+            avatar_url=profile.avatar_url,
+            filename=filename
+        )
