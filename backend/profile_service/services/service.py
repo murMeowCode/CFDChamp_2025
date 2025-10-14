@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.models.profile import Profile
 from profile_service.schemas.profile import ProfileUpdate
-from shared.utils.file_utils import file_service
+from profile_service.services.file_service import file_service
 
 
 class ProfileService:

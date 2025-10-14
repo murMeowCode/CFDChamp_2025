@@ -5,8 +5,8 @@ from fastapi import HTTPException, Depends, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.services.service import ProfileService
 from profile_service.schemas.profile import AvatarUploadResponse, ProfileResponse, ProfileUpdate
+from profile_service.services.file_service import file_service
 from shared.database.database import get_db
-from shared.utils.file_utils import file_service
 
 
 class ProfileController:
