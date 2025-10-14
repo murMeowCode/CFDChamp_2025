@@ -20,6 +20,10 @@ async def get_my_messages(
     service = MessageService(db)
     messages = await service.get_user_messages(str(user["user_id"]))
 
+    if not messages:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Нет непрочитанных сообщений!")
+
     return MessageListResponse(messages=messages)
 
 @router.patch("/me/messages/{message_id}/read", response_model=MessageResponse)
