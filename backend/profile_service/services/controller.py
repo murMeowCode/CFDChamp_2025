@@ -48,6 +48,6 @@ class ProfileController:
             raise HTTPException(status_code=404, detail="Profile not found")
 
         return AvatarUploadResponse(
-            avatar_url=profile.avatar_url,
+            avatar_url=profile.avatar_filename,
             filename=filename
         )

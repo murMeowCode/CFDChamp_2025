@@ -10,12 +10,18 @@ class ProfileBase(BaseModel):
     last_name: Optional[str] = None
     middle_name: Optional[str] = None
     birth_date: Optional[date] = None
-    avatar_url: Optional[str] = None
+    avatar_filename: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
 
 class ProfileUpdate(ProfileBase):
     """схема обновления профиля"""
+    
+    class Config:
+        # Исключаем поле из схемы
+        fields = {
+            'avatar_filename': {'exclude': True}
+        }
 
 class ProfileResponse(ProfileBase):
     """ответ на действие с профилем"""
