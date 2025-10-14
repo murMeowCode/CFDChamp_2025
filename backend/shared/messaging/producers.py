@@ -118,6 +118,8 @@ class AuthProducer(BaseProducer):
             exclusive=True
         )
 
+        await reply_queue.bind(self.exchange, routing_key=reply_queue.name)
+
         # Создаем сообщение запроса
         verify_message = BaseMessage(
             message_type=MessageType.TOKEN_VERIFY_REQUEST,
