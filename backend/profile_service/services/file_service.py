@@ -10,11 +10,12 @@ from shared.config.base import settings
 minio_client = Minio(
     endpoint=settings.MINIO_ENDPOINT,
     access_key=settings.MINIO_ACCESS_KEY,
-    secret_key=settings.MINIO_SECRET_KEY, 
+    secret_key=settings.MINIO_SECRET_KEY,
     secure=settings.MINIO_SECURE
 )
 
 class FileService:
+    """класс файловой службы"""
 
     @staticmethod
     async def init_minio():
@@ -26,7 +27,7 @@ class FileService:
                 print(f"✅ MinIO bucket '{settings.MINIO_AVATAR_BUCKET}' created")
             else:
                 print(f"✅ MinIO bucket '{settings.MINIO_AVATAR_BUCKET}' already exists")
-                
+
         except S3Error as e:
             print(f"❌ MinIO initialization error: {e}")
             raise

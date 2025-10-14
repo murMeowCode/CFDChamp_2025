@@ -23,7 +23,7 @@ class ProfileService:
 
         if profile and profile.avatar_filename:
             profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
-        
+
         return profile
 
     async def get_all_profiles(self) -> List[Profile]:
@@ -48,13 +48,13 @@ class ProfileService:
 
             await self.db.commit()
             await self.db.refresh(profile)
-            
+
             # Обновляем URL аватарки
             if profile.avatar_filename:
                 profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
-                
+
         return profile
-    
+
     async def update_avatar(self, user_id: uuid.UUID, avatar_filename: str) -> Profile:
         """Обновление аватарки пользователя"""
         profile = await self.get_profile_by_user_id(user_id)

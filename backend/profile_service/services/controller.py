@@ -34,7 +34,7 @@ class ProfileController:
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
         return ProfileResponse.model_validate(profile)
-    
+
     async def upload_avatar(self, user_id: uuid.UUID, file: UploadFile) -> AvatarUploadResponse:
         """Загрузка аватарки пользователя"""
         # Загружаем файл в MinIO
