@@ -5,12 +5,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.models.profile import Profile
 from profile_service.schemas.profile import ProfileUpdate
-from profile_service.services.file_service import file_service
+from profile_service.services.file_service import FileService
 
 
 class ProfileService:
     """класс службы"""
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession,file_service: FileService):
+        self.file_service = file_service
         self.db = db
 
     async def get_profile_by_user_id(self, user_id: uuid.UUID) -> Profile:
@@ -22,7 +23,7 @@ class ProfileService:
         profile = result.scalar_one_or_none()
 
         if profile and profile.avatar_filename:
-            profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
+            profile.avatar_url = await self.file_service.get_avatar_url(profile.avatar_filename)
 
         return profile
 
@@ -34,7 +35,7 @@ class ProfileService:
 
         for profile in profiles:
             if profile.avatar_filename:
-                profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
+                profile.avatar_url = await self.file_service.get_avatar_url(profile.avatar_filename)
 
         return profiles
 
@@ -51,7 +52,7 @@ class ProfileService:
 
             # Обновляем URL аватарки
             if profile.avatar_filename:
-                profile.avatar_url = await file_service.get_avatar_url(profile.avatar_filename)
+                profile.avatar_url = await self.file_service.get_avatar_url(profile.avatar_filename)
 
         return profile
 
@@ -63,7 +64,7 @@ class ProfileService:
 
         # Удаляем старую аватарку если была
         if profile.avatar_filename:
-            await file_service.delete_avatar(profile.avatar_filename)
+            await self.file_service.delete_avatar(profile.avatar_filename)
 
         # Обновляем имя файла
         profile.avatar_filename = avatar_filename
@@ -71,7 +72,7 @@ class ProfileService:
         await self.db.refresh(profile)
 
         # Добавляем URL
-        profile.avatar_url = await file_service.get_avatar_url(avatar_filename)
+        profile.avatar_url = await self.file_service.get_avatar_url(avatar_filename)
 
         return profile
 

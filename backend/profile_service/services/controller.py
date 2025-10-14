@@ -5,15 +5,16 @@ from fastapi import HTTPException, Depends, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from profile_service.services.service import ProfileService
 from profile_service.schemas.profile import AvatarUploadResponse, ProfileResponse, ProfileUpdate
-from profile_service.services.file_service import file_service
+from profile_service.services.file_service import FileService, get_file_service
 from shared.database.database import get_db
 
 
 class ProfileController:
     """класс-контроллер"""
-    def __init__(self, db: AsyncSession = Depends(get_db)):
+    def __init__(self, db: AsyncSession = Depends(get_db),file_service: FileService = Depends(get_file_service)):
         self.db = db
-        self.profile_service = ProfileService(db)
+        self.file_service = file_service
+        self.profile_service = ProfileService(db,file_service)
 
     async def get_profile(self, user_id: uuid.UUID) -> ProfileResponse:
         """получение профиля"""
@@ -38,7 +39,7 @@ class ProfileController:
     async def upload_avatar(self, user_id: uuid.UUID, file: UploadFile) -> AvatarUploadResponse:
         """Загрузка аватарки пользователя"""
         # Загружаем файл в MinIO
-        filename = await file_service.upload_avatar(user_id, file)
+        filename = await self.file_service.upload_avatar(user_id, file)
 
         # Обновляем профиль
         profile = await self.profile_service.update_avatar(user_id, filename)

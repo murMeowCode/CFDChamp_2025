@@ -68,3 +68,8 @@ class FileService:
             )
         except S3Error:
             return None
+
+async def get_file_service() -> FileService:
+    """генератор службы"""
+    file_service = FileService()
+    return file_service
