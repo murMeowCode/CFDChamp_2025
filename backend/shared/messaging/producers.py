@@ -45,7 +45,7 @@ class BaseProducer(RabbitMQBase):
             routing_key=routing_key
         )
 
-        logger.debug(f"Message sent to {routing_key}: {message.message_type}")
+        logger.debug(f"Message sent to {routing_key}")
 
     async def send_response(self, message: BaseMessage, reply_to: str, correlation_id: str):
         """Отправка ответа во временную очередь"""

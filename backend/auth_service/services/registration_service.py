@@ -41,7 +41,7 @@ class RegistrationService:
                 "type": "user_registered",
                 "username": user.username,
                 "user_email": user.email,
-                "user_id": user.id
+                "user_id": str(user.id)
             })
 
             return {
