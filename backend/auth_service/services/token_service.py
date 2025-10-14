@@ -35,7 +35,8 @@ class TokenService:
             # Создаем refresh token
             refresh_token_data = {"sub": user_id, "token_id": str(uuid.uuid4())}
             refresh_token = create_refresh_token(refresh_token_data)
-            logger.debug("Refresh токен создан успешно", extra={"token_id": refresh_token_data["token_id"]})
+            logger.debug("Refresh токен создан успешно",
+                         extra={"token_id": refresh_token_data["token_id"]})
 
             # Сохраняем refresh token в БД
             expires_at = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
@@ -142,7 +143,7 @@ class TokenService:
             # Проверяем наличие в БД
             stmt = select(RefreshToken).where(
                 RefreshToken.token == refresh_token,
-                RefreshToken.is_active == True
+                RefreshToken.is_active is True
             )
             result = await self.db.execute(stmt)
             db_token = result.scalar_one_or_none()
@@ -230,12 +231,12 @@ class TokenService:
             result = await self.db.execute(stmt)
             revoked_count = result.rowcount
             await self.db.commit()
-            
+
             logger.info(
                 "Токены пользователя отозваны",
                 extra={"user_id": user_id, "revoked_tokens_count": revoked_count}
             )
-            
+
             return revoked_count
 
         except Exception as e:

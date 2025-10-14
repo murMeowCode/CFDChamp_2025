@@ -1,7 +1,6 @@
 """общий модуль для аутентификации"""#pylint: disable=E0401, E0611, W0707
-from typing import Optional
 import uuid
-from fastapi import HTTPException, Depends, Header
+from fastapi import HTTPException, Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from shared.messaging.producers import AuthProducer
 from shared.config.base import settings
@@ -18,7 +17,7 @@ class AuthDependency:
     ) -> dict:
         """Проверяет токен и возвращает данные пользователя"""
         token = credentials.credentials
-        
+
         try:
             # Отправляем запрос на верификацию
             response = await self.producer.verify_token(token)

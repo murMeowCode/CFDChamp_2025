@@ -16,9 +16,9 @@ class ProfileBase(BaseModel):
 
 class ProfileUpdate(ProfileBase):
     """схема обновления профиля"""
-    
+
     class Config:
-        # Исключаем поле из схемы
+        """исключение служебного поля"""
         fields = {
             'avatar_filename': {'exclude': True}
         }

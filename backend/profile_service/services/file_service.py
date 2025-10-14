@@ -38,10 +38,11 @@ class FileService:
                     ]
                 }
                 minio_client.set_bucket_policy(
-                    settings.MINIO_AVATAR_BUCKET, 
+                    settings.MINIO_AVATAR_BUCKET,
                     json.dumps(policy)
                 )
-                print(f"✅ MinIO bucket '{settings.MINIO_AVATAR_BUCKET}' created with public read access")
+                print(f"""✅ MinIO bucket '{settings.MINIO_AVATAR_BUCKET}'
+                       created with public read access""")
             else:
                 print(f"✅ MinIO bucket '{settings.MINIO_AVATAR_BUCKET}' already exists")
 
@@ -63,7 +64,7 @@ class FileService:
         try:
             # Удаляем старую аватарку если существует
             await FileService.delete_avatar(user_id)
-            
+
             # Загружаем новую аватарку
             contents = await file.read()
             minio_client.put_object(
@@ -73,11 +74,11 @@ class FileService:
                 length=len(contents),
                 content_type=file.content_type
             )
-            
+
             # Генерируем публичный URL для фронта
             avatar_url = await FileService.get_avatar_url(filename)
             return avatar_url
-            
+
         except S3Error as e:
             raise HTTPException(500, f"Upload failed: {str(e)}")
 
@@ -90,13 +91,13 @@ class FileService:
                 settings.MINIO_AVATAR_BUCKET, 
                 prefix=f"{user_id}/"
             )
-            
+
             deleted = False
             for obj in objects:
                 minio_client.remove_object(settings.MINIO_AVATAR_BUCKET, obj.object_name)
                 deleted = True
                 print(f"🗑️ Deleted old avatar: {obj.object_name}")
-            
+
             return deleted
         except S3Error as e:
             print(f"⚠️ Error deleting old avatar: {e}")
@@ -107,13 +108,14 @@ class FileService:
         """Получение публичного URL аватарки"""
         if not filename:
             return None
-        
+
         try:
             # Для MinIO с настройкой public access можно использовать прямой URL
             if settings.MINIO_SECURE:
-                return f"https://{settings.MINIO_ENDPOINT}/{settings.MINIO_AVATAR_BUCKET}/{filename}"
-            else:
-                return f"http://{settings.MINIO_ENDPOINT}/{settings.MINIO_AVATAR_BUCKET}/{filename}"
+                return f"""https://{settings.MINIO_ENDPOINT}/
+                    {settings.MINIO_AVATAR_BUCKET}/{filename}"""
+            
+            return f"http://{settings.MINIO_ENDPOINT}/{settings.MINIO_AVATAR_BUCKET}/{filename}"
         except Exception as e:
             print(f"⚠️ Error generating avatar URL: {e}")
             return None
@@ -127,7 +129,7 @@ class FileService:
                 settings.MINIO_AVATAR_BUCKET, 
                 prefix=f"{user_id}/"
             )
-            
+
             for obj in objects:
                 if obj.object_name.startswith(f"{user_id}/avatar."):
                     return await FileService.get_avatar_url(obj.object_name)

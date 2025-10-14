@@ -20,7 +20,7 @@ class RoleChangeService:
         stmt = select(AuthUser).where(AuthUser.username == username)
         result = await self.db.execute(stmt)
         user = result.scalar_one_or_none()
-        
+
         if not user:
             raise ValueError("User not found")
 

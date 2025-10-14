@@ -19,10 +19,10 @@ class ProfileService:
         stmt = select(Profile).where(Profile.user_id == user_id)
         result = await self.db.execute(stmt)
         profile = result.scalar_one_or_none()
-        
+
         if not profile:
             return None
-        
+
         profile.avatar_filename = avatar_url
         await self.db.commit()
         await self.db.refresh(profile)
@@ -33,7 +33,7 @@ class ProfileService:
         stmt = select(Profile).where(Profile.user_id == user_id)
         result = await self.db.execute(stmt)
         profile = result.scalar_one_or_none()
-        
+
         if profile:
             profile.avatar_filename = avatar_url
             await self.db.commit()

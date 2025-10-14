@@ -34,11 +34,11 @@ class MessageService:
             "🟡 Начало получения сообщений пользователя",
             extra={"user_id": user_id, "service": "MessageService", "method": "get_user_messages"}
         )
-        
+
         try:
             stmt = select(Message).where(
                 Message.user_id == user_id,
-                Message.is_read == False
+                Message.is_read is False
             )
 
             result = await self.db.execute(stmt)
