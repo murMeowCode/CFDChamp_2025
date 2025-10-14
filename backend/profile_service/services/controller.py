@@ -11,7 +11,8 @@ from shared.database.database import get_db
 
 class ProfileController:
     """класс-контроллер"""
-    def __init__(self, db: AsyncSession = Depends(get_db),file_service: FileService = Depends(get_file_service)):
+    def __init__(self, db: AsyncSession = Depends(get_db),
+                 file_service: FileService = Depends(get_file_service)):
         self.db = db
         self.file_service = file_service
         self.profile_service = ProfileService(db,file_service)

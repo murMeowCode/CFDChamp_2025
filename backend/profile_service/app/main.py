@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
     await file_service.init_minio()
 
     async with AsyncSessionLocal() as db:
-        profile_service = ProfileService(db)
+        profile_service = ProfileService(db,file_service)
         consumer = ProfileConsumer(settings.RABBITMQ_URL, profile_service)
         await consumer.connect()
 
