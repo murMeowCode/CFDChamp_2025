@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     #Email
     RESEND_API_KEY: str
     RESEND_FROM_EMAIL: str = "onboarding@resend.dev"
+    #MinIO
+    MINIO_ENDPOINT = "localhost:9000"
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+    MINIO_SECURE : bool = False
 
     class Config:
         """импорт из файла среды"""
