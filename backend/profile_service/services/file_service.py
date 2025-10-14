@@ -67,6 +67,3 @@ class FileService:
             )
         except S3Error:
             return None
-
-# Создаем инстанс сервиса
-file_service = FileService()
