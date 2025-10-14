@@ -67,10 +67,9 @@ class MailingConsumer(BaseConsumer):
             logger.info(f"Message record created with ID: {message_record.id}")
 
         # Отправляем email
-        await self._send_email_by_type(notification_type, user_email, user_id, data)
+        await self._send_email_by_type(notification_type, user_email, data)
 
-    async def _send_email_by_type(self, notification_type: str, user_email: str,
-                                  user_id: str, data: dict):
+    async def _send_email_by_type(self, notification_type: str, user_email: str, data: dict):
         """Отправка email в зависимости от типа уведомления"""
         handlers = {
             "user_registered": self._handle_user_registered,
@@ -80,7 +79,7 @@ class MailingConsumer(BaseConsumer):
 
         handler = handlers.get(notification_type)
         if handler:
-            await handler(user_email, user_id, data)
+            await handler(user_email, data)
         else:
             logger.warning(f"Unknown notification type: {notification_type}")
 

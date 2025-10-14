@@ -1,7 +1,7 @@
 """общий модуль для аутентификации"""#pylint: disable=E0401, E0611, W0707
-from typing import Optional
 import uuid
-from fastapi import HTTPException, Depends, Header
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from shared.messaging.producers import AuthProducer
 from shared.config.base import settings
 
@@ -9,21 +9,16 @@ class AuthDependency:
     """зависимость аутентификации"""
     def __init__(self, producer: AuthProducer):
         self.producer = producer
+        self.security_scheme = HTTPBearer()
 
     async def get_current_user(
         self,
-        authorization: Optional[str] = Header(None)
+        credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())
     ) -> dict:
         """Проверяет токен и возвращает данные пользователя"""
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Authorization header missing")
+        token = credentials.credentials
 
         try:
-            # Извлекаем токен из заголовка
-            scheme, token = authorization.split()
-            if scheme.lower() != "bearer":
-                raise HTTPException(status_code=401, detail="Invalid authentication scheme")
-
             # Отправляем запрос на верификацию
             response = await self.producer.verify_token(token)
 
@@ -38,8 +33,6 @@ class AuthDependency:
                 "role": response.role or 0
             }
 
-        except ValueError:
-            raise HTTPException(status_code=401, detail="Invalid authorization header")
         except TimeoutError:
             raise HTTPException(status_code=503, detail="Authentication service unavailable")
         except Exception as e:

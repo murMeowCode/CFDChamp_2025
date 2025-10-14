@@ -26,12 +26,12 @@ async def create_role_change_request(
     role_change_service = RoleChangeService(db)
 
     try:
-        request = await role_change_service.create_role_change_request(current_user.id,
+        request = await role_change_service.create_role_change_request(current_user.username,
                                                                         request_data)
 
         return RoleChangeRequestResponse(
             id=request.id,
-            user_id=request.user_id,
+            username=request.username,
             current_role=request.current_role,
             requested_role=request.requested_role,
             status=request.status,
@@ -62,7 +62,7 @@ async def get_pending_requests(
 
         response_requests.append(RoleChangeRequestResponse(
             id=req.id,
-            user_id=req.user_id,
+            username=req.username,
             current_role=req.current_role,
             requested_role=req.requested_role,
             status=req.status,

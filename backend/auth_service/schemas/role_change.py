@@ -18,7 +18,7 @@ class RoleChangeRequestCreate(BaseModel):
 class RoleChangeRequestResponse(BaseModel):
     """ответ на запрос"""
     id: uuid.UUID
-    user_id: uuid.UUID
+    username: str
     current_role: int
     requested_role: int
     status: RoleChangeStatus

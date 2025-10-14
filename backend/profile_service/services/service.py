@@ -9,10 +9,34 @@ from profile_service.services.file_service import FileService
 
 
 class ProfileService:
-    """класс службы"""
-    def __init__(self, db: AsyncSession,file_service: FileService):
-        self.file_service = file_service
+    """класс службы"""    
+    def __init__(self, db: AsyncSession, file_service: FileService):
         self.db = db
+        self.file_service = file_service
+
+    async def update_avatar(self, user_id: uuid.UUID, avatar_url: str) -> Profile:
+        """Обновление аватарки в профиле"""
+        stmt = select(Profile).where(Profile.user_id == user_id)
+        result = await self.db.execute(stmt)
+        profile = result.scalar_one_or_none()
+
+        if not profile:
+            return None
+
+        profile.avatar_filename = avatar_url
+        await self.db.commit()
+        await self.db.refresh(profile)
+        return profile
+
+    async def update_avatar_url(self, user_id: uuid.UUID, avatar_url: str) -> None:
+        """Обновление только URL аватарки"""
+        stmt = select(Profile).where(Profile.user_id == user_id)
+        result = await self.db.execute(stmt)
+        profile = result.scalar_one_or_none()
+
+        if profile:
+            profile.avatar_filename = avatar_url
+            await self.db.commit()
 
     async def get_profile_by_user_id(self, user_id: uuid.UUID) -> Profile:
         """получение профиля по айди пользователя"""
@@ -56,25 +80,6 @@ class ProfileService:
 
         return profile
 
-    async def update_avatar(self, user_id: uuid.UUID, avatar_filename: str) -> Profile:
-        """Обновление аватарки пользователя"""
-        profile = await self.get_profile_by_user_id(user_id)
-        if not profile:
-            return None
-
-        # Удаляем старую аватарку если была
-        if profile.avatar_filename:
-            await self.file_service.delete_avatar(profile.avatar_filename)
-
-        # Обновляем имя файла
-        profile.avatar_filename = avatar_filename
-        await self.db.commit()
-        await self.db.refresh(profile)
-
-        # Добавляем URL
-        profile.avatar_url = await self.file_service.get_avatar_url(avatar_filename)
-
-        return profile
 
     async def create_profile_from_message(self, profile_data: Dict[str, Any]) -> Profile:
         """Создает профиль из данных сообщения"""

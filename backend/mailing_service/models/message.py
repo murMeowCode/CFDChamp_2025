@@ -1,4 +1,5 @@
 """модели сообщений"""#pylint: disable=E0401,E1123
+import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, String, Boolean, Text
 from shared.database.database import Base
@@ -7,7 +8,7 @@ class Message(Base):
     """модель сообщения"""
     __tablename__ = "messages"
 
-    id = Column(UUID(as_uuid=True), primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True,default=uuid.uuid4())
     user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
     subject = Column(String(255), nullable=False)  # Тема письма
     content = Column(Text, nullable=False)  # Текст письма

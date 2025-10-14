@@ -8,12 +8,12 @@ class Settings(BaseSettings):
     """класс настроек"""
 
     # База данных
-    DATABASE_URL: str = "postgresql+asyncpg://test:test@127.0.0.1:5432/postgres"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
     # RabbitMQ
     RABBITMQ_URL: str = "amqp://guest:guest@localhost:5672/"
     RABBITMQ_EXCHANGE: str = "auth_exchange"
     # JWT
-    JWT_SECRET_KEY: str = "your-secret-key-change-in-production"
+    JWT_SECRET_KEY: str = "RAhuvd1qzpdKcjeYsAoIQxKeRKaa-pBJb9iksJ9DAWQ"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -21,9 +21,9 @@ class Settings(BaseSettings):
     RESEND_API_KEY: str = "re_PNUDqH1W_prku9ViR4NwVZs2TeDsmDUst"
     RESEND_FROM_EMAIL: str = "onboarding@resend.dev"
     #MinIO
-    MINIO_ENDPOINT: str = "minio:9000"
+    MINIO_ENDPOINT: str = "212.111.87.142:9000"
     MINIO_ACCESS_KEY: str = "minioadmin"
-    MINIO_SECRET_KEY: str = "minioadmin"
+    MINIO_SECRET_KEY: str = "minio_311."
     MINIO_SECURE : bool = False
     MINIO_AVATAR_BUCKET: str = "avatars"
 

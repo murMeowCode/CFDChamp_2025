@@ -13,11 +13,14 @@ class RoleChangeService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create_role_change_request(self, user_id: uuid.UUID,
+    async def create_role_change_request(self, username: str,
         request_data: RoleChangeRequestCreate) -> RoleChangeRequest:
         """Создание заявки на изменение роли"""
         # Получаем пользователя
-        user = await self.db.get(AuthUser, user_id)
+        stmt = select(AuthUser).where(AuthUser.username == username)
+        result = await self.db.execute(stmt)
+        user = result.scalar_one_or_none()
+
         if not user:
             raise ValueError("User not found")
 
@@ -28,7 +31,7 @@ class RoleChangeService:
         # Проверяем, есть ли уже pending заявка у пользователя
         existing_pending_stmt = select(RoleChangeRequest).where(
             and_(
-                RoleChangeRequest.user_id == user_id,
+                RoleChangeRequest.username == username,
                 RoleChangeRequest.status == RoleChangeStatus.PENDING
             )
         )
@@ -38,7 +41,7 @@ class RoleChangeService:
 
         # Создаем заявку
         role_request = RoleChangeRequest(
-            user_id=user_id,
+            username=username,
             current_role=user.role,
             requested_role=request_data.requested_role,
             reason=request_data.reason,
@@ -74,7 +77,7 @@ class RoleChangeService:
             return {"success": False, "error": "Request is not pending"}
 
         # Получаем пользователя
-        user = await self.db.get(AuthUser, role_request.user_id)
+        user = await self.db.get(AuthUser, role_request.username)
         if not user:
             return {"success": False, "error": "User not found"}
 

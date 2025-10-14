@@ -1,9 +1,11 @@
 """служба работы с сообщениями""" #pylint: disable=E0401,E1102
+import logging
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from mailing_service.models.message import Message
 
+logger = logging.getLogger(__name__)
 
 class MessageService:
     """класс службы"""
@@ -28,12 +30,43 @@ class MessageService:
         user_id: str,
     ) -> List[Message]:
         """Получение сообщений пользователя с фильтрацией"""
-        stmt = select(Message).where(Message.user_id == user_id)
+        logger.info(
+            "🟡 Начало получения сообщений пользователя",
+            extra={"user_id": user_id, "service": "MessageService", "method": "get_user_messages"}
+        )
 
-        stmt = stmt.where(Message.is_read is False)
+        try:
+            stmt = select(Message).where(
+                Message.user_id == user_id,
+                Message.is_read is False
+            )
 
-        result = await self.db.execute(stmt)
-        return result.scalars().all()
+            result = await self.db.execute(stmt)
+            messages = result.scalars().all()
+
+            logger.info(
+                "✅ Успешно получены сообщения из базы данных",
+                extra={
+                    "user_id": user_id,
+                    "messages_count": len(messages),
+                    "message_ids": [str(msg.id) for msg in messages] if messages else []
+                }
+            )
+
+            return messages
+
+        except Exception as e:
+            logger.error(
+                "❌ Ошибка при получении сообщений пользователя",
+                extra={
+                    "user_id": user_id,
+                    "error_type": type(e).__name__,
+                    "error_message": str(e),
+                    "service": "MessageService"
+                },
+                exc_info=True
+            )
+            raise
 
     async def get_message_by_id(self, message_id: str, user_id: str) -> Optional[Message]:
         """Получение конкретного сообщения по ID"""
