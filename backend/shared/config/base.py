@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     #Email
-    RESEND_API_KEY: str
+    RESEND_API_KEY: str = "re_PNUDqH1W_prku9ViR4NwVZs2TeDsmDUst"
     RESEND_FROM_EMAIL: str = "onboarding@resend.dev"
     #MinIO
     MINIO_ENDPOINT: str = "minio:9000"
