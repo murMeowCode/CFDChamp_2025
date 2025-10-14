@@ -1,15 +1,15 @@
 FROM python:3.11-slim
 
-WORKDIR /app
+WORKDIR /auth_service
 
-RUN mkdir -p /app/shared
+RUN mkdir -p /auth_service/shared
 
-COPY shared/ /app/shared/
-COPY requirements.txt /app/
+COPY shared/ /auth_service/shared/
+COPY requirements.txt /auth_service/
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY auth_service/ /app/
+COPY auth_service/ /auth_service/
 
 EXPOSE 8000
 
