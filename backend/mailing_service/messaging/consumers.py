@@ -1,4 +1,4 @@
-"""Потребитель RabbitMQ для сервиса рассылки"""  # pylint: disable=W1203, E0401, W0718
+"""Потребитель RabbitMQ для сервиса рассылки"""  # pylint: disable=W1203, E0401, W0718, C0301
 import json
 import logging
 import aio_pika
@@ -107,40 +107,239 @@ class MailingConsumer(BaseConsumer):
         }
         return contents.get(notification_type, "У вас новое уведомление.")
 
-    def _create_welcome_template(self, username: str, is_extended: bool = False) -> str:
-        """Шаблон приветственного письма"""
-        if is_extended:
-            return f"""
-            <!DOCTYPE html>
-            <html>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6;">
-                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <h1 style="color: #4F46E5;">Добро пожаловать в CFDChamp, {username}!</h1>
-                    <p>Мы рады приветствовать вас в нашем сообществе трейдеров.</p>
-                    <p>Теперь у вас есть доступ ко всем возможностям нашей платформы:</p>
-                    <ul>
-                        <li>Анализ CFD инструментов</li>
-                        <li>Торговые сигналы</li>
-                        <li>Образовательные материалы</li>
-                    </ul>
-                    <p>Если у вас есть вопросы, не стесняйтесь обращаться в поддержку.</p>
-                    <hr>
-                    <p style="color: #666; font-size: 12px;">
-                        С уважением,<br>Команда CFDChamp
-                    </p>
-                </div>
-            </body>
-            </html>
-            """
-
+    def _create_welcome_template(self, username: str) -> str:
+        """Красивый шаблон приветственного письма"""
         return f"""
         <!DOCTYPE html>
         <html>
-        <body style="font-family: Arial, sans-serif;">
-            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #4F46E5;">Добро пожаловать, {username}!</h2>
-                <p>Спасибо за регистрацию в CFDChamp.</p>
-                <p>Начните знакомство с платформой прямо сейчас!</p>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            </style>
+        </head>
+        <body style="font-family: 'Inter', Arial, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div style="max-width: 500px; margin: 40px auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #4F46E5 0%, #7E22CE 100%); padding: 40px 30px; text-align: center;">
+                    <div style="background: white; width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <span style="font-size: 32px; color: #4F46E5;">🎯</span>
+                    </div>
+                    <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Добро пожаловать!</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; font-weight: 400;">{username}, начинаем торговое путешествие</p>
+                </div>
+                
+                <!-- Content -->
+                <div style="padding: 40px 30px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h2 style="color: #1F2937; margin: 0 0 15px; font-size: 22px; font-weight: 600;">Ваш аккаунт активирован</h2>
+                        <p style="color: #6B7280; margin: 0; line-height: 1.6;">Теперь вы часть сообщества профессиональных трейдеров CFDChamp</p>
+                    </div>
+                    
+                    <!-- Features -->
+                    <div style="background: #F8FAFC; border-radius: 12px; padding: 25px; margin: 30px 0;">
+                        <h3 style="color: #374151; margin: 0 0 20px; font-size: 16px; font-weight: 600; text-align: center;">Доступные возможности</h3>
+                        <div style="display: grid; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #4F46E5; width: 8px; height: 8px; border-radius: 50%;"></div>
+                                <span style="color: #4B5563; font-size: 14px;">Анализ CFD инструментов в реальном времени</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #7E22CE; width: 8px; height: 8px; border-radius: 50%;"></div>
+                                <span style="color: #4B5563; font-size: 14px;">Точные торговые сигналы и аналитика</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #10B981; width: 8px; height: 8px; border-radius: 50%;"></div>
+                                <span style="color: #4B5563; font-size: 14px;">Образовательные материалы и вебинары</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="background: #F59E0B; width: 8px; height: 8px; border-radius: 50%;"></div>
+                                <span style="color: #4B5563; font-size: 14px;">Персональная поддержка 24/7</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA Button -->
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="#" style="display: inline-block; background: linear-gradient(135deg, #4F46E5, #7E22CE); color: white; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); transition: all 0.3s;">
+                            Начать торговать
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="background: #F8FAFC; padding: 25px 30px; text-align: center; border-top: 1px solid #E5E7EB;">
+                    <p style="color: #6B7280; margin: 0 0 10px; font-size: 14px;">Нужна помощь? Мы всегда на связи</p>
+                    <p style="color: #9CA3AF; margin: 0; font-size: 12px;">
+                        С уважением, команда CFDChamp<br>
+                        <span style="color: #D1D5DB;">© 2024 CFDChamp. Все права защищены.</span>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+    def _create_role_approved_template(self, username: str, data: dict) -> str:
+        """Красивый шаблон для уведомления об одобрении роли"""
+        new_role = data.get("new_role", "новая роль")
+        role_description = data.get("role_description", "дополнительные возможности платформы")
+        
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            </style>
+        </head>
+        <body style="font-family: 'Inter', Arial, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+            <div style="max-width: 500px; margin: 40px auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
+                <!-- Success Header -->
+                <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 40px 30px; text-align: center;">
+                    <div style="background: white; width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <span style="font-size: 32px; color: #10B981;">✅</span>
+                    </div>
+                    <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Роль одобрена!</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; font-weight: 400;">Поздравляем с новыми возможностями</p>
+                </div>
+                
+                <!-- Content -->
+                <div style="padding: 40px 30px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h2 style="color: #1F2937; margin: 0 0 10px; font-size: 22px; font-weight: 600;">Приветствуем, {username}!</h2>
+                        <p style="color: #6B7280; margin: 0; line-height: 1.6;">Ваш запрос на роль <strong style="color: #10B981;">{new_role}</strong> успешно одобрен</p>
+                    </div>
+                    
+                    <!-- Role Benefits -->
+                    <div style="background: #ECFDF5; border: 1px solid #D1FAE5; border-radius: 12px; padding: 25px; margin: 30px 0;">
+                        <h3 style="color: #065F46; margin: 0 0 15px; font-size: 16px; font-weight: 600; text-align: center;">🎉 Новые возможности</h3>
+                        <p style="color: #047857; margin: 0; text-align: center; font-size: 14px; line-height: 1.5;">
+                            {role_description}
+                        </p>
+                    </div>
+                    
+                    <!-- Next Steps -->
+                    <div style="background: #F8FAFC; border-radius: 12px; padding: 20px; margin: 25px 0;">
+                        <h4 style="color: #374151; margin: 0 0 15px; font-size: 14px; font-weight: 600;">Что дальше?</h4>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="color: #10B981; font-size: 12px;">▶</span>
+                                <span style="color: #4B5563; font-size: 13px;">Войдите в свой аккаунт для доступа к новым функциям</span>
+                            </div>
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="color: #10B981; font-size: 12px;">▶</span>
+                                <span style="color: #4B5563; font-size: 13px;">Изучите обновленный интерфейс платформы</span>
+                            </div>
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="color: #10B981; font-size: 12px;">▶</span>
+                                <span style="color: #4B5563; font-size: 13px;">Обратитесь к поддержке при возникновении вопросов</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA Button -->
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="#" style="display: inline-block; background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                            Перейти в платформу
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="background: #F8FAFC; padding: 25px 30px; text-align: center; border-top: 1px solid #E5E7EB;">
+                    <p style="color: #6B7280; margin: 0 0 10px; font-size: 14px;">Рады видеть вас в нашем сообществе</p>
+                    <p style="color: #9CA3AF; margin: 0; font-size: 12px;">
+                        С уважением, команда CFDChamp<br>
+                        <span style="color: #D1D5DB;">© 2024 CFDChamp. Все права защищены.</span>
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+    def _create_role_rejected_template(self, username: str, data: dict) -> str:
+        """Красивый шаблон для уведомления об отклонении роли"""
+        requested_role = data.get("requested_role", "запрашиваемая роль")
+        reason = data.get("reason", "Требования к роли не выполнены")
+        contact_support = data.get("contact_support", True)
+        
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            </style>
+        </head>
+        <body style="font-family: 'Inter', Arial, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
+            <div style="max-width: 500px; margin: 40px auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1);">
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); padding: 40px 30px; text-align: center;">
+                    <div style="background: white; width: 80px; height: 80px; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                        <span style="font-size: 32px; color: #EF4444;">❌</span>
+                    </div>
+                    <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Запрос отклонен</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px; font-weight: 400;">{username}, ваш запрос рассмотрен</p>
+                </div>
+                
+                <!-- Content -->
+                <div style="padding: 40px 30px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h2 style="color: #1F2937; margin: 0 0 15px; font-size: 22px; font-weight: 600;">К сожалению, роль не одобрена</h2>
+                        <p style="color: #6B7280; margin: 0; line-height: 1.6;">Запрос на роль <strong style="color: #EF4444;">{requested_role}</strong> был отклонен</p>
+                    </div>
+                    
+                    <!-- Reason -->
+                    <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: 12px; padding: 25px; margin: 30px 0;">
+                        <h3 style="color: #7F1D1D; margin: 0 0 15px; font-size: 16px; font-weight: 600; text-align: center;">📋 Причина отказа</h3>
+                        <p style="color: #B91C1C; margin: 0; text-align: center; font-size: 14px; line-height: 1.5;">
+                            {reason}
+                        </p>
+                    </div>
+                    
+                    <!-- Next Steps -->
+                    <div style="background: #F8FAFC; border-radius: 12px; padding: 20px; margin: 25px 0;">
+                        <h4 style="color: #374151; margin: 0 0 15px; font-size: 14px; font-weight: 600;">Возможные действия</h4>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="color: #EF4444; font-size: 12px;">▶</span>
+                                <span style="color: #4B5563; font-size: 13px;">Ознакомьтесь с требованиями к запрашиваемой роли</span>
+                            </div>
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="color: #EF4444; font-size: 12px;">▶</span>
+                                <span style="color: #4B5563; font-size: 13px;">Улучшите ваш профиль и активность на платформе</span>
+                            </div>
+                            <div style="display: flex; align-items: start; gap: 10px;">
+                                <span style="color: #EF4444; font-size: 12px;">▶</span>
+                                <span style="color: #4B5563; font-size: 13px;">Подайте новый запрос через 30 дней</span>
+                            </div>
+                            {"<div style='display: flex; align-items: start; gap: 10px;'><span style='color: #EF4444; font-size: 12px;'>▶</span><span style='color: #4B5563; font-size: 13px;'>Свяжитесь с поддержкой для уточнения деталей</span></div>" if contact_support else ""}
+                        </div>
+                    </div>
+                    
+                    <!-- Support CTA -->
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="#" style="display: inline-block; background: linear-gradient(135deg, #EF4444, #DC2626); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); margin: 0 5px;">
+                            Связаться с поддержкой
+                        </a>
+                        <a href="#" style="display: inline-block; background: #6B7280; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 0 5px;">
+                            Требования к ролям
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="background: #F8FAFC; padding: 25px 30px; text-align: center; border-top: 1px solid #E5E7EB;">
+                    <p style="color: #6B7280; margin: 0 0 10px; font-size: 14px;">Надеемся на ваше понимание</p>
+                    <p style="color: #9CA3AF; margin: 0; font-size: 12px;">
+                        С уважением, команда CFDChamp<br>
+                        <span style="color: #D1D5DB;">© 2024 CFDChamp. Все права защищены.</span>
+                    </p>
+                </div>
             </div>
         </body>
         </html>
