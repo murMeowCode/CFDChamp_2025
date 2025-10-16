@@ -246,7 +246,7 @@
                 name="role"
                 :value="role.value"
                 class="role-checkbox-input"
-                @change="onRoleChange"
+               
               />
               <label 
                 :for="`role-${role.value}`" 
@@ -462,10 +462,7 @@ const showConfirmPassword = ref(false)
 const isSubmitting = ref(false)
 const formSubmitted = ref(false)
 
-// Обработчик изменения роли
-const onRoleChange = () => {
-  console.log('Выбрана роль:', form.role)
-}
+
 
 // Валидация формы
 const validateForm = () => {

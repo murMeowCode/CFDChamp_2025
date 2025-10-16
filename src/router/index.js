@@ -1,4 +1,4 @@
-import MyLogin from '@/views/Auth/myLogin.vue'
+import MyLogin from '@/views/Auth/MyLogin.vue'
 import MyRegistration from '@/views/Auth/MyRegistration.vue'
 import Mycabinet from '@/views/Cabinet/Mycabinet.vue'
 import MyForgotPassword from '@/views/Forgot/MyForgotPassword.vue'
