@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     """класс настроек"""
 
     # База данных
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:slon_311.@212.111.87.142:5666/postgres"
     # RabbitMQ
-    RABBITMQ_URL: str = "amqp://guest:guest@localhost:5672/"
+    RABBITMQ_URL: str = "amqp://guest:guest@212.111.87.142:5672/"
     RABBITMQ_EXCHANGE: str = "auth_exchange"
     # JWT
     JWT_SECRET_KEY: str = "RAhuvd1qzpdKcjeYsAoIQxKeRKaa-pBJb9iksJ9DAWQ"
@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     MINIO_SECRET_KEY: str = "minio_311."
     MINIO_SECURE : bool = False
     MINIO_AVATAR_BUCKET: str = "avatars"
+
+    # Redis
+    REDIS_HOST="212.111.87.142"
+    REDIS_PORT=6379
+    REDIS_DB_CACHE=0
+    REDIS_DB_CELERY=1
+    REDIS_PASSWORD="redis_311."
 
     class Config:
         """импорт из файла среды"""
