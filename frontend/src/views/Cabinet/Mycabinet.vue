@@ -1,5 +1,7 @@
 <template>
-  <h1>Кабинет</h1>
+  <div data-aos="zoom-in">
+    <h1>Кабинет</h1>
+  </div>
 </template>
 
 <script setup></script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="register-container">
+  <div class="register-container" data-aos="flip-right">
     <div class="register-card">
       <!-- Заголовок -->
       <div class="register-header">
@@ -234,11 +234,7 @@
             Роль *
           </label>
           <div class="roles-container">
-            <div 
-              v-for="role in roles" 
-              :key="role.value"
-              class="role-checkbox-wrapper"
-            >
+            <div v-for="role in roles" :key="role.value" class="role-checkbox-wrapper">
               <input
                 :id="`role-${role.value}`"
                 v-model="form.role"
@@ -246,10 +242,9 @@
                 name="role"
                 :value="role.value"
                 class="role-checkbox-input"
-               
               />
-              <label 
-                :for="`role-${role.value}`" 
+              <label
+                :for="`role-${role.value}`"
                 class="role-checkbox-label"
                 :class="{ 'role-checkbox-label--selected': form.role === role.value }"
               >
@@ -375,46 +370,37 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { useUserStore } from '@/stores/useUserStore'
+import { ref, reactive, computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useValidation } from '@/utils/useValidation'
+import { useNotificationsStore } from '@/stores/useToastStore'
+
+const toast = useNotificationsStore()
 
 // Список ролей
 const roles = [
   {
     value: 'role1',
     title: 'Роль 1',
-    description: 'Базовый доступ'
+    description: 'Базовый доступ',
   },
   {
-    value: 'role2', 
+    value: 'role2',
     title: 'Роль 2',
-    description: 'Расширенный доступ'
+    description: 'Расширенный доступ',
   },
   {
     value: 'role3',
-    title: 'Роль 3', 
-    description: 'Полный доступ'
-  }
+    title: 'Роль 3',
+    description: 'Полный доступ',
+  },
 ]
-
+const { errors, formSubmitted, validateForm } = useValidation()
+const router = useRouter()
 // Состояние формы
 const form = reactive({
-  last_name: '',
-  first_name: '',
-  middle_Name: '',
-  username: '',
-  email: '',
-  birth_Date: '',
-  phone: '',
-  address: '',
-  role: '',
-  password: '',
-  confirmPassword: '',
-
-})
-
-// Ошибки валидации
-const errors = reactive({
   last_name: '',
   first_name: '',
   middle_Name: '',
@@ -432,120 +418,14 @@ const errors = reactive({
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const isSubmitting = ref(false)
-const formSubmitted = ref(false)
 
-
+const useUser = useUserStore()
 
 // Валидация формы
-const validateForm = () => {
-  formSubmitted.value = true
-  let isValid = true
-
-  // Очистка предыдущих ошибок
-  Object.keys(errors).forEach((key) => {
-    errors[key] = ''
-  })
-
-  // Валидация ФИО
-  if (!form.last_name.trim()) {
-    errors.last_name = 'Фамилия обязательна'
-    isValid = false
-  }
-
-  if (!form.first_name.trim()) {
-    errors.first_name = 'Имя обязательно'
-    isValid = false
-  }
-
-  // Валидация логина
-  if (!form.username.trim()) {
-    errors.username = 'Логин обязателен'
-    isValid = false
-  } else if (form.username.length < 3) {
-    errors.username = 'Логин должен содержать минимум 3 символа'
-    isValid = false
-  }
-
-  // Валидация email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!form.email.trim()) {
-    errors.email = 'Email обязателен'
-    isValid = false
-  } else if (!emailRegex.test(form.email)) {
-    errors.email = 'Введите корректный email'
-    isValid = false
-  }
-
-  // Валидация телефона
-  const phoneRegex = /^(\+7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/
-  if (!form.phone.trim()) {
-    errors.phone = 'Номер телефона обязателен'
-    isValid = false
-  } else if (!phoneRegex.test(form.phone.replace(/\s/g, ''))) {
-    errors.phone = 'Введите корректный номер телефона'
-    isValid = false
-  }
-
-  // Валидация даты рождения
-  if (!form.birth_Date) {
-    errors.birth_Date = 'Дата рождения обязательна'
-    isValid = false
-  } else {
-    const birth_Date = new Date(form.birth_Date)
-    const today = new Date()
-    const minDate = new Date()
-    minDate.setFullYear(today.getFullYear() - 100)
-
-    if (birth_Date > today) {
-      errors.birth_Date = 'Дата рождения не может быть в будущем'
-      isValid = false
-    } else if (birth_Date < minDate) {
-      errors.birth_Date = 'Проверьте корректность даты рождения'
-      isValid = false
-    }
-  }
-
-  // Валидация адреса
-  if (!form.address.trim()) {
-    errors.address = 'Адрес обязателен'
-    isValid = false
-  } else if (form.address.length < 5) {
-    errors.address = 'Адрес должен содержать минимум 5 символов'
-    isValid = false
-  }
-
-  // Валидация роли
-  if (!form.role) {
-    errors.role = 'Выберите роль'
-    isValid = false
-  }
-
-  // Валидация пароля
-  if (!form.password) {
-    errors.password = 'Пароль обязателен'
-    isValid = false
-  } else if (form.password.length < 8) {
-    errors.password = 'Пароль должен содержать минимум 8 символов'
-    isValid = false
-  }
-
-  // Подтверждение пароля
-  if (!form.confirmPassword) {
-    errors.confirmPassword = 'Подтвердите пароль'
-    isValid = false
-  } else if (form.password !== form.confirmPassword) {
-    errors.confirmPassword = 'Пароли не совпадают'
-    isValid = false
-  }
-
-
-
-  return isValid
-}
 
 // Обработчик отправки формы
 const handleSubmit = async () => {
-  if (!validateForm()) {
+  if (!validateForm(form)) {
     return
   }
 
@@ -553,17 +433,16 @@ const handleSubmit = async () => {
 
   try {
     // Имитация API запроса
-    await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    // Здесь будет реальный API вызов
-    console.log('Форма отправлена:', {
-      ...form,
-      // Не логируем реальный пароль
-    })
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    useUser.setUser(form)
+    toast.success('вошли')
+
+    router.push({ name: 'home' })
     formSubmitted.value = false
   } catch (error) {
     console.error('Ошибка регистрации:', error)
-    alert('Произошла ошибка при регистрации. Попробуйте еще раз.')
+    toast.error('ошибка')
   } finally {
     isSubmitting.value = false
   }
@@ -761,14 +640,14 @@ const handleSubmit = async () => {
 .roles-container {
   display: flex;
   flex-direction: row;
-  width:100%;
-  justify-content:space-between;
+  width: 100%;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
 .role-checkbox-wrapper {
   position: relative;
-  width:100%;
+  width: 100%;
 }
 
 .role-checkbox-input {
@@ -1134,15 +1013,15 @@ const handleSubmit = async () => {
   .roles-container {
     gap: 0.375rem;
   }
-  
+
   .role-checkbox-label {
     padding: 0.75rem;
   }
-  
+
   .role-title {
     font-size: 0.85rem;
   }
-  
+
   .role-description {
     font-size: 0.75rem;
   }
@@ -1171,7 +1050,7 @@ const handleSubmit = async () => {
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .role-checkbox-decoration {
     align-self: flex-start;
   }

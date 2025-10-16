@@ -1,7 +1,9 @@
 <script setup></script>
 
 <template>
-  <h1>One</h1>
+  <div class="one" data-aos="zoom-in">
+    <h1>One</h1>
+  </div>
 </template>
 
 <style scoped></style>

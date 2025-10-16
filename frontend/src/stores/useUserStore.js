@@ -19,6 +19,8 @@ export const useUserStore = defineStore('user', () => {
     user.value = newUser
     isauth.value = true
     localStorage.setItem('user', JSON.stringify(newUser))
+    console.log(user.value, 'fff')
+    console.log(isauth.value, 'erty')
   }
   function removeUser() {
     user.value = null

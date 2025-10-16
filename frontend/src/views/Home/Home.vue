@@ -1,11 +1,12 @@
 <template>
-  <main>
+  <div class="home" data-aos="zoom-out">
+    <MyNotifi />
     <h1>Добро</h1>
-  </main>
+  </div>
 </template>
 
 <script setup>
-import MainHead from '@/components/Header/MainHead.vue'
+import MyNotifi from '@/components/Notyfi/MyNotifi.vue'
 </script>
 
 <style scoped>
