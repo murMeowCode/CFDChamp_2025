@@ -1,5 +1,8 @@
 <template>
-  <h1>Восстановление пароля</h1>
+  <div class="forgot" data-aos="zoom-in">
+
+    <h1>Восстановление пароля</h1>
+  </div>
 </template>
 
 <script setup></script>

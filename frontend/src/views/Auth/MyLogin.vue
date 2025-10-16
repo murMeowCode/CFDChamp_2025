@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" data-aos="flip-left">
     <div class="login-card">
       <!-- Заголовок -->
       <div class="login-header">

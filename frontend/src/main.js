@@ -4,9 +4,33 @@ import 'primeicons/primeicons.css'
 import './assets/styless/main.css'
 import App from './App.vue'
 import router from './router'
+import AOS from 'aos'
+import "aos/dist/aos.css";
+import axios from 'axios';
+import { createNotivue } from 'notivue'
+import 'notivue/notification.css' // Only needed if using built-in notifications
+import 'notivue/animations.css' // Only needed if using built-in animations
+
 
 const app = createApp(App)
-
+const notivue = createNotivue({
+  position: 'top-right',
+  limit: 5,
+  enqueue: true,
+  notifications: {
+    global: {
+      duration: 4000
+    }
+  }
+})
+app.use(notivue)
+export const apiClient = axios.create({
+  baseURL: 'http://192.168.3.116:8000', 
+});
+AOS.init({
+  duration: 800,
+  once: false,
+});
 app.use(createPinia())
 app.use(router)
 

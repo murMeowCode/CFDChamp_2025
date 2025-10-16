@@ -1,7 +1,8 @@
 <template>
-  <main>
-    <h1>Добро</h1>
-  </main>
+    <div class="home" data-aos="zoom-out">
+      <h1>Добро</h1>
+    </div>
+  
 </template>
 
 <script setup>

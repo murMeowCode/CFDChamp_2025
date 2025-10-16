@@ -59,7 +59,7 @@
       </button>
 
       <!-- Мобильное меню -->
-      <nav v-if="isMobileMenuOpen" class="nav-mobile">
+      <nav v-if="isMobileMenuOpen" class="nav-mobile" data-aos="flip-right" >
         <RouterLink
           v-for="item in navItems"
           :key="item.route"
