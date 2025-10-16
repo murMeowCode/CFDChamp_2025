@@ -69,18 +69,26 @@ class MailingConsumer(BaseConsumer):
         """Создание HTML контента для email"""
         username = data.get("username", "Пользователь")
 
-        if notification_type == "user_registered":
-            return self._create_welcome_template(username)
-        elif notification_type == "custom_notification":
-            return self._create_custom_template(data.get("content", ""))
-        else:
-            return self._create_custom_template("У вас новое уведомление.")
+        match notification_type:
+            case "user_registered":
+                return self._create_welcome_template(username)
+
+            case "role_approved":
+                return self._create_role_approved_template(username, data)
+
+            case "role_rejected":
+                return self._create_role_rejected_template(username, data)
+
+            case _:
+                logger.warning(f"Unknown notification type: {notification_type}")
+                return self._create_custom_template("У вас новое уведомление.")
 
     def _get_subject_by_type(self, notification_type: str, data: dict) -> str:
         """Получение темы сообщения по типу уведомления"""
         subjects = {
             "user_registered": "Добро пожаловать на платформу!",
-            "welcome_message": "Приветственное сообщение от CFDChamp",
+            "role_approved": "Положительный ответ на вашу заявку.",
+            "role_rejected": "Отрицательный ответ на вашу заявку.",
             "custom_notification": data.get("subject", "Уведомление от CFDChamp")
         }
         return subjects.get(notification_type, "Уведомление от CFDChamp")
@@ -93,6 +101,8 @@ class MailingConsumer(BaseConsumer):
         contents = {
             "user_registered": f"""Добро пожаловать, {username}!
                     Спасибо за регистрацию на нашем ресурсе.""",
+            "role_approved": f"Уважаемый {username}! Ваша новая роль подтверждена администратором",
+            "role_rejected": f"Уважаемый {username}! Ваша новая роль отклонена администратором",
             "custom_notification": custom_content or "У вас новое уведомление."
         }
         return contents.get(notification_type, "У вас новое уведомление.")
