@@ -25,6 +25,7 @@ async def lifespan(app: FastAPI):
     # Инициализация RabbitMQ producer
     producer = UserProducer(settings.RABBITMQ_URL)
     await producer.connect()
+    print("✅ RabbitMQ producer подключен")
 
     # Сохраняем producer в состоянии приложения
     app.state.producer = producer
@@ -32,12 +33,14 @@ async def lifespan(app: FastAPI):
     # Инициализация RabbitMQ consumer
     async with AsyncSessionLocal() as db:
         token_service = TokenService(db)
+        print("✅ Служба токенов запущена")
         user_service = UserService(db)
+        print("✅ Служба пользователей запущена")
         auth_service = AuthService(token_service, user_service)
+        print("✅ Служба аутентификации запущена")
         consumer = AuthConsumer(settings.RABBITMQ_URL, auth_service, producer)
         await consumer.connect()
-
-    logger.info("Auth Service started successfully")
+        print("✅ RabbitMQ consumer подключен")
 
     yield
 
@@ -45,7 +48,6 @@ async def lifespan(app: FastAPI):
     await producer.close()
     await consumer.close()
 
-    logger.info("Auth Service stopped")
 
 app = FastAPI(
     title="Auth Service",

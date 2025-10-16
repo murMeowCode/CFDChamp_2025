@@ -15,7 +15,6 @@ class AuthService:
     def __init__(self, token_service: TokenService, user_service: UserService):
         self.token_service = token_service
         self.user_service = user_service
-        logger.info("AuthService initialized")
 
     async def verify_token_handler(self, message: TokenVerifyMessage) -> TokenVerifyResponseMessage:
         """Обработчик верификации токена"""
