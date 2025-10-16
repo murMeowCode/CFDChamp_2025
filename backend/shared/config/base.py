@@ -28,11 +28,11 @@ class Settings(BaseSettings):
     MINIO_AVATAR_BUCKET: str = "avatars"
 
     # Redis
-    REDIS_HOST="212.111.87.142"
-    REDIS_PORT=6379
-    REDIS_DB_CACHE=0
-    REDIS_DB_CELERY=1
-    REDIS_PASSWORD="redis_311."
+    REDIS_HOST: str ="212.111.87.142"
+    REDIS_PORT: int = 6379
+    REDIS_DB_CACHE: int = 0
+    REDIS_DB_CELERY: int = 1
+    REDIS_PASSWORD: str = "redis_311."
 
     class Config:
         """импорт из файла среды"""
