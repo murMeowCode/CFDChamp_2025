@@ -1,0 +1,1 @@
+celery -A celery_mail worker --pool=solo  --loglevel=info

@@ -1,5 +1,7 @@
-"""Продюсер для пользовательских событий"""#pylint:disable=E0401
+"""Продюсер для пользовательских событий"""#pylint:disable=E0401, W1203
 import logging
+
+from fastapi import Request
 from shared.messaging.producers import BaseProducer
 from shared.schemas.messaging import UserCreatedMessage
 
@@ -15,3 +17,7 @@ class UserProducer(BaseProducer):
             routing_key="auth.user.created"
         )
         logger.info(f"User created event sent for user_id: {message.user_id}")
+
+async def get_producer(request: Request) -> UserProducer:
+    """Функция для получения глобального продюсера"""
+    return request.app.state.producer
