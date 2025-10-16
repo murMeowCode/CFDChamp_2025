@@ -3,16 +3,16 @@ import json
 import logging
 import aio_pika
 from shared.messaging.consumers import BaseConsumer
-from shared.database.database import AsyncSessionLocal
 from mailing_service.services.email_service import email_service
 from mailing_service.schemas.message import EmailData
-from mailing_service.services.message_service import MessageService
+from mailing_service.celery.tasks import process_notification_task
+
 
 
 logger = logging.getLogger(__name__)
 
 class MailingConsumer(BaseConsumer):
-    """Потребитель для обработки уведомлений и отправки email"""
+    """Потребитель для обработки уведомлений и отправки email через Celery"""
 
     def __init__(self, rabbitmq_url: str, exchange_name: str = "auth_exchange"):
         super().__init__(rabbitmq_url, exchange_name)
@@ -20,13 +20,10 @@ class MailingConsumer(BaseConsumer):
 
     async def setup_queues(self):
         """Настройка очередей для mailing service"""
-        # Основная очередь для уведомлений
         queue = await self.declare_and_bind_queue(
             queue_name=self.queue_name,
             routing_key="notification.*"
         )
-
-        # Начинаем слушать очередь
         await queue.consume(self.handle_notification)
         logger.info(f"MailingConsumer started listening on queue: {self.queue_name}")
 
@@ -39,12 +36,10 @@ class MailingConsumer(BaseConsumer):
             logger.error("Failed to process notification")
 
     async def _process_notification(self, message: aio_pika.IncomingMessage):
-        """Основная логика обработки уведомления"""
-        # Парсим сообщение
+        """Основная логика обработки уведомления - теперь через Celery"""
         body = json.loads(message.body.decode())
         logger.info(f"Received notification: {body}")
 
-        # Определяем тип уведомления и обрабатываем
         notification_type = body.get("type")
         user_email = body.get("user_email")
         user_id = body.get("user_id")
@@ -54,21 +49,36 @@ class MailingConsumer(BaseConsumer):
             logger.error("No user_email or user_id in notification")
             return
 
-        # Создаем запись в базе данных
-        async with AsyncSessionLocal() as session:
-            message_service = MessageService(session)
+        # Создаем данные для Celery задачи
+        celery_data = {
+            "user_id": user_id,
+            "user_email": user_email,
+            "type": notification_type,
+            "data": data
+        }
 
-            # Создаем запись сообщения
-            message_record = await message_service.create_message(
-                user_id=user_id,
-                subject=self._get_subject_by_type(notification_type, data),
-                content=self._get_content_by_type(notification_type, data)
-            )
+        # Добавляем subject и content
+        celery_data["subject"] = self._get_subject_by_type(notification_type, data)
+        celery_data["content"] = self._get_content_by_type(notification_type, data)
+        celery_data["html_content"] = self._create_html_content(notification_type, data)
 
-            logger.info(f"Message record created with ID: {message_record.id}")
+        # Отправляем задачу в Celery
+        task = process_notification_task.delay(celery_data)
 
-        # Отправляем email
-        await self._send_email_by_type(notification_type, user_email, data)
+        logger.info(f"Celery task created: {task.id} for notification type: {notification_type}")
+
+    def _create_html_content(self, notification_type: str, data: dict) -> str:
+        """Создание HTML контента для email"""
+        username = data.get("username", "Пользователь")
+
+        if notification_type == "user_registered":
+            return self._create_welcome_template(username)
+        elif notification_type == "welcome_message":
+            return self._create_welcome_template(username, is_extended=True)
+        elif notification_type == "custom_notification":
+            return self._create_custom_template(data.get("content", ""))
+        else:
+            return self._create_custom_template("У вас новое уведомление.")
 
     async def _send_email_by_type(self, notification_type: str, user_email: str, data: dict):
         """Отправка email в зависимости от типа уведомления"""
