@@ -3,62 +3,89 @@
     <div class="login-card">
       <!-- Заголовок -->
       <div class="login-header">
-        <h1 class="login-title">Вход в систему</h1>
+        <div class="logo-wrapper">
+          <i class="pi pi-shield" style="font-size: 2.5rem; color: var(--color-primary);"></i>
+        </div>
+        <h1 class="login-title">Добро пожаловать</h1>
         <p class="login-subtitle">Войдите в свой аккаунт</p>
       </div>
 
       <!-- Форма входа -->
       <form @submit.prevent="handleSubmit" class="login-form">
         <!-- Поле для логина или email -->
-        <div class="form-group">
-          <label for="login" class="form-label">Логин или Email *</label>
-          <input
-            id="login"
-            v-model="form.login"
-            type="text"
-            class="form-input"
-            :class="{ 'form-input--error': errors.login }"
-            placeholder="Введите логин или email"
-            required
-            autocomplete="username"
-          />
-          <span v-if="errors.login" class="form-error">{{ errors.login }}</span>
+        <div class="form-group floating-group">
+          <div class="input-container">
+            <input
+              id="username"
+              v-model="form.username"
+              type="text"
+              class="form-input floating-input"
+              :class="{ 
+                'form-input--error': errors.username,
+                'form-input--filled': form.username 
+              }"
+              placeholder=" "
+              required
+              autocomplete="username"
+            />
+            <label for="username" class="floating-label">
+              <i class="pi pi-user" style="margin-right: 8px;"></i>
+              Логин или Email
+            </label>
+            <div class="input-decoration"></div>
+          </div>
+          <span v-if="errors.username" class="form-error">
+            <i class="pi pi-exclamation-circle" style="margin-right: 4px;"></i>
+            {{ errors.username }}
+          </span>
         </div>
 
         <!-- Поле пароля -->
-        <div class="form-group">
-          <div class="form-label-wrapper">
-            <label for="password" class="form-label">Пароль *</label>
-            <RouterLink :to="{ name:  'forgot' }" class="forgot-password">
-              Забыли пароль?
-            </RouterLink>
-          </div>
-          <div class="password-input-wrapper">
+        <div class="form-group floating-group">
+          <div class="input-container">
             <input
               id="password"
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
-              class="form-input"
-              :class="{ 'form-input--error': errors.password }"
-              placeholder="Введите ваш пароль"
+              class="form-input floating-input"
+              :class="{ 
+                'form-input--error': errors.password,
+                'form-input--filled': form.password 
+              }"
+              placeholder=" "
               required
               autocomplete="current-password"
             />
+            <label for="password" class="floating-label">
+              <i class="pi pi-lock" style="margin-right: 8px;"></i>
+              Пароль
+            </label>
+            <div class="input-decoration"></div>
+            
             <button
               type="button"
-              class="password-toggle"
+              class="password-toggle beauty-toggle"
               @click="showPassword = !showPassword"
               :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
             >
               <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
             </button>
           </div>
-          <span v-if="errors.password" class="form-error">{{ errors.password }}</span>
+          <div class="password-actions">
+            <RouterLink :to="{ name: 'forgot' }" class="forgot-password beauty-link">
+              <i class="pi pi-key" style="margin-right: 6px;"></i>
+              Забыли пароль?
+            </RouterLink>
+          </div>
+          <span v-if="errors.password" class="form-error">
+            <i class="pi pi-exclamation-circle" style="margin-right: 4px;"></i>
+            {{ errors.password }}
+          </span>
         </div>
 
         <!-- Запомнить меня -->
         <div class="form-options">
-          <div class="form-checkbox">
+          <div class="beauty-checkbox">
             <input
               id="rememberMe"
               v-model="form.rememberMe"
@@ -66,7 +93,10 @@
               class="checkbox-input"
             />
             <label for="rememberMe" class="checkbox-label">
-              Запомнить меня
+              <div class="checkbox-decoration">
+                <i class="pi pi-check"></i>
+              </div>
+              <span class="checkbox-text">Запомнить меня</span>
             </label>
           </div>
         </div>
@@ -74,39 +104,61 @@
         <!-- Кнопка входа -->
         <button
           type="submit"
-          class="submit-button"
+          class="submit-button beauty-button"
           :disabled="isSubmitting"
-          :class="{ 'submit-button--loading': isSubmitting }"
+          :class="{ 
+            'submit-button--loading': isSubmitting,
+            'beauty-button--loading': isSubmitting
+          }"
         >
-          <span v-if="!isSubmitting">Войти</span>
+          <span v-if="!isSubmitting" class="button-content">
+            <i class="pi pi-sign-in" style="margin-right: 8px;"></i>
+            Войти в систему
+          </span>
           <div v-else class="loading-spinner">
-            <i class="pi pi-spinner pi-spin"></i>
-            <span>Вход...</span>
+            <div class="spinner-circle"></div>
+            <span>Выполняется вход...</span>
           </div>
         </button>
 
         <!-- Разделитель -->
-        <div class="divider">
-          <span class="divider-text">или</span>
+        <div class="divider beauty-divider">
+          <div class="divider-line"></div>
+          <span class="divider-text">или продолжите через</span>
+          <div class="divider-line"></div>
         </div>
 
-        <!-- Быстрый вход (опционально) -->
+        <!-- Быстрый вход -->
         <div class="social-login">
-          <button type="button" class="social-button social-button--google" @click="handleSocialLogin('google')">
-            <i class="pi pi-google"></i>
-            <span>Войти через Google</span>
+          <button type="button" class="social-button social-button--google beauty-social" @click="handleSocialLogin('google')">
+            <div class="social-icon">
+              <i class="pi pi-google"></i>
+            </div>
+            <span class="social-text">Google</span>
           </button>
           
-          <button type="button" class="social-button social-button--github" @click="handleSocialLogin('github')">
-            <i class="pi pi-github"></i>
-            <span>Войти через GitHub</span>
+          <button type="button" class="social-button social-button--github beauty-social" @click="handleSocialLogin('github')">
+            <div class="social-icon">
+              <i class="pi pi-github"></i>
+            </div>
+            <span class="social-text">GitHub</span>
+          </button>
+
+          <button type="button" class="social-button social-button--twitter beauty-social" @click="handleSocialLogin('twitter')">
+            <div class="social-icon">
+              <i class="pi pi-twitter"></i>
+            </div>
+            <span class="social-text">Twitter</span>
           </button>
         </div>
 
         <!-- Ссылка на регистрацию -->
-        <div class="register-link">
-          Еще нет аккаунта? 
-          <RouterLink :to="{ name:  'auth' }" class="link link--primary">Зарегистрироваться</RouterLink>
+        <div class="register-link beauty-register">
+          <span class="register-text">Впервые у нас?</span>
+          <RouterLink :to="{ name: 'auth' }" class="register-action beauty-link">
+            <i class="pi pi-user-plus" style="margin-right: 6px;"></i>
+            Создать аккаунт
+          </RouterLink>
         </div>
       </form>
     </div>
@@ -119,14 +171,14 @@ import { RouterLink } from 'vue-router'
 
 // Состояние формы
 const form = reactive({
-  login: '',
+  username: '',
   password: '',
   rememberMe: false
 })
 
 // Ошибки валидации
 const errors = reactive({
-  login: '',
+  username: '',
   password: ''
 })
 
@@ -144,11 +196,11 @@ const validateForm = () => {
   })
 
   // Валидация логина/email
-  if (!form.login.trim()) {
-    errors.login = 'Введите логин или email'
+  if (!form.username.trim()) {
+    errors.username = 'Введите логин или email'
     isValid = false
-  } else if (form.login.length < 3) {
-    errors.login = 'Логин должен содержать минимум 3 символа'
+  } else if (form.username.length < 3) {
+    errors.username = 'Логин должен содержать минимум 3 символа'
     isValid = false
   }
 
@@ -173,30 +225,22 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    // Имитация API запроса
     await new Promise(resolve => setTimeout(resolve, 1500))
     
     // Здесь будет реальный API вызов
     console.log('Вход выполнен:', {
-      login: form.login,
+      username: form.username,
       rememberMe: form.rememberMe
     })
 
     // Успешный вход
-    // В реальном приложении здесь будет редирект или обновление состояния авторизации
     alert('Вход выполнен успешно!')
     
-    // В реальном приложении:
-    // - Сохранение токена
-    // - Редирект на главную
-    // - Обновление состояния пользователя
-
   } catch (error) {
     console.error('Ошибка входа:', error)
     
-    // В реальном приложении здесь будут конкретные ошибки от API
     if (error.message?.includes('credentials')) {
-      errors.login = 'Неверный логин или пароль'
+      errors.username = 'Неверный логин или пароль'
       errors.password = 'Неверный логин или пароль'
     } else {
       alert('Произошла ошибка при входе. Попробуйте еще раз.')
@@ -209,14 +253,7 @@ const handleSubmit = async () => {
 // Обработчик социального входа
 const handleSocialLogin = (provider) => {
   console.log(`Социальный вход через: ${provider}`)
-  // В реальном приложении здесь будет OAuth redirect
   alert(`Вход через ${provider} (в разработке)`)
-}
-
-// Автозаполнение для демонстрации
-const fillDemoCredentials = () => {
-  form.login = 'demo@example.com'
-  form.password = 'demopassword123'
 }
 </script>
 
@@ -227,29 +264,58 @@ const fillDemoCredentials = () => {
   align-items: center;
   justify-content: center;
   padding: var(--spacing-xl);
-  background: var(--color-bg-muted);
+  background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-primary-soft) 100%);
+  position: relative;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
 }
 
 .login-card {
   background: var(--color-bg-elevated);
-  border-radius: var(--border-radius-xl);
-  box-shadow: var(--shadow-lg);
-  padding: var(--spacing-2xl);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  padding: 3rem;
   width: 100%;
   max-width: 440px;
-  border: 1px solid var(--color-border);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: 2.5rem;
+}
+
+.logo-wrapper {
+  margin-bottom: 1rem;
 }
 
 .login-title {
   font-size: 2rem;
-  font-weight: var(--font-weight-bold);
+  font-weight: 700;
   color: var(--color-text);
-  margin: 0 0 var(--spacing-sm);
+  margin: 0 0 0.5rem;
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -259,304 +325,438 @@ const fillDemoCredentials = () => {
 .login-subtitle {
   color: var(--color-text-muted);
   margin: 0;
-  font-size: 1.125rem;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: 1.5rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.form-label-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.form-label {
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text);
-  font-size: 0.875rem;
-}
-
-.forgot-password {
-  color: var(--color-primary);
-  font-size: 0.875rem;
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.forgot-password:hover {
-  color: var(--color-primary-hover);
-}
-
-.form-input {
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-size: 1rem;
-  transition: all var(--transition-normal);
-  outline: none;
-  width: 90%;
-}
-
-.form-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
-}
-
-.form-input--error {
-  border-color: var(--color-error);
-}
-
-.form-input--error:focus {
-  border-color: var(--color-error);
-  box-shadow: 0 0 0 3px var(--color-error-soft);
-}
-
-.form-error {
-  color: var(--color-error);
-  font-size: 0.75rem;
-  font-weight: var(--font-weight-medium);
-}
-
-/* Стили для поля пароля */
-.password-input-wrapper {
+/* Floating Label Styles */
+.floating-group {
   position: relative;
 }
 
-.password-toggle {
+.input-container {
+  position: relative;
+}
+
+.floating-input {
+  padding: 1.5rem 1rem 0.5rem 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  width: 100%;
+  height: 56px;
+}
+
+.floating-input:focus {
+  border-color: var(--color-primary);
+  background: var(--color-bg-elevated);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.floating-input--filled {
+  border-color: var(--color-primary-muted);
+  background: var(--color-bg-elevated);
+}
+
+.floating-input--error {
+  border-color: var(--color-error);
+  background: var(--color-error-soft);
+}
+
+.floating-label {
   position: absolute;
-  right: var(--spacing-md);
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  font-weight: 500;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+}
+
+.floating-input:focus + .floating-label,
+.floating-input--filled + .floating-label {
+  top: 0.75rem;
+  transform: none;
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.input-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-input:focus ~ .input-decoration {
+  transform: scaleX(1);
+}
+
+/* Password Toggle */
+.beauty-toggle {
+  position: absolute;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: var(--spacing-xs);
-  border-radius: var(--border-radius-sm);
-  transition: all var(--transition-fast);
-}
-
-.password-toggle:hover {
-  color: var(--color-primary);
   background: var(--color-primary-soft);
-}
-
-/* Опции формы */
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: var(--spacing-sm) 0;
-}
-
-.form-checkbox {
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.beauty-toggle:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Password Actions */
+.password-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.beauty-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.beauty-link:hover {
+  color: var(--color-primary-hover);
+  transform: translateX(2px);
+}
+
+/* Checkbox Styles */
+.beauty-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .checkbox-input {
-  width: 1.125rem;
-  height: 1.125rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  background: var(--color-bg);
-  cursor: pointer;
+  display: none;
 }
 
 .checkbox-label {
-  font-size: 0.875rem;
-  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* Кнопка входа */
-.submit-button {
-  background: var(--gradient-primary);
-  color: var(--color-text-inverted);
-  border: none;
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-md);
-  font-size: 1rem;
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  height: 52px;
-  margin-top: var(--spacing-sm);
-}
-
-.submit-button:hover:not(:disabled) {
+.checkbox-label:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
-.submit-button:disabled {
+.checkbox-decoration {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  background: var(--color-bg);
+}
+
+.checkbox-input:checked + .checkbox-label .checkbox-decoration {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.checkbox-input:checked + .checkbox-label .checkbox-decoration i {
+  transform: scale(1);
+}
+
+.checkbox-decoration i {
+  font-size: 0.75rem;
+  transform: scale(0);
+  transition: transform 0.3s ease;
+}
+
+.checkbox-text {
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Button Styles */
+.beauty-button {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 56px;
+  margin-top: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.beauty-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.beauty-button:hover::before {
+  left: 100%;
+}
+
+.beauty-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.beauty-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.beauty-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.submit-button--loading {
-  cursor: wait;
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Loading Spinner */
 .loading-spinner {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
+  gap: 0.75rem;
 }
 
-/* Разделитель */
-.divider {
-  position: relative;
-  text-align: center;
-  margin: var(--spacing-lg) 0;
+.spinner-circle {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Divider Styles */
+.beauty-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.divider-line {
+  flex: 1;
   height: 1px;
-  background: var(--color-border);
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
 }
 
 .divider-text {
-  background: var(--color-bg-elevated);
-  padding: 0 var(--spacing-md);
   color: var(--color-text-muted);
   font-size: 0.875rem;
-  position: relative;
-  z-index: 1;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-/* Социальный вход */
+/* Social Login Styles */
 .social-login {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.beauty-social {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 80px;
 }
 
-.social-button {
+.beauty-social:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon {
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-size: 0.875rem;
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: all var(--transition-normal);
+  border-radius: 8px;
+  background: var(--color-bg-elevated);
+  transition: all 0.3s ease;
 }
 
-.social-button:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-  border-color: var(--color-border-hover);
+.social-button--google:hover .social-icon {
+  background: #db4437;
+  color: white;
 }
 
-.social-button--google:hover {
-  border-color: #db4437;
-  background: #f8f8f8;
+.social-button--github:hover .social-icon {
+  background: #333;
+  color: white;
 }
 
-.social-button--github:hover {
-  border-color: #333;
-  background: #f6f8fa;
+.social-button--twitter:hover .social-icon {
+  background: #1da1f2;
+  color: white;
 }
 
-/* Ссылки */
-.link {
-  color: var(--color-primary);
-  text-decoration: none;
-  transition: color var(--transition-fast);
+.social-text {
+  font-weight: 600;
 }
 
-.link:hover {
-  color: var(--color-primary-hover);
+/* Register Link Styles */
+.beauty-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0 0.5rem;
+  border-top: 1px solid var(--color-border);
 }
 
-.link--primary {
-  font-weight: var(--font-weight-medium);
-}
-
-.register-link {
-  text-align: center;
+.register-text {
   color: var(--color-text-muted);
   font-size: 0.875rem;
-  margin-top: var(--spacing-lg);
 }
 
-/* Демо кнопка (можно убрать в продакшене) */
-.demo-button {
-  background: var(--color-secondary-soft);
-  color: var(--color-secondary);
-  border: 1px solid var(--color-secondary-muted);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+.register-action {
+  font-weight: 600;
+}
+
+/* Error Styles */
+.form-error {
+  display: flex;
+  align-items: center;
+  color: var(--color-error);
   font-size: 0.75rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  margin-top: var(--spacing-md);
-}
-
-.demo-button:hover {
-  background: var(--color-secondary-muted);
+  font-weight: 500;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-error-soft);
+  border-radius: 8px;
+  border-left: 3px solid var(--color-error);
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
   .login-container {
-    padding: var(--spacing-md);
+    padding: 1rem;
   }
 
   .login-card {
-    padding: var(--spacing-xl);
+    padding: 2rem;
+    margin: 1rem;
   }
 
   .login-title {
     font-size: 1.75rem;
   }
 
-  .form-options {
+  .social-login {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .beauty-social {
+    flex-direction: row;
+    justify-content: flex-start;
+    height: auto;
+    padding: 0.75rem 1rem;
+  }
+
+  .beauty-register {
     flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
+    gap: 0.5rem;
+    text-align: center;
   }
 }
 
 @media (max-width: 480px) {
   .login-card {
-    padding: var(--spacing-lg);
-    margin: var(--spacing-sm);
+    padding: 1.5rem;
   }
 
   .login-title {
     font-size: 1.5rem;
   }
 
-  .social-button {
-    font-size: 0.8rem;
-    padding: var(--spacing-sm);
+  .floating-input {
+    height: 52px;
+  }
+
+  .beauty-button {
+    height: 52px;
   }
 }
 </style>

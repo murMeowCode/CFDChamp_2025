@@ -12,60 +12,60 @@
         <!-- ФИО - в одной строке -->
         <div class="form-row">
           <div class="form-group">
-            <label for="lastName" class="form-label">Фамилия *</label>
+            <label for="last_name" class="form-label">Фамилия *</label>
             <input
-              id="lastName"
-              v-model="form.lastName"
+              id="last_name"
+              v-model="form.last_name"
               type="text"
               class="form-input"
-              :class="{ 'form-input--error': errors.lastName }"
+              :class="{ 'form-input--error': errors.last_name }"
               placeholder="Иванов"
               required
             />
-            <span v-if="errors.lastName" class="form-error">{{ errors.lastName }}</span>
+            <span v-if="errors.last_name" class="form-error">{{ errors.last_name }}</span>
           </div>
 
           <div class="form-group">
-            <label for="firstName" class="form-label">Имя *</label>
+            <label for="first_name" class="form-label">Имя *</label>
             <input
-              id="firstName"
-              v-model="form.firstName"
+              id="first_name"
+              v-model="form.first_name"
               type="text"
               class="form-input"
-              :class="{ 'form-input--error': errors.firstName }"
+              :class="{ 'form-input--error': errors.first_name }"
               placeholder="Иван"
               required
             />
-            <span v-if="errors.firstName" class="form-error">{{ errors.firstName }}</span>
+            <span v-if="errors.first_name" class="form-error">{{ errors.first_name }}</span>
           </div>
 
           <div class="form-group">
-            <label for="middleName" class="form-label">Отчество</label>
+            <label for="middle_Name" class="form-label">Отчество</label>
             <input
-              id="middleName"
-              v-model="form.middleName"
+              id="middle_Name"
+              v-model="form.middle_Name"
               type="text"
               class="form-input"
-              :class="{ 'form-input--error': errors.middleName }"
+              :class="{ 'form-input--error': errors.middle_Name }"
               placeholder="Иванович"
             />
-            <span v-if="errors.middleName" class="form-error">{{ errors.middleName }}</span>
+            <span v-if="errors.middle_Name" class="form-error">{{ errors.middle_Name }}</span>
           </div>
         </div>
 
         <!-- Основные поля -->
         <div class="form-group">
-          <label for="login" class="form-label">Логин *</label>
+          <label for="username" class="form-label">Логин *</label>
           <input
-            id="login"
-            v-model="form.login"
+            id="username"
+            v-model="form.username"
             type="text"
             class="form-input"
-            :class="{ 'form-input--error': errors.login }"
+            :class="{ 'form-input--error': errors.username }"
             placeholder="Придумайте логин"
             required
           />
-          <span v-if="errors.login" class="form-error">{{ errors.login }}</span>
+          <span v-if="errors.username" class="form-error">{{ errors.username }}</span>
         </div>
 
         <div class="form-group">
@@ -82,17 +82,67 @@
           <span v-if="errors.email" class="form-error">{{ errors.email }}</span>
         </div>
 
+        <!-- Телефон и дата рождения в одной строке -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone" class="form-label">Номер телефона *</label>
+            <input
+              id="phone"
+              v-model="form.phone"
+              type="tel"
+              class="form-input"
+              :class="{ 'form-input--error': errors.phone }"
+              placeholder="+7 (999) 999-99-99"
+              required
+            />
+            <span v-if="errors.phone" class="form-error">{{ errors.phone }}</span>
+          </div>
+
+          <div class="form-group">
+            <label for="birth_Date" class="form-label">Дата рождения *</label>
+            <input
+              id="birth_Date"
+              v-model="form.birth_Date"
+              type="date"
+              class="form-input"
+              :class="{ 'form-input--error': errors.birth_Date }"
+              required
+            />
+            <span v-if="errors.birth_Date" class="form-error">{{ errors.birth_Date }}</span>
+          </div>
+        </div>
+
+        <!-- Адрес -->
         <div class="form-group">
-          <label for="birthDate" class="form-label">Дата рождения *</label>
+          <label for="address" class="form-label">Адрес *</label>
           <input
-            id="birthDate"
-            v-model="form.birthDate"
-            type="date"
+            id="address"
+            v-model="form.address"
+            type="text"
             class="form-input"
-            :class="{ 'form-input--error': errors.birthDate }"
+            :class="{ 'form-input--error': errors.address }"
+            placeholder="Город, улица, дом, квартира"
             required
           />
-          <span v-if="errors.birthDate" class="form-error">{{ errors.birthDate }}</span>
+          <span v-if="errors.address" class="form-error">{{ errors.address }}</span>
+        </div>
+
+        <!-- Роль -->
+        <div class="form-group">
+          <label for="role" class="form-label">Роль *</label>
+          <select
+            id="role"
+            v-model="form.role"
+            class="form-input"
+            :class="{ 'form-input--error': errors.role }"
+            required
+          >
+            <option value="" disabled selected>Выберите роль</option>
+            <option value="role1">Роль 1</option>
+            <option value="role2">Роль 2</option>
+            <option value="role3">Роль 3</option>
+          </select>
+          <span v-if="errors.role" class="form-error">{{ errors.role }}</span>
         </div>
 
         <!-- Пароли -->
@@ -180,7 +230,7 @@
         <!-- Ссылка на вход -->
         <div class="login-link">
           Уже есть аккаунт? 
-          <RouterLink :to="{ name:  'login' }" class="link link--primary">Войти</RouterLink>
+          <RouterLink :to="{ name: 'login' }" class="link link--primary">Войти</RouterLink>
         </div>
       </form>
     </div>
@@ -193,12 +243,15 @@ import { RouterLink } from 'vue-router'
 
 // Состояние формы
 const form = reactive({
-  lastName: '',
-  firstName: '',
-  middleName: '',
-  login: '',
+  last_name: '',
+  first_name: '',
+  middle_Name: '',
+  username: '',
   email: '',
-  birthDate: '',
+  birth_Date: '',
+  phone: '',
+  address: '',
+  role: '',
   password: '',
   confirmPassword: '',
   agreement: false
@@ -206,12 +259,15 @@ const form = reactive({
 
 // Ошибки валидации
 const errors = reactive({
-  lastName: '',
-  firstName: '',
-  middleName: '',
-  login: '',
+  last_name: '',
+  first_name: '',
+  middle_Name: '',
+  username: '',
   email: '',
-  birthDate: '',
+  birth_Date: '',
+  phone: '',
+  address: '',
+  role: '',
   password: '',
   confirmPassword: ''
 })
@@ -231,22 +287,22 @@ const validateForm = () => {
   })
 
   // Валидация ФИО
-  if (!form.lastName.trim()) {
-    errors.lastName = 'Фамилия обязательна'
+  if (!form.last_name.trim()) {
+    errors.last_name = 'Фамилия обязательна'
     isValid = false
   }
 
-  if (!form.firstName.trim()) {
-    errors.firstName = 'Имя обязательно'
+  if (!form.first_name.trim()) {
+    errors.first_name = 'Имя обязательно'
     isValid = false
   }
 
   // Валидация логина
-  if (!form.login.trim()) {
-    errors.login = 'Логин обязателен'
+  if (!form.username.trim()) {
+    errors.username = 'Логин обязателен'
     isValid = false
-  } else if (form.login.length < 3) {
-    errors.login = 'Логин должен содержать минимум 3 символа'
+  } else if (form.username.length < 3) {
+    errors.username = 'Логин должен содержать минимум 3 символа'
     isValid = false
   }
 
@@ -260,23 +316,48 @@ const validateForm = () => {
     isValid = false
   }
 
+  // Валидация телефона
+  const phoneRegex = /^(\+7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/
+  if (!form.phone.trim()) {
+    errors.phone = 'Номер телефона обязателен'
+    isValid = false
+  } else if (!phoneRegex.test(form.phone.replace(/\s/g, ''))) {
+    errors.phone = 'Введите корректный номер телефона'
+    isValid = false
+  }
+
   // Валидация даты рождения
-  if (!form.birthDate) {
-    errors.birthDate = 'Дата рождения обязательна'
+  if (!form.birth_Date) {
+    errors.birth_Date = 'Дата рождения обязательна'
     isValid = false
   } else {
-    const birthDate = new Date(form.birthDate)
+    const birth_Date = new Date(form.birth_Date)
     const today = new Date()
     const minDate = new Date()
     minDate.setFullYear(today.getFullYear() - 100)
     
-    if (birthDate > today) {
-      errors.birthDate = 'Дата рождения не может быть в будущем'
+    if (birth_Date > today) {
+      errors.birth_Date = 'Дата рождения не может быть в будущем'
       isValid = false
-    } else if (birthDate < minDate) {
-      errors.birthDate = 'Проверьте корректность даты рождения'
+    } else if (birth_Date < minDate) {
+      errors.birth_Date = 'Проверьте корректность даты рождения'
       isValid = false
     }
+  }
+
+  // Валидация адреса
+  if (!form.address.trim()) {
+    errors.address = 'Адрес обязателен'
+    isValid = false
+  } else if (form.address.length < 5) {
+    errors.address = 'Адрес должен содержать минимум 5 символов'
+    isValid = false
+  }
+
+  // Валидация роли
+  if (!form.role) {
+    errors.role = 'Выберите роль'
+    isValid = false
   }
 
   // Валидация пароля
@@ -456,6 +537,16 @@ const handleSubmit = async () => {
 .password-toggle:hover {
   color: var(--color-primary);
   background: var(--color-primary-soft);
+}
+
+/* Стили для select */
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23666' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 40px;
 }
 
 /* Чекбокс */
