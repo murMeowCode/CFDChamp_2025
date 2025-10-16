@@ -6,7 +6,6 @@
         <div class="logo-wrapper">
           <i class="pi pi-key"></i>
         </div>
-        <h1 class="forgot-password-title">Восстановление пароля</h1>
         <p class="forgot-password-subtitle">
           Введите email, и мы отправим вам ссылку для сброса пароля
         </p>
