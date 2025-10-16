@@ -392,7 +392,7 @@ const handleSocialLogin = (provider) => {
   font-size: 0.875rem;
   transition: all 0.2s ease;
   outline: none;
-  width: 100%;
+  width: 90%;
   height: 35px;
 }
 
