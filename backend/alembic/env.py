@@ -10,6 +10,7 @@ from auth_service.models.token import RefreshToken
 from auth_service.models.role_change_request import RoleChangeRequest
 from profile_service.models.profile import Profile
 from mailing_service.models.message import Message
+from common_service.models.common import Item
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config

@@ -41,15 +41,6 @@ async def lifespan(app: FastAPI):
     await auth_producer.connect()
     print("✅ RabbitMQ producer подключен")
 
-    # # Инициализация RabbitMQ consumer
-    # async with AsyncSessionLocal() as db:
-    #     profile_service = ProfileService(db, file_service)
-    #     consumer = ProfileConsumer(settings.RABBITMQ_URL, profile_service)
-    #     await consumer.connect()
-    #     print("✅ RabbitMQ consumer подключен")
-
-    #     app.state.consumer = consumer
-
     yield
 
     # Завершение работы
