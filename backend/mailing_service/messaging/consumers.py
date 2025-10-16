@@ -1,8 +1,8 @@
 """Потребитель RabbitMQ для сервиса рассылки"""  # pylint: disable=W1203, E0401, W0718, C0301
 import json
 import logging
-import aio_pika
 import traceback
+import aio_pika
 from shared.messaging.consumers import BaseConsumer
 from mailing_service.celery_mail.tasks import process_notification_task
 
