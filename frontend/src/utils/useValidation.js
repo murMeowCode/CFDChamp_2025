@@ -10,7 +10,7 @@ export function useValidation() {
     address: '',
     role: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   })
   const formSubmitted = reactive({ value: false })
 
@@ -54,7 +54,8 @@ export function useValidation() {
     }
 
     // Валидация телефона
-    const phoneRegex = /^(\+7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/
+    const phoneRegex =
+      /^(\+7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/
     if (!form.phone?.trim()) {
       errors.phone = 'Номер телефона обязателен'
       isValid = false
@@ -121,6 +122,6 @@ export function useValidation() {
   return {
     errors,
     formSubmitted,
-    validateForm
+    validateForm,
   }
 }

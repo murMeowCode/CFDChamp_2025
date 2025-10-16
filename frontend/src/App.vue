@@ -1,10 +1,8 @@
 <script setup>
 import MainHead from './components/Header/MainHead.vue'
-
 </script>
 
 <template>
- 
   <div class="app">
     <MainHead />
     <div class="page-container">
@@ -25,6 +23,4 @@ import MainHead from './components/Header/MainHead.vue'
   max-width: 1200px;
   margin: 0 auto;
 }
-
-
 </style>

@@ -194,6 +194,7 @@
 import { ref, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/useUserStore'
+import { useNotificationsStore } from '@/stores/useToastStore'
 // Состояние формы
 const form = reactive({
   username: '',
@@ -207,7 +208,7 @@ const errors = reactive({
   username: '',
   password: '',
 })
-
+const toast = useNotificationsStore()
 // Состояние UI
 const showPassword = ref(false)
 const isSubmitting = ref(false)
@@ -273,15 +274,16 @@ const handleSubmit = async () => {
       username: form.username,
       password: form.password,
     })
+    toast.success('Вошли успешно')
     // Здесь будет реальный API вызов
     console.log('Вход выполнен:', {
       username: form.username,
       password: form.password,
     })
-    router.push({name:'home'})
+    router.push({ name: 'home' })
   } catch (error) {
     console.error('Ошибка входа:', error)
-
+    toast.error('Не вошли')
     if (error.message?.includes('credentials')) {
       errors.username = 'Неверный логин или пароль'
       errors.password = 'Неверный логин или пароль'

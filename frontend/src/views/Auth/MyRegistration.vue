@@ -1,5 +1,4 @@
 <template>
-
   <div class="register-container" data-aos="flip-right">
     <div class="register-card">
       <!-- Заголовок -->
@@ -376,11 +375,10 @@ import { ref, reactive, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useValidation } from '@/utils/useValidation'
+import { useNotificationsStore } from '@/stores/useToastStore'
 
-import { useToast } from 'vue-toastification'
+const toast = useNotificationsStore()
 
-const toast = useToast()
-import { Notivue, Notification,push } from 'notivue'
 // Список ролей
 const roles = [
   {
@@ -399,10 +397,10 @@ const roles = [
     description: 'Полный доступ',
   },
 ]
-const {errors,formSubmitted,validateForm} = useValidation()
+const { errors, formSubmitted, validateForm } = useValidation()
 const router = useRouter()
 // Состояние формы
- const form = reactive({
+const form = reactive({
   last_name: '',
   first_name: '',
   middle_Name: '',
@@ -416,18 +414,14 @@ const router = useRouter()
   confirmPassword: '',
 })
 
-
-
 // Состояние UI
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const isSubmitting = ref(false)
 
-
 const useUser = useUserStore()
 
 // Валидация формы
-
 
 // Обработчик отправки формы
 const handleSubmit = async () => {
@@ -439,17 +433,16 @@ const handleSubmit = async () => {
 
   try {
     // Имитация API запроса
-  
+
     await new Promise((resolve) => setTimeout(resolve, 2000))
     useUser.setUser(form)
-toast.success('УРа')
-
+    toast.success('вошли')
 
     router.push({ name: 'home' })
     formSubmitted.value = false
   } catch (error) {
     console.error('Ошибка регистрации:', error)
-  toast.error('УРа')
+    toast.error('ошибка')
   } finally {
     isSubmitting.value = false
   }
