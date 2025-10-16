@@ -21,11 +21,12 @@ async def lifespan(_: FastAPI):
 
     auth_producer = AuthProducer(settings.RABBITMQ_URL)
     await auth_producer.connect()
+    print("✅ RabbitMQ producer подключен")
 
     mail_consumer = MailingConsumer(rabbitmq_url=settings.RABBITMQ_URL)
     try:
         await mail_consumer.connect()
-        logger.info("Successfully connected to RabbitMQ")
+        print("✅ RabbitMQ consumer подключен")
     except Exception as e:
         logger.error(f"Failed to connect to RabbitMQ: {e}")
 
