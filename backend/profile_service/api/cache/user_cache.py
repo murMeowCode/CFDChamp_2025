@@ -15,26 +15,14 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
 
             user_id = None
 
-            # Способ 1: Ищем user_id в kwargs (из Depends)
-            if 'user' in kwargs and isinstance(kwargs['user'], dict) and 'user_id' in kwargs['user']:
-                user_id = kwargs['user']['user_id']
-                cache_key+=str(user_id)
-                print(f"🔑 User_id найден в kwargs: {user_id}")
-
-            # Способ 2: Ищем user_id в args
-            if not user_id:
-                for arg in args:
-                    if isinstance(arg, dict) and 'user_id' in arg:
-                        user_id = arg['user_id']
-                        print(f"🔑 User_id найден в args: {user_id}")
-                        break
-
-            # Способ 3: Для эндпоинта /all используем специальный ключ
             if func.__name__ == 'get_all_users':
                 cache_key += "all"
                 print("🏢 Кэш для всех пользователей")
+            elif 'user' in kwargs and isinstance(kwargs['user'], dict) and 'user_id' in kwargs['user']:
+                user_id = kwargs['user']['user_id']
+                cache_key += str(user_id)
+                print(f"🔑 User_id найден в kwargs: {user_id}")
 
-            # Логирование попытки получения из кэша
             print(f"🔍 Поиск в кэше: {cache_key}")
 
             cached_data = await redis.get(cache_key)
@@ -42,27 +30,42 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
                 print(f"✅ Данные получены из кэша: {cache_key}")
                 try:
                     data = json.loads(cached_data)
+
                     if isinstance(data, list):
                         print(f"📋 Получен список из {len(data)} элементов из кэша")
                     else:
                         print("📄 Получен одиночный объект из кэша")
+
                     return data
                 except json.JSONDecodeError as e:
                     print(f"❌ Ошибка десериализации кэша: {e}")
             else:
                 print(f"❌ Данных нет в кэше: {cache_key}")
 
-            # Выполнение оригинальной функции
             print(f"🔄 Выполнение функции {func.__name__}")
             result = await func(*args, **kwargs)
 
-            # Сохранение в кэш
             try:
-                if hasattr(result, '__iter__') and not isinstance(result, (str, bytes)):
-                    serializable_result = [item.dict() if hasattr(item, 'dict') else item for item in result]
+                # Универсальная функция сериализации для Pydantic моделей
+                def serialize_model(model):
+                    """Сериализует Pydantic модель в словарь."""
+                    if hasattr(model, 'model_dump'):
+                        # Pydantic v2
+                        return model.model_dump(mode='json')
+                    elif hasattr(model, 'dict'):
+                        # Pydantic v1
+                        return model.dict()
+                    else:
+                        return model
+
+                # Сериализуем результат в зависимости от типа
+                if isinstance(result, list):
+                    # Для списков
+                    serializable_result = [serialize_model(item) for item in result]
                     print(f"📦 Сохранение списка из {len(serializable_result)} элементов в кэш")
                 else:
-                    serializable_result = result.dict() if hasattr(result, 'dict') else result
+                    # Для одиночных объектов
+                    serializable_result = serialize_model(result)
                     print("📄 Сохранение одиночного объекта в кэш")
 
                 await redis.setex(
