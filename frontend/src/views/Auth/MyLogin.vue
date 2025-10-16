@@ -1,5 +1,5 @@
 <template>
-<div class="login-container">
+  <div class="login-container">
     <div class="login-card">
       <!-- Заголовок -->
       <div class="login-header">
@@ -29,11 +29,11 @@
               @focus="handleInputFocus"
               @blur="handleInputBlur"
             />
-            <label 
-              for="username" 
+            <label
+              for="username"
               class="floating-label"
               :class="{
-                'floating-label--active': form.username || isFocused.username
+                'floating-label--active': form.username || isFocused.username,
               }"
             >
               <i class="pi pi-user"></i>
@@ -64,11 +64,11 @@
               @focus="handleInputFocus"
               @blur="handleInputBlur"
             />
-            <label 
-              for="password" 
+            <label
+              for="password"
               class="floating-label"
               :class="{
-                'floating-label--active': form.password || isFocused.password
+                'floating-label--active': form.password || isFocused.password,
               }"
             >
               <i class="pi pi-lock"></i>
@@ -192,15 +192,16 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { RouterLink } from 'vue-router'
-
+import { RouterLink, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/useUserStore'
 // Состояние формы
 const form = reactive({
   username: '',
   password: '',
   rememberMe: false,
 })
-
+const router = useRouter()
+const useUser = useUserStore()
 // Ошибки валидации
 const errors = reactive({
   username: '',
@@ -268,12 +269,16 @@ const handleSubmit = async () => {
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 1500))
-
+    useUser.setUser({
+      username: form.username,
+      password: form.password,
+    })
     // Здесь будет реальный API вызов
     console.log('Вход выполнен:', {
       username: form.username,
-      rememberMe: form.rememberMe,
+      password: form.password,
     })
+    router.push({name:'home'})
   } catch (error) {
     console.error('Ошибка входа:', error)
 
