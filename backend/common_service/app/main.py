@@ -9,9 +9,9 @@ from shared.utils.redis_client import RedisManager
 from shared.messaging.producers import AuthProducer
 from shared.database.database import AsyncSessionLocal
 from shared.config.base import settings
-from profile_service.messaging.consumers import ProfileConsumer
+# from profile_service.messaging.consumers import ProfileConsumer
 from common_service.services.service import ProfileService
-from common_service.api.endpoints.common import router as profile_router
+from common_service.api.endpoints.common import router as common_router
 from common_service.services.file_service import FileService
 from fastapi import FastAPI
 
@@ -41,14 +41,14 @@ async def lifespan(app: FastAPI):
     await auth_producer.connect()
     print("✅ RabbitMQ producer подключен")
 
-    # Инициализация RabbitMQ consumer
-    async with AsyncSessionLocal() as db:
-        profile_service = ProfileService(db, file_service)
-        consumer = ProfileConsumer(settings.RABBITMQ_URL, profile_service)
-        await consumer.connect()
-        print("✅ RabbitMQ consumer подключен")
+    # # Инициализация RabbitMQ consumer
+    # async with AsyncSessionLocal() as db:
+    #     profile_service = ProfileService(db, file_service)
+    #     consumer = ProfileConsumer(settings.RABBITMQ_URL, profile_service)
+    #     await consumer.connect()
+    #     print("✅ RabbitMQ consumer подключен")
 
-        app.state.consumer = consumer
+    #     app.state.consumer = consumer
 
     yield
 
@@ -56,19 +56,19 @@ async def lifespan(app: FastAPI):
     await redis_manager.close_connections()
     print("✅ Redis соединения закрыты")
 
-    await consumer.close()
-    print("✅ RabbitMQ consumer отключен")
+    # await consumer.close()
+    # print("✅ RabbitMQ consumer отключен")
 
 
 app = FastAPI(
-    title="Profile Service",
-    description="Service for managing user profiles",
+    title="Common Service",
+    description="Common Service",
     lifespan=lifespan
 )
 
-app.include_router(profile_router, prefix="/common")
+app.include_router(common_router, prefix="/common")
 
 @app.get("/health")
 async def health_check():
     """ручка проверки работоспособности"""
-    return {"status": "healthy", "service": "profile_service"}
+    return {"status": "healthy", "service": "common_service"}
