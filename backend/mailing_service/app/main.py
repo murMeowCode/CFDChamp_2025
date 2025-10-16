@@ -33,7 +33,7 @@ async def lifespan(_: FastAPI):
 
     await mail_consumer.close()
 
-app = FastAPI(title="CFDChamp API",lifespan=lifespan)
+app = FastAPI(title="Mailing Service",lifespan=lifespan)
 app.include_router(mailing_router)
 
 @app.get("/health")
