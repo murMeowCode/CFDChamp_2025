@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
+from shared.utils.redis_client import RedisManager
 from shared.messaging.producers import AuthProducer
 from shared.database.database import AsyncSessionLocal
 from shared.config.base import settings
@@ -22,6 +23,9 @@ from fastapi import FastAPI
 async def lifespan(app: FastAPI):
     """функция инициализации"""
 
+    redis_manager = RedisManager()
+    await redis_manager.get_cache_client()
+
     auth_producer = AuthProducer(settings.RABBITMQ_URL)
     await auth_producer.connect()
 
@@ -37,6 +41,7 @@ async def lifespan(app: FastAPI):
 
     yield
 
+    await redis_manager.close_connections()
     await consumer.close()
 
 
