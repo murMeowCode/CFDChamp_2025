@@ -20,13 +20,10 @@ class RedisManager:
     async def get_cache_client(self) -> Redis:
         """Get async Redis client for caching."""
         if self._cache_client is None:
-            print(f"""🔄 Создание Redis клиента: {self.host}:{self.port},
-                  DB: {settings.REDIS_DB_CACHE}, PWD: {self.password}""")
             self._cache_client = Redis(
                 host=self.host,
                 port=self.port,
                 db=settings.REDIS_DB_CACHE,
-                #password=self.password,
                 decode_responses=True,
                 socket_connect_timeout=5,
                 socket_timeout=5,
@@ -41,7 +38,6 @@ class RedisManager:
                 host=self.host,
                 port=self.port,
                 db=settings.REDIS_DB_CELERY,
-                password=self.password,
                 decode_responses=True,
                 socket_connect_timeout=5,
                 socket_timeout=5,
