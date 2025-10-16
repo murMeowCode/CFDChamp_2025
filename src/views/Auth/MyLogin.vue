@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+<div class="login-container">
     <div class="login-card">
       <!-- Заголовок -->
       <div class="login-header">
@@ -22,13 +22,20 @@
               class="form-input floating-input"
               :class="{
                 'form-input--error': errors.username,
-                'form-input--filled': form.username,
               }"
               placeholder=" "
               required
               autocomplete="username"
+              @focus="handleInputFocus"
+              @blur="handleInputBlur"
             />
-            <label for="username" class="floating-label">
+            <label 
+              for="username" 
+              class="floating-label"
+              :class="{
+                'floating-label--active': form.username || isFocused.username
+              }"
+            >
               <i class="pi pi-user"></i>
               Логин или Email
             </label>
@@ -50,13 +57,20 @@
               class="form-input floating-input"
               :class="{
                 'form-input--error': errors.password,
-                'form-input--filled': form.password,
               }"
               placeholder=" "
               required
               autocomplete="current-password"
+              @focus="handleInputFocus"
+              @blur="handleInputBlur"
             />
-            <label for="password" class="floating-label">
+            <label 
+              for="password" 
+              class="floating-label"
+              :class="{
+                'floating-label--active': form.password || isFocused.password
+              }"
+            >
               <i class="pi pi-lock"></i>
               Пароль
             </label>
@@ -82,7 +96,6 @@
             {{ errors.password }}
           </span>
         </div>
-
         <!-- Запомнить меня -->
         <div class="form-options">
           <div class="beauty-checkbox">
@@ -198,6 +211,23 @@ const errors = reactive({
 const showPassword = ref(false)
 const isSubmitting = ref(false)
 
+// Отслеживание фокуса для каждого поля
+const isFocused = reactive({
+  username: false,
+  password: false,
+})
+
+// Обработчики фокуса
+const handleInputFocus = (event) => {
+  const fieldName = event.target.id
+  isFocused[fieldName] = true
+}
+
+const handleInputBlur = (event) => {
+  const fieldName = event.target.id
+  isFocused[fieldName] = false
+}
+
 // Валидация формы
 const validateForm = () => {
   let isValid = true
@@ -244,9 +274,6 @@ const handleSubmit = async () => {
       username: form.username,
       rememberMe: form.rememberMe,
     })
-
-    // Успешный вход
-    alert('Вход выполнен успешно!')
   } catch (error) {
     console.error('Ошибка входа:', error)
 
@@ -368,10 +395,6 @@ const handleSocialLogin = (provider) => {
   box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
-.floating-input--filled {
-  border-color: var(--color-primary-muted);
-}
-
 .floating-input--error {
   border-color: var(--color-error);
   background: var(--color-error-soft);
@@ -397,13 +420,29 @@ const handleSocialLogin = (provider) => {
   opacity: 0.7;
 }
 
+/* Ключевое изменение: лейбл остается сверху когда есть значение ИЛИ поле в фокусе */
 .floating-input:focus + .floating-label,
-.floating-input--filled + .floating-label {
+.floating-label--active {
   top: 0.5rem;
   transform: none;
   font-size: 0.75rem;
   color: var(--color-primary);
   font-weight: 500;
+}
+
+.input-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+
+.floating-input:focus ~ .input-decoration {
+  transform: scaleX(1);
 }
 
 .input-decoration {

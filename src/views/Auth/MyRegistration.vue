@@ -341,34 +341,6 @@
           </div>
         </div>
 
-        <!-- Соглашение -->
-        <div class="form-options">
-          <div class="beauty-checkbox">
-            <input
-              id="agreement"
-              v-model="form.agreement"
-              type="checkbox"
-              class="checkbox-input"
-              required
-            />
-            <label for="agreement" class="checkbox-label">
-              <div class="checkbox-decoration">
-                <i class="pi pi-check"></i>
-              </div>
-              <span class="checkbox-text">
-                Я соглашаюсь с
-                <a href="#" class="beauty-link">условиями использования</a>
-                и
-                <a href="#" class="beauty-link">политикой конфиденциальности</a>
-              </span>
-            </label>
-          </div>
-          <span v-if="!form.agreement && formSubmitted" class="form-error">
-            <i class="pi pi-exclamation-circle"></i>
-            Необходимо принять условия
-          </span>
-        </div>
-
         <!-- Кнопка отправки -->
         <button
           type="submit"
@@ -438,7 +410,7 @@ const form = reactive({
   role: '',
   password: '',
   confirmPassword: '',
-  agreement: false,
+
 })
 
 // Ошибки валидации
@@ -566,10 +538,7 @@ const validateForm = () => {
     isValid = false
   }
 
-  // Соглашение
-  if (!form.agreement) {
-    isValid = false
-  }
+
 
   return isValid
 }
@@ -591,17 +560,6 @@ const handleSubmit = async () => {
       ...form,
       // Не логируем реальный пароль
     })
-
-    // Успешная регистрация
-    alert('Регистрация успешно завершена!')
-
-    // Сброс формы
-    Object.keys(form).forEach((key) => {
-      if (key !== 'agreement') {
-        form[key] = ''
-      }
-    })
-    form.agreement = false
     formSubmitted.value = false
   } catch (error) {
     console.error('Ошибка регистрации:', error)
