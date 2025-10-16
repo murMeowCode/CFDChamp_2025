@@ -30,7 +30,18 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
             cached_data = await redis.get(cache_key)
             if cached_data:
                 print(f"✅ Данные получены из кэша: {cache_key}")
-                return json.loads(cached_data)
+                try:
+                    # Десериализуем данные
+                    data = json.loads(cached_data)
+                    # Проверяем, является ли результат списком
+                    if isinstance(data, list):
+                        print(f"📋 Получен список из {len(data)} элементов из кэша")
+                    else:
+                        print(f"📄 Получен одиночный объект из кэша")
+                    return data
+                except json.JSONDecodeError as e:
+                    print(f"❌ Ошибка десериализации кэша: {e}")
+                    # Если ошибка десериализации, выполняем функцию заново
             else:
                 print(f"❌ Данных нет в кэше: {cache_key}")
 
@@ -40,13 +51,20 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
 
             # Сохранение в кэш
             try:
+                # Сериализуем результат
+                if hasattr(result, '__iter__') and not isinstance(result, (str, bytes)):
+                    # Если результат итерируемый (список, кортеж и т.д.)
+                    serializable_result = [item.dict() if hasattr(item, 'dict') else item for item in result]
+                    print(f"📦 Сохранение списка из {len(serializable_result)} элементов в кэш")
+                else:
+                    # Одиночный объект
+                    serializable_result = result.dict() if hasattr(result, 'dict') else result
+                    print(f"📄 Сохранение одиночного объекта в кэш")
+                
                 await redis.setex(
                     cache_key, 
                     ttl, 
-                    json.dumps(
-                        result if not hasattr(result, 'dict') else result.dict(),
-                        default=str
-                    )
+                    json.dumps(serializable_result, default=str)
                 )
                 print(f"💾 Данные сохранены в кэш: {cache_key} (TTL: {ttl}сек)")
             except Exception as e:
