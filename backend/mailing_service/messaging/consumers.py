@@ -3,7 +3,7 @@ import json
 import logging
 import aio_pika
 from shared.messaging.consumers import BaseConsumer
-from mailing_service.celery.tasks import process_notification_task
+from mailing_service.celery_mail.tasks import process_notification_task
 
 
 

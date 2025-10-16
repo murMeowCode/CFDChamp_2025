@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     REDIS_DB_CELERY: int = 1
     REDIS_PASSWORD: str = "redis_311."
 
+    #Celery
+    CELERY_BROKER_URL: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_CELERY}"
+    CELERY_RESULT_BACKEND: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_CELERY}"
+
     class Config:
         """импорт из файла среды"""
         env_file = ".env"

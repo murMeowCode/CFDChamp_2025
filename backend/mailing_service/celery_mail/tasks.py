@@ -1,7 +1,7 @@
 """задачи для Celery""" #pylint: disable=E0401, W1203
 import logging
 import asyncio
-from celery import celery_app
+from mailing_service.celery_mail import celery_app
 from shared.database.database import AsyncSessionLocal
 from mailing_service.services.email_service import email_service
 from mailing_service.services.message_service import MessageService
