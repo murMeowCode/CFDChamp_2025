@@ -1,6 +1,11 @@
-"""Инициализация Celery""" #pylint: disable=W0406, E0401, W1203
+"""Инициализация Celery""" #pylint: disable=W0406, E0401, W1203, C0413
 import logging
+import os
+import sys
 from celery import Celery
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
 from shared.config.base import settings
 
 logger = logging.getLogger(__name__)
@@ -22,10 +27,8 @@ celery_app.conf.update(
 logger.info(f"Celery broker URL: {celery_app.conf.broker_url}")
 logger.info(f"Celery result backend: {celery_app.conf.result_backend}")
 
-celery_app.autodiscover_tasks(["mailing_service.celery.tasks"])
-
 # Автоматически обнаруживаем задачи
-celery_app.autodiscover_tasks(["mailing_service.celery.tasks"])
+celery_app.autodiscover_tasks(["mailing_service.celery_mail.tasks"])
 
 # Отладочная информация
 print(f"Celery broker: {celery_app.conf.broker_url}")

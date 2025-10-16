@@ -1,4 +1,4 @@
-"""основной модуль сервиса""" #pylint: disable=E0401
+"""основной модуль сервиса""" #pylint: disable=E0401, C0413, W0718, W1203
 from contextlib import asynccontextmanager
 import logging
 import os

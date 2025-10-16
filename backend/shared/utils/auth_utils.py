@@ -38,10 +38,11 @@ class AuthDependency:
             # Обрабатываем HTTP ошибки от aiohttp
             if e.status == 401:
                 raise HTTPException(status_code=401, detail="Invalid token")
-            elif e.status == 503:
+            if e.status == 503:
                 raise HTTPException(status_code=503, detail="Authentication service unavailable")
-            else:
-                raise HTTPException(status_code=e.status, detail=f"Authentication service error: {e.message}")
+
+            raise HTTPException(status_code=e.status,
+                                detail=f"Authentication service error: {e.message}")
 
         except TimeoutError:
             raise HTTPException(status_code=503, detail="Authentication service unavailable")

@@ -184,7 +184,7 @@ class MailingConsumer(BaseConsumer):
         """Красивый шаблон для уведомления об одобрении роли"""
         new_role = data.get("new_role", "новая роль")
         role_description = data.get("role_description", "дополнительные возможности платформы")
-        
+
         return f"""
         <!DOCTYPE html>
         <html>
@@ -265,7 +265,7 @@ class MailingConsumer(BaseConsumer):
         requested_role = data.get("requested_role", "запрашиваемая роль")
         reason = data.get("reason", "Требования к роли не выполнены")
         contact_support = data.get("contact_support", True)
-        
+
         return f"""
         <!DOCTYPE html>
         <html>

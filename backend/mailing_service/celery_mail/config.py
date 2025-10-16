@@ -21,8 +21,8 @@ class CeleryConfig:
 
     # Роутинг задач
     task_routes = {
-        "mailing_service.celery.tasks.send_email_task": {"queue": "mailing_queue"},
-        "mailing_service.celery.tasks.process_notification_task": {"queue": "mailing_queue"},
+        "mailing_service.celery_mail.tasks.send_email_task": {"queue": "mailing_queue"},
+        "mailing_service.celery_mail.tasks.process_notification_task": {"queue": "mailing_queue"},
     }
 
     # Расписание задач (если понадобится)
