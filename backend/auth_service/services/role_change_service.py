@@ -116,7 +116,7 @@ class RoleChangeService:
         role_request.status = RoleChangeStatus.REJECTED
 
         await self.db.commit()
-        
+
         stmt = select(AuthUser).where(AuthUser.username == role_request.username)
         result = await self.db.execute(stmt)
         user = result.scalar_one_or_none()

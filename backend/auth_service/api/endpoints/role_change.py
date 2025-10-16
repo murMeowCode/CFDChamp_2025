@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth_service.models.user import AuthUser
-from shared.database.database import get_db
+from auth_service.messaging.producers import UserProducer, get_producer
 from auth_service.services.role_change_service import RoleChangeService
 from auth_service.schemas.role_change import (
     RoleChangeRequestCreate,
@@ -12,6 +12,7 @@ from auth_service.schemas.role_change import (
     RoleChangeRequestList
 )
 from auth_service.core.auth import get_current_user
+from shared.database.database import get_db
 
 REQUIRED_ROLE_FOR_REVIEW = 2
 router = APIRouter()
@@ -20,10 +21,11 @@ router = APIRouter()
 async def create_role_change_request(
     request_data: RoleChangeRequestCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: AuthUser = Depends(get_current_user)
+    current_user: AuthUser = Depends(get_current_user),
+    producer: UserProducer = Depends(get_producer)
 ):
     """Создание заявки на изменение роли"""
-    role_change_service = RoleChangeService(db)
+    role_change_service = RoleChangeService(db, producer)
 
     try:
         request = await role_change_service.create_role_change_request(current_user.username,
@@ -46,13 +48,14 @@ async def create_role_change_request(
 @router.get("/requests", response_model=RoleChangeRequestList)
 async def get_pending_requests(
     db: AsyncSession = Depends(get_db),
-    current_user: AuthUser = Depends(get_current_user)
+    current_user: AuthUser = Depends(get_current_user),
+    producer: UserProducer = Depends(get_producer)
 ):
     """Получение списка pending заявок (только для пользователей с достаточными правами)"""
     if current_user.role < REQUIRED_ROLE_FOR_REVIEW:
         raise HTTPException(status_code=403, detail="Insufficient permissions")
 
-    role_change_service = RoleChangeService(db)
+    role_change_service = RoleChangeService(db, producer)
 
     requests = await role_change_service.get_pending_requests()
 
@@ -78,10 +81,11 @@ async def get_pending_requests(
 async def approve_role_change_request(
     request_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: AuthUser = Depends(get_current_user)
+    current_user: AuthUser = Depends(get_current_user),
+    producer: UserProducer = Depends(get_producer)
 ):
     """Одобрение заявки на изменение роли"""
-    role_change_service = RoleChangeService(db)
+    role_change_service = RoleChangeService(db, producer)
 
     if current_user.role != 2:
         raise HTTPException(
@@ -102,10 +106,11 @@ async def approve_role_change_request(
 async def reject_role_change_request(
     request_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: AuthUser = Depends(get_current_user)
+    current_user: AuthUser = Depends(get_current_user),
+    producer: UserProducer = Depends(get_producer)
 ):
     """Отклонение заявки на изменение роли"""
-    role_change_service = RoleChangeService(db)
+    role_change_service = RoleChangeService(db, producer)
 
     if current_user.role != 2:
         raise HTTPException(

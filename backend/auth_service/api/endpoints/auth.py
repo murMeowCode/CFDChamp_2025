@@ -1,7 +1,7 @@
 """апи для аутентификации""" #pylint: disable=E0401, C0412
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from auth_service.messaging.producers import UserProducer
+from auth_service.messaging.producers import UserProducer, get_producer
 from auth_service.services.registration_service import RegistrationService
 from auth_service.schemas.auth import (LoginRequest, LoginResponse, RefreshTokenRequest,
 RefreshTokenResponse, UserRegisterResponse, UserResponse)
@@ -12,9 +12,7 @@ from shared.schemas.messaging import UserRegister
 
 router = APIRouter()
 
-async def get_producer(request: Request) -> UserProducer:
-    """Функция для получения глобального продюсера"""
-    return request.app.state.producer
+
 
 @router.post("/register", response_model=UserRegisterResponse)
 async def register(
