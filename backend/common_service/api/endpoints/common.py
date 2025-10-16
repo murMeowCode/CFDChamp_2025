@@ -2,10 +2,10 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from shared.database.database import get_db  # Предполагаю функцию для сессии БД
-from shared.utils.auth_utils import get_auth_dependency  # Предполагаю функцию для аутентификации
+from shared.database.database import get_db
+from shared.utils.auth_utils import get_auth_dependency
 from common_service.schemas.common import ItemResponse, ItemCreate, ItemUpdate
-from common_service.models.common import Item  # Импорт модели
+from common_service.models.common import Item
 
 router = APIRouter()
 
