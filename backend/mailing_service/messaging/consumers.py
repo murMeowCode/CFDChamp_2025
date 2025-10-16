@@ -2,6 +2,7 @@
 import json
 import logging
 import aio_pika
+import traceback
 from shared.messaging.consumers import BaseConsumer
 from mailing_service.celery_mail.tasks import process_notification_task
 
@@ -29,7 +30,7 @@ class MailingConsumer(BaseConsumer):
 
         print(f"✅ [CONSUMER {self.consumer_id}] setup_queues() COMPLETED")
         print(f"✅ [CONSUMER {self.consumer_id}] Listening on: {self.queue_name}")
-        print(f"✅ [CONSUMER {self.consumer_id}] Exchange: {self.exchange_name}") 
+        print(f"✅ [CONSUMER {self.consumer_id}] Exchange: {self.exchange_name}")
         print(f"✅ [CONSUMER {self.consumer_id}] Routing: notification.*")
 
     async def handle_notification(self, message: aio_pika.IncomingMessage):
@@ -47,7 +48,6 @@ class MailingConsumer(BaseConsumer):
                 print("❌ Failed to process notification")
         except Exception as e:
             print(f"💥 Error in handle_notification: {e}")
-            import traceback
             traceback.print_exc()
 
     async def _process_notification(self, message: aio_pika.IncomingMessage):
