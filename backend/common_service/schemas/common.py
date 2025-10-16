@@ -1,37 +1,20 @@
-"""схемы работы с профилем"""
-from uuid import UUID
-from datetime import date
+# item_service/schemas/item.py
+from pydantic import BaseModel, Field
 from typing import Optional
-from pydantic import BaseModel
 
-class ProfileBase(BaseModel):
-    """базовая схема профиля"""
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    birth_date: Optional[date] = None
-    avatar_filename: Optional[str] = None
-    phone: Optional[str] = None
-    address: Optional[str] = None
+class ItemBase(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255, description="Название элемента")
+    description: Optional[str] = Field(None, max_length=1000, description="Описание элемента")
 
-class ProfileResponse(ProfileBase):
-    """ответ на действие с профилем"""
-    user_id: UUID
+class ItemCreate(ItemBase):
+    pass
+
+class ItemUpdate(BaseModel):
+    title: Optional[str] = Field(None, min_length=1, max_length=255, description="Название элемента")
+    description: Optional[str] = Field(None, max_length=1000, description="Описание элемента")
+
+class ItemResponse(ItemBase):
+    id: int = Field(..., description="Уникальный идентификатор элемента")
 
     class Config:
-        """переход в режим ORM"""
         from_attributes = True
-
-class ProfileUpdate(ProfileBase):
-    """схема обновления профиля"""
-
-    class Config:
-        """исключение служебного поля"""
-        fields = {
-            'avatar_filename': {'exclude': True}
-        }
-
-class AvatarUploadResponse(BaseModel):
-    """Ответ после загрузки аватарки"""
-    avatar_url: str
-    filename: str

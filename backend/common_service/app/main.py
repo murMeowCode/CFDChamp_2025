@@ -11,7 +11,7 @@ from shared.database.database import AsyncSessionLocal
 from shared.config.base import settings
 from profile_service.messaging.consumers import ProfileConsumer
 from common_service.services.service import ProfileService
-from profile_service.api.endpoints.profiles import router as profile_router
+from common_service.api.endpoints.common import router as profile_router
 from common_service.services.file_service import FileService
 from fastapi import FastAPI
 
