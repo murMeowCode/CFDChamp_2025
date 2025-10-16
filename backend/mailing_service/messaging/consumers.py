@@ -15,28 +15,45 @@ class MailingConsumer(BaseConsumer):
     def __init__(self, rabbitmq_url: str, exchange_name: str = "auth_exchange"):
         super().__init__(rabbitmq_url, exchange_name)
         self.queue_name = "mailing_queue"
+        self.consumer_id = id(self)  # Уникальный ID для отладки
 
     async def setup_queues(self):
         """Настройка очередей для mailing service"""
+        print(f"🎯 [CONSUMER {self.consumer_id}] STARTING setup_queues()")
+
         queue = await self.declare_and_bind_queue(
             queue_name=self.queue_name,
             routing_key="notification.*"
         )
         await queue.consume(self.handle_notification)
-        logger.info(f"MailingConsumer started listening on queue: {self.queue_name}")
+
+        print(f"✅ [CONSUMER {self.consumer_id}] setup_queues() COMPLETED")
+        print(f"✅ [CONSUMER {self.consumer_id}] Listening on: {self.queue_name}")
+        print(f"✅ [CONSUMER {self.consumer_id}] Exchange: {self.exchange_name}") 
+        print(f"✅ [CONSUMER {self.consumer_id}] Routing: notification.*")
 
     async def handle_notification(self, message: aio_pika.IncomingMessage):
         """Обработка входящих уведомлений"""
-        success = await self.process_message(message, self._process_notification)
-        if success:
-            logger.info("Notification processed successfully")
-        else:
-            logger.error("Failed to process notification")
+        print("📨 NEW MESSAGE RECEIVED:")
+        print(f"   Routing Key: {message.routing_key}")
+        print(f"   Message ID: {message.message_id}")
+        print(f"   Body: {message.body.decode()}")
+
+        try:
+            success = await self.process_message(message, self._process_notification)
+            if success:
+                print("✅ Notification processed successfully")
+            else:
+                print("❌ Failed to process notification")
+        except Exception as e:
+            print(f"💥 Error in handle_notification: {e}")
+            import traceback
+            traceback.print_exc()
 
     async def _process_notification(self, message: aio_pika.IncomingMessage):
         """Основная логика обработки уведомления - теперь через Celery"""
         body = json.loads(message.body.decode())
-        logger.info(f"Received notification: {body}")
+        print(f"Received notification: {body}")
 
         notification_type = body.get("type")
         user_email = body.get("user_email")
@@ -63,7 +80,7 @@ class MailingConsumer(BaseConsumer):
         # Отправляем задачу в Celery
         task = process_notification_task.delay(celery_data)
 
-        logger.info(f"Celery task created: {task.id} for notification type: {notification_type}")
+        print(f"Celery task created: {task.id} for notification type: {notification_type}")
 
     def _create_html_content(self, notification_type: str, data: dict) -> str:
         """Создание HTML контента для email"""

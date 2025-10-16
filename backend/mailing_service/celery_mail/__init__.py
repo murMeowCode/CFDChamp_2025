@@ -29,6 +29,3 @@ logger.info(f"Celery result backend: {celery_app.conf.result_backend}")
 
 # Автоматически обнаруживаем задачи
 celery_app.autodiscover_tasks(["mailing_service.celery_mail.tasks"])
-
-# Отладочная информация
-print(f"Celery broker: {celery_app.conf.broker_url}")
