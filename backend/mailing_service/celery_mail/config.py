@@ -4,8 +4,8 @@ from shared.config.base import settings #pylint: disable=E0401
 class CeleryConfig:
     """Конфигурация Celery"""
 
-    broker_url = f"redis://{settings.CELERY_BROKER_URL}"
-    result_backend=f"redis://{settings.CELERY_RESULT_BACKEND}"
+    broker_url = settings.CELERY_BROKER_URL
+    result_backend=settings.CELERY_RESULT_BACKEND
 
     # Настройки задач
     task_serializer = "json"
