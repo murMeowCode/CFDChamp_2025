@@ -1,4 +1,4 @@
-"""Инициализация Celery"""
+"""Инициализация Celery""" #pylint: disable=W0406, E0401
 from celery import Celery
 from mailing_service.celery.config import CeleryConfig
 
