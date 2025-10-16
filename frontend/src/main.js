@@ -10,7 +10,8 @@ import axios from 'axios';
 import { createNotivue } from 'notivue'
 import 'notivue/notification.css' // Only needed if using built-in notifications
 import 'notivue/animations.css' // Only needed if using built-in animations
-
+import Toast from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
 
 const app = createApp(App)
 const notivue = createNotivue({
@@ -22,6 +23,11 @@ const notivue = createNotivue({
       duration: 4000
     }
   }
+})
+app.use(Toast, {
+  transition: 'Vue-Toastification__bounce',
+  maxToasts: 20,
+  newestOnTop: true
 })
 app.use(notivue)
 export const apiClient = axios.create({

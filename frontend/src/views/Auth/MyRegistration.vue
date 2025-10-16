@@ -1,4 +1,5 @@
 <template>
+
   <div class="register-container" data-aos="flip-right">
     <div class="register-card">
       <!-- Заголовок -->
@@ -375,7 +376,11 @@ import { ref, reactive, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useValidation } from '@/utils/useValidation'
-import { useUseNotificationsStore } from '@/stores/useToastStore'
+
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+import { Notivue, Notification,push } from 'notivue'
 // Список ролей
 const roles = [
   {
@@ -410,7 +415,7 @@ const router = useRouter()
   password: '',
   confirmPassword: '',
 })
-const useNotif  = useUseNotificationsStore()
+
 
 
 // Состояние UI
@@ -434,19 +439,17 @@ const handleSubmit = async () => {
 
   try {
     // Имитация API запроса
-     const loadingNotification = useNotif.loading('Регистрация...')
-
+  
     await new Promise((resolve) => setTimeout(resolve, 2000))
     useUser.setUser(form)
+toast.success('УРа')
 
-    // ✅ Завершаем загрузку с успехом
-    loadingNotification.success('Регистрация прошла успешно!', 'Добро пожаловать')
 
     router.push({ name: 'home' })
     formSubmitted.value = false
   } catch (error) {
     console.error('Ошибка регистрации:', error)
-    useNotif.error('Ошибка при регистрации: ' + error.message)
+  toast.error('УРа')
   } finally {
     isSubmitting.value = false
   }
