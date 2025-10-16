@@ -28,8 +28,8 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def get_url():
-    """получение адреса БД"""
-    return settings.DATABASE_URL
+    """Получение адреса БД из alembic.ini."""
+    return config.get_main_option("sqlalchemy.url")
 
 def run_migrations_offline() -> None:
     """функция осуществления миграций"""
