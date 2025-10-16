@@ -18,7 +18,8 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
             if func.__name__ == 'get_all_users':
                 cache_key += "all"
                 print("🏢 Кэш для всех пользователей")
-            elif 'user' in kwargs and isinstance(kwargs['user'], dict) and 'user_id' in kwargs['user']:
+            elif ('user' in kwargs and isinstance(kwargs['user'], dict) and
+                  'user_id' in kwargs['user']):
                 user_id = kwargs['user']['user_id']
                 cache_key += str(user_id)
                 print(f"🔑 User_id найден в kwargs: {user_id}")
@@ -52,11 +53,10 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
                     if hasattr(model, 'model_dump'):
                         # Pydantic v2
                         return model.model_dump(mode='json')
-                    elif hasattr(model, 'dict'):
+                    if hasattr(model, 'dict'):
                         # Pydantic v1
                         return model.dict()
-                    else:
-                        return model
+                    return model
 
                 # Сериализуем результат в зависимости от типа
                 if isinstance(result, list):
