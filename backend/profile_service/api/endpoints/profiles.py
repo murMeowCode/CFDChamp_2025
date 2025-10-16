@@ -42,7 +42,7 @@ async def upload_avatar(
     """Загрузка аватарки пользователя"""
     if not file.filename:
         raise HTTPException(400, "No file provided")
-    
+
     await invalidate_user_cache(user["user_id"])
     await invalidate_all_profiles_cache()
 

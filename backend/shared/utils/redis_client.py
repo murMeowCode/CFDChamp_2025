@@ -2,8 +2,6 @@
 Redis клиент.
 Предоставляет доступ к редис для кеширования и работы с Селери.
 """
-import os
-import asyncio
 from redis.asyncio import Redis
 from shared.config.base import settings
 
@@ -11,18 +9,18 @@ from shared.config.base import settings
 
 class RedisManager:
     """Manager for Redis connections with async support."""
-    
+
     def __init__(self):
         self.host = settings.REDIS_HOST
         self.port = settings.REDIS_PORT
         self.password = settings.REDIS_PASSWORD
         self._cache_client = None
         self._celery_client = None
-    
+
     async def get_cache_client(self) -> Redis:
         """Get async Redis client for caching."""
         if self._cache_client is None:
-            print(f"""🔄 Создание Redis клиента: {self.host}:{self.port}, 
+            print(f"""🔄 Создание Redis клиента: {self.host}:{self.port},
                   DB: {settings.REDIS_DB_CACHE}, PWD: {self.password}""")
             self._cache_client = Redis(
                 host=self.host,
@@ -35,7 +33,7 @@ class RedisManager:
                 retry_on_timeout=True
             )
         return self._cache_client
-    
+
     async def get_celery_client(self) -> Redis:
         """Get async Redis client for Celery."""
         if self._celery_client is None:
@@ -50,7 +48,7 @@ class RedisManager:
                 retry_on_timeout=True
             )
         return self._celery_client
-    
+
     async def close_connections(self):
         """Close all Redis connections."""
         if self._cache_client:

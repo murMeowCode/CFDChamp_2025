@@ -37,7 +37,7 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
                     if isinstance(data, list):
                         print(f"📋 Получен список из {len(data)} элементов из кэша")
                     else:
-                        print(f"📄 Получен одиночный объект из кэша")
+                        print("📄 Получен одиночный объект из кэша")
                     return data
                 except json.JSONDecodeError as e:
                     print(f"❌ Ошибка десериализации кэша: {e}")
@@ -54,16 +54,17 @@ def cache_response(prefix: str, ttl: int = 300) -> Callable:
                 # Сериализуем результат
                 if hasattr(result, '__iter__') and not isinstance(result, (str, bytes)):
                     # Если результат итерируемый (список, кортеж и т.д.)
-                    serializable_result = [item.dict() if hasattr(item, 'dict') else item for item in result]
+                    serializable_result = [item.dict() if hasattr(item, 'dict')
+                                             else item for item in result]
                     print(f"📦 Сохранение списка из {len(serializable_result)} элементов в кэш")
                 else:
                     # Одиночный объект
                     serializable_result = result.dict() if hasattr(result, 'dict') else result
-                    print(f"📄 Сохранение одиночного объекта в кэш")
-                
+                    print("📄 Сохранение одиночного объекта в кэш")
+
                 await redis.setex(
-                    cache_key, 
-                    ttl, 
+                    cache_key,
+                    ttl,
                     json.dumps(serializable_result, default=str)
                 )
                 print(f"💾 Данные сохранены в кэш: {cache_key} (TTL: {ttl}сек)")
