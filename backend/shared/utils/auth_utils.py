@@ -1,0 +1,51 @@
+"""общий модуль для аутентификации"""#pylint: disable=E0401, E0611, W0707
+import uuid
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from shared.messaging.producers import AuthProducer
+from shared.config.base import settings
+
+class AuthDependency:
+    """зависимость аутентификации"""
+    def __init__(self, producer: AuthProducer):
+        self.producer = producer
+        self.security_scheme = HTTPBearer()
+
+    async def get_current_user(
+        self,
+        credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())
+    ) -> dict:
+        """Проверяет токен и возвращает данные пользователя"""
+        token = credentials.credentials
+
+        try:
+            # Отправляем запрос на верификацию
+            response = await self.producer.verify_token(token)
+
+            if not response.valid:
+                raise HTTPException(status_code=401, detail="Invalid token")
+
+            if not response.user_id:
+                raise HTTPException(status_code=401, detail="User not found")
+
+            return {
+                "user_id": uuid.UUID(response.user_id),
+                "role": response.role or 0
+            }
+
+        except TimeoutError:
+            raise HTTPException(status_code=503, detail="Authentication service unavailable")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Authentication error: {str(e)}")
+
+    async def require_role(self, required_role: int,
+                           user: dict = Depends(get_current_user)) -> dict:
+        """Проверяет роль пользователя"""
+        if user.get("role", 0) != required_role:
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        return user
+
+def get_auth_dependency() -> AuthDependency:
+    """Фабрика для создания AuthDependency"""
+    producer = AuthProducer(rabbitmq_url=settings.RABBITMQ_URL)  # Создаем producer с настройками
+    return AuthDependency(producer)

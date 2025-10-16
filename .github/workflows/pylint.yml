@@ -1,0 +1,27 @@
+name: Pylint
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+    
+    - name: Analysing the code with pylint
+      run: |
+        pylint --disable=E0611,E0401,E1101,E1123,W0707,W1203,W0718,W0201,R0903,W0621,C0103,C0412,C0413,R0801 backend/
