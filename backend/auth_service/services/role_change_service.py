@@ -7,10 +7,12 @@ from sqlalchemy import select, and_
 from auth_service.models.user import AuthUser
 from auth_service.models.role_change_request import RoleChangeRequest
 from auth_service.schemas.role_change import RoleChangeRequestCreate, RoleChangeStatus
+from auth_service.messaging.producers import UserProducer
 
 class RoleChangeService:
     """класс сервиса"""
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, producer: UserProducer):
+        self.producer = producer
         self.db = db
 
     async def create_role_change_request(self, username: str,
@@ -89,6 +91,13 @@ class RoleChangeService:
 
         await self.db.commit()
 
+        await self.producer.send_notification({
+                "type": "role_approved",
+                "username": user.username,
+                "user_email": user.email,
+                "user_id": str(user.id)
+            })
+
         return {
             "success": True, 
             "message": f"Role changed to {role_request.requested_role}"
@@ -107,5 +116,16 @@ class RoleChangeService:
         role_request.status = RoleChangeStatus.REJECTED
 
         await self.db.commit()
+        
+        stmt = select(AuthUser).where(AuthUser.username == role_request.username)
+        result = await self.db.execute(stmt)
+        user = result.scalar_one_or_none()
+
+        await self.producer.send_notification({
+                "type": "role_rejected",
+                "username": user.username,
+                "user_email": user.email,
+                "user_id": str(user.id)
+            })
 
         return {"success": True, "message": "Request rejected"}

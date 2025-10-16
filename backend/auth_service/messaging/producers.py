@@ -1,4 +1,4 @@
-"""Продюсер для пользовательских событий"""#pylint:disable=E0401
+"""Продюсер для пользовательских событий"""#pylint:disable=E0401, W1203
 import logging
 from shared.messaging.producers import BaseProducer
 from shared.schemas.messaging import UserCreatedMessage
