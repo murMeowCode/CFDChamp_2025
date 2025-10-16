@@ -24,7 +24,6 @@ class BaseProducer(RabbitMQBase):
             type=aio_pika.ExchangeType.TOPIC,
             durable=True
         )
-        logger.info(f"{self.__class__.__name__} connected to exchange '{self.exchange_name}'")
 
     async def _send_message(self, message: BaseMessage, routing_key: str, **message_kwargs):
         """Базовый метод отправки сообщений"""

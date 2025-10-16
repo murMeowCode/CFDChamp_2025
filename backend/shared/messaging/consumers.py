@@ -29,7 +29,6 @@ class BaseConsumer(RabbitMQBase, ABC):
 
         # Настраиваем конкретного потребителя
         await self.setup_queues()
-        logger.info(f"{self.__class__.__name__} successfully connected")
 
     @abstractmethod
     async def setup_queues(self):

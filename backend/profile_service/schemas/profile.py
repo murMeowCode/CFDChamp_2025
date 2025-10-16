@@ -14,6 +14,14 @@ class ProfileBase(BaseModel):
     phone: Optional[str] = None
     address: Optional[str] = None
 
+class ProfileResponse(ProfileBase):
+    """ответ на действие с профилем"""
+    user_id: UUID
+
+    class Config:
+        """переход в режим ORM"""
+        from_attributes = True
+
 class ProfileUpdate(ProfileBase):
     """схема обновления профиля"""
 
@@ -22,14 +30,6 @@ class ProfileUpdate(ProfileBase):
         fields = {
             'avatar_filename': {'exclude': True}
         }
-
-class ProfileResponse(ProfileBase):
-    """ответ на действие с профилем"""
-    user_id: UUID
-
-    class Config:
-        """переход в режим ORM"""
-        from_attributes = True
 
 class AvatarUploadResponse(BaseModel):
     """Ответ после загрузки аватарки"""

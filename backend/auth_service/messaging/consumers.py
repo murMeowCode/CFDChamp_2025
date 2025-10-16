@@ -32,8 +32,6 @@ class AuthConsumer(BaseConsumer):
             lambda msg: self.process_message(msg, self._handle_verify_request)
         )
 
-        logger.info("AuthConsumer queues setup completed")
-
     async def _handle_verify_request(self, message: aio_pika.IncomingMessage):
         """Обработка запроса верификации токена"""
         start_time = datetime.utcnow()

@@ -32,15 +32,14 @@ async def lifespan(app: FastAPI):
         # Можно выбросить исключение или продолжить в зависимости от требований
         raise
 
+    # Инициализация MinIO
+    file_service = FileService()
+    await file_service.init_minio()
+
     # Инициализация RabbitMQ producer
     auth_producer = AuthProducer(settings.RABBITMQ_URL)
     await auth_producer.connect()
     print("✅ RabbitMQ producer подключен")
-
-    # Инициализация MinIO
-    file_service = FileService()
-    await file_service.init_minio()
-    print("✅ MinIO инициализирован")
 
     # Инициализация RabbitMQ consumer
     async with AsyncSessionLocal() as db:
