@@ -3,8 +3,6 @@ import json
 import logging
 import aio_pika
 from shared.messaging.consumers import BaseConsumer
-from mailing_service.services.email_service import email_service
-from mailing_service.schemas.message import EmailData
 from mailing_service.celery.tasks import process_notification_task
 
 
@@ -73,31 +71,15 @@ class MailingConsumer(BaseConsumer):
 
         if notification_type == "user_registered":
             return self._create_welcome_template(username)
-        elif notification_type == "welcome_message":
-            return self._create_welcome_template(username, is_extended=True)
         elif notification_type == "custom_notification":
             return self._create_custom_template(data.get("content", ""))
         else:
             return self._create_custom_template("У вас новое уведомление.")
 
-    async def _send_email_by_type(self, notification_type: str, user_email: str, data: dict):
-        """Отправка email в зависимости от типа уведомления"""
-        handlers = {
-            "user_registered": self._handle_user_registered,
-            "welcome_message": self._handle_welcome_message,
-            "custom_notification": self._handle_custom_notification
-        }
-
-        handler = handlers.get(notification_type)
-        if handler:
-            await handler(user_email, data)
-        else:
-            logger.warning(f"Unknown notification type: {notification_type}")
-
     def _get_subject_by_type(self, notification_type: str, data: dict) -> str:
         """Получение темы сообщения по типу уведомления"""
         subjects = {
-            "user_registered": "Добро пожаловать в CFDChamp!",
+            "user_registered": "Добро пожаловать на платформу!",
             "welcome_message": "Приветственное сообщение от CFDChamp",
             "custom_notification": data.get("subject", "Уведомление от CFDChamp")
         }
@@ -109,51 +91,11 @@ class MailingConsumer(BaseConsumer):
         custom_content = data.get("content", "")
 
         contents = {
-            "user_registered": f"Добро пожаловать, {username}! Спасибо за регистрацию в CFDChamp.",
-            "welcome_message": f"Привет, {username}! Рады видеть вас в нашем сообществе трейдеров.",
+            "user_registered": f"""Добро пожаловать, {username}!
+                    Спасибо за регистрацию на нашем ресурсе.""",
             "custom_notification": custom_content or "У вас новое уведомление."
         }
         return contents.get(notification_type, "У вас новое уведомление.")
-
-    async def _handle_user_registered(self, user_email: str, data: dict):
-        """Обработка регистрации пользователя"""
-        username = data.get("username", "Пользователь")
-
-        email_data = EmailData(
-            to=[user_email],
-            subject="Добро пожаловать в CFDChamp!",
-            html=self._create_welcome_template(username)
-        )
-
-        await email_service.send_email(email_data)
-        logger.info(f"Welcome email sent to {user_email}")
-
-    async def _handle_welcome_message(self, user_email: str, data: dict):
-        """Обработка приветственного сообщения"""
-        username = data.get("username", "Пользователь")
-
-        email_data = EmailData(
-            to=[user_email],
-            subject="Приветственное сообщение от CFDChamp",
-            html=self._create_welcome_template(username, is_extended=True)
-        )
-
-        await email_service.send_email(email_data)
-        logger.info(f"Extended welcome email sent to {user_email}")
-
-    async def _handle_custom_notification(self, user_email: str, data: dict):
-        """Обработка кастомных уведомлений"""
-        subject = data.get("subject", "Уведомление от CFDChamp")
-        content = data.get("content", "")
-
-        email_data = EmailData(
-            to=[user_email],
-            subject=subject,
-            html=self._create_custom_template(content)
-        )
-
-        await email_service.send_email(email_data)
-        logger.info(f"Custom notification sent to {user_email}")
 
     def _create_welcome_template(self, username: str, is_extended: bool = False) -> str:
         """Шаблон приветственного письма"""
