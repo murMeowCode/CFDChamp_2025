@@ -46,7 +46,7 @@ const router = createRouter({
       name: 'profile',
       component: Mycabinet,
     },
-     {
+    {
       path: '/forgot-password',
       name: 'forgot',
       component: MyForgotPassword,

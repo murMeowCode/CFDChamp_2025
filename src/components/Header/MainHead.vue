@@ -19,7 +19,7 @@
             <i :class="item.icon" class="nav-icon"></i>
             <span class="nav-label">{{ item.label }}</span>
           </RouterLink>
-          
+
           <!-- Динамическая иконка входа/профиля -->
           <RouterLink
             :to="{ name: isAuthenticated ? 'profile' : 'login' }"
@@ -31,7 +31,7 @@
           </RouterLink>
         </nav>
         <ThemeToggle class="theme-toggle theme-toggle--desktop" />
-        
+
         <!-- Кнопка для тестирования переключения (можно убрать в продакшене)
         <button 
           v-if="showDebugButton"
@@ -71,7 +71,7 @@
           <i :class="item.icon" class="nav-icon"></i>
           <span class="nav-label">{{ item.label }}</span>
         </RouterLink>
-        
+
         <!-- Динамическая иконка для мобильного меню -->
         <RouterLink
           :to="{ name: isAuthenticated ? 'profile' : 'login' }"
@@ -80,7 +80,9 @@
           @click="closeMobileMenu"
         >
           <i :class="isAuthenticated ? 'pi pi-user' : 'pi pi-sign-in'" class="nav-icon"></i>
-          <span class="nav-label">{{ isAuthenticated ? 'Личный кабинет' : 'Войти / Регистрация' }}</span>
+          <span class="nav-label">{{
+            isAuthenticated ? 'Личный кабинет' : 'Войти / Регистрация'
+          }}</span>
         </RouterLink>
       </nav>
     </div>
@@ -94,9 +96,8 @@ import ThemeToggle from '../Theme/ThemeToggle.vue'
 import { useUserStore } from '@/stores/useUserStore'
 import { storeToRefs } from 'pinia'
 // Состояние авторизации (в реальном приложении будет из store/auth)
-const {getAuth:isAuthenticated} = storeToRefs(useUserStore())
+const { getAuth: isAuthenticated } = storeToRefs(useUserStore())
 // const isAuthenticated = ref(false)
-
 
 // Навигационные пункты
 const navItems = [
@@ -135,7 +136,10 @@ const closeMobileMenu = () => {
 // Функция переключения авторизации для тестирования
 const toggleAuth = () => {
   isAuthenticated.value = !isAuthenticated.value
-  console.log('Статус авторизации изменен:', isAuthenticated.value ? 'Авторизован' : 'Не авторизован')
+  console.log(
+    'Статус авторизации изменен:',
+    isAuthenticated.value ? 'Авторизован' : 'Не авторизован',
+  )
 }
 
 // Закрывать меню при изменении размера окна (если стало > 768px)
@@ -148,13 +152,13 @@ const handleResize = () => {
 // Инициализация при загрузке
 onMounted(() => {
   window.addEventListener('resize', handleResize)
-  
+
   // Проверяем есть ли токен в localStorage (реальная логика)
   const token = localStorage.getItem('auth-token')
   if (token) {
     isAuthenticated.value = true
   }
-  
+
   // Для демонстрации - автоматическое переключение каждые 5 секунд
   // setInterval(toggleAuth, 5000)
 })
@@ -184,7 +188,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
+
   position: relative;
 }
 

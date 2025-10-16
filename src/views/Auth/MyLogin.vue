@@ -4,7 +4,7 @@
       <!-- Заголовок -->
       <div class="login-header">
         <div class="logo-wrapper">
-          <i class="pi pi-shield" style="font-size: 2.5rem; color: var(--color-primary);"></i>
+          <i class="pi pi-shield"></i>
         </div>
         <h1 class="login-title">Добро пожаловать</h1>
         <p class="login-subtitle">Войдите в свой аккаунт</p>
@@ -20,22 +20,22 @@
               v-model="form.username"
               type="text"
               class="form-input floating-input"
-              :class="{ 
+              :class="{
                 'form-input--error': errors.username,
-                'form-input--filled': form.username 
+                'form-input--filled': form.username,
               }"
               placeholder=" "
               required
               autocomplete="username"
             />
             <label for="username" class="floating-label">
-              <i class="pi pi-user" style="margin-right: 8px;"></i>
+              <i class="pi pi-user"></i>
               Логин или Email
             </label>
             <div class="input-decoration"></div>
           </div>
           <span v-if="errors.username" class="form-error">
-            <i class="pi pi-exclamation-circle" style="margin-right: 4px;"></i>
+            <i class="pi pi-exclamation-circle"></i>
             {{ errors.username }}
           </span>
         </div>
@@ -48,20 +48,20 @@
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               class="form-input floating-input"
-              :class="{ 
+              :class="{
                 'form-input--error': errors.password,
-                'form-input--filled': form.password 
+                'form-input--filled': form.password,
               }"
               placeholder=" "
               required
               autocomplete="current-password"
             />
             <label for="password" class="floating-label">
-              <i class="pi pi-lock" style="margin-right: 8px;"></i>
+              <i class="pi pi-lock"></i>
               Пароль
             </label>
             <div class="input-decoration"></div>
-            
+
             <button
               type="button"
               class="password-toggle beauty-toggle"
@@ -73,12 +73,12 @@
           </div>
           <div class="password-actions">
             <RouterLink :to="{ name: 'forgot' }" class="forgot-password beauty-link">
-              <i class="pi pi-key" style="margin-right: 6px;"></i>
+              <i class="pi pi-key"></i>
               Забыли пароль?
             </RouterLink>
           </div>
           <span v-if="errors.password" class="form-error">
-            <i class="pi pi-exclamation-circle" style="margin-right: 4px;"></i>
+            <i class="pi pi-exclamation-circle"></i>
             {{ errors.password }}
           </span>
         </div>
@@ -106,13 +106,13 @@
           type="submit"
           class="submit-button beauty-button"
           :disabled="isSubmitting"
-          :class="{ 
+          :class="{
             'submit-button--loading': isSubmitting,
-            'beauty-button--loading': isSubmitting
+            'beauty-button--loading': isSubmitting,
           }"
         >
           <span v-if="!isSubmitting" class="button-content">
-            <i class="pi pi-sign-in" style="margin-right: 8px;"></i>
+            <i class="pi pi-sign-in"></i>
             Войти в систему
           </span>
           <div v-else class="loading-spinner">
@@ -130,21 +130,33 @@
 
         <!-- Быстрый вход -->
         <div class="social-login">
-          <button type="button" class="social-button social-button--google beauty-social" @click="handleSocialLogin('google')">
+          <button
+            type="button"
+            class="social-button social-button--google beauty-social"
+            @click="handleSocialLogin('google')"
+          >
             <div class="social-icon">
               <i class="pi pi-google"></i>
             </div>
             <span class="social-text">Google</span>
           </button>
-          
-          <button type="button" class="social-button social-button--github beauty-social" @click="handleSocialLogin('github')">
+
+          <button
+            type="button"
+            class="social-button social-button--github beauty-social"
+            @click="handleSocialLogin('github')"
+          >
             <div class="social-icon">
               <i class="pi pi-github"></i>
             </div>
             <span class="social-text">GitHub</span>
           </button>
 
-          <button type="button" class="social-button social-button--twitter beauty-social" @click="handleSocialLogin('twitter')">
+          <button
+            type="button"
+            class="social-button social-button--twitter beauty-social"
+            @click="handleSocialLogin('twitter')"
+          >
             <div class="social-icon">
               <i class="pi pi-twitter"></i>
             </div>
@@ -156,7 +168,7 @@
         <div class="register-link beauty-register">
           <span class="register-text">Впервые у нас?</span>
           <RouterLink :to="{ name: 'auth' }" class="register-action beauty-link">
-            <i class="pi pi-user-plus" style="margin-right: 6px;"></i>
+            <i class="pi pi-user-plus"></i>
             Создать аккаунт
           </RouterLink>
         </div>
@@ -173,13 +185,13 @@ import { RouterLink } from 'vue-router'
 const form = reactive({
   username: '',
   password: '',
-  rememberMe: false
+  rememberMe: false,
 })
 
 // Ошибки валидации
 const errors = reactive({
   username: '',
-  password: ''
+  password: '',
 })
 
 // Состояние UI
@@ -191,7 +203,7 @@ const validateForm = () => {
   let isValid = true
 
   // Очистка предыдущих ошибок
-  Object.keys(errors).forEach(key => {
+  Object.keys(errors).forEach((key) => {
     errors[key] = ''
   })
 
@@ -225,20 +237,19 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
     // Здесь будет реальный API вызов
     console.log('Вход выполнен:', {
       username: form.username,
-      rememberMe: form.rememberMe
+      rememberMe: form.rememberMe,
     })
 
     // Успешный вход
     alert('Вход выполнен успешно!')
-    
   } catch (error) {
     console.error('Ошибка входа:', error)
-    
+
     if (error.message?.includes('credentials')) {
       errors.username = 'Неверный логин или пароль'
       errors.password = 'Неверный логин или пароль'
@@ -259,34 +270,23 @@ const handleSocialLogin = (provider) => {
 
 <style scoped>
 .login-container {
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-xl);
+  padding: 1rem;
   background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-primary-soft) 100%);
-  position: relative;
-}
-
-.login-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
 }
 
 .login-card {
   background: var(--color-bg-elevated);
-  border-radius: 24px;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.1),
+  border-radius: 16px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(255, 255, 255, 0.1);
-  padding: 3rem;
+  padding: 2rem;
   width: 100%;
-  max-width: 440px;
+  max-width: 400px;
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
@@ -298,22 +298,27 @@ const handleSocialLogin = (provider) => {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 3px;
   background: var(--gradient-primary);
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .logo-wrapper {
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.logo-wrapper i {
+  font-size: 2rem;
+  color: var(--color-primary);
 }
 
 .login-title {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: var(--color-text);
   margin: 0 0 0.5rem;
   background: var(--gradient-primary);
@@ -325,14 +330,14 @@ const handleSocialLogin = (provider) => {
 .login-subtitle {
   color: var(--color-text-muted);
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 400;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 /* Floating Label Styles */
@@ -345,28 +350,26 @@ const handleSocialLogin = (provider) => {
 }
 
 .floating-input {
-  padding: 1.5rem 1rem 0.5rem 1rem;
-  border: 2px solid var(--color-border);
-  border-radius: 12px;
+  padding: 1rem 0.75rem 0.5rem 0.75rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
   outline: none;
   width: 100%;
-  height: 56px;
+  height: 35px;
 }
 
 .floating-input:focus {
   border-color: var(--color-primary);
   background: var(--color-bg-elevated);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .floating-input--filled {
   border-color: var(--color-primary-muted);
-  background: var(--color-bg-elevated);
 }
 
 .floating-input--error {
@@ -377,24 +380,30 @@ const handleSocialLogin = (provider) => {
 .floating-label {
   position: absolute;
   top: 50%;
-  left: 1rem;
+  left: 0.75rem;
   transform: translateY(-50%);
   color: var(--color-text-muted);
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.875rem;
+  font-weight: 400;
   pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+}
+
+.floating-label i {
+  font-size: 0.8rem;
+  opacity: 0.7;
 }
 
 .floating-input:focus + .floating-label,
 .floating-input--filled + .floating-label {
-  top: 0.75rem;
+  top: 0.5rem;
   transform: none;
   font-size: 0.75rem;
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .input-decoration {
@@ -402,10 +411,10 @@ const handleSocialLogin = (provider) => {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 1px;
   background: var(--gradient-primary);
   transform: scaleX(0);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease;
 }
 
 .floating-input:focus ~ .input-decoration {
@@ -415,27 +424,26 @@ const handleSocialLogin = (provider) => {
 /* Password Toggle */
 .beauty-toggle {
   position: absolute;
-  right: 12px;
+  right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
-  background: var(--color-primary-soft);
+  background: none;
   border: none;
-  color: var(--color-primary);
+  color: var(--color-text-muted);
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  width: 36px;
-  height: 36px;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .beauty-toggle:hover {
-  background: var(--color-primary);
-  color: white;
-  transform: translateY(-50%) scale(1.1);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
 /* Password Actions */
@@ -448,23 +456,27 @@ const handleSocialLogin = (provider) => {
 .beauty-link {
   color: var(--color-primary);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
+  gap: 0.25rem;
 }
 
 .beauty-link:hover {
   color: var(--color-primary-hover);
-  transform: translateX(2px);
+}
+
+.beauty-link i {
+  font-size: 0.7rem;
 }
 
 /* Checkbox Styles */
 .beauty-checkbox {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .checkbox-input {
@@ -474,24 +486,20 @@ const handleSocialLogin = (provider) => {
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.checkbox-label:hover {
-  transform: translateY(-1px);
+  transition: all 0.2s ease;
 }
 
 .checkbox-decoration {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border);
-  border-radius: 6px;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   background: var(--color-bg);
 }
 
@@ -506,15 +514,15 @@ const handleSocialLogin = (provider) => {
 }
 
 .checkbox-decoration i {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   transform: scale(0);
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .checkbox-text {
   color: var(--color-text);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 400;
 }
 
 /* Button Styles */
@@ -522,38 +530,19 @@ const handleSocialLogin = (provider) => {
   background: var(--gradient-primary);
   color: white;
   border: none;
-  border-radius: 16px;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  height: 56px;
+  transition: all 0.3s ease;
+  height: 44px;
   margin-top: 0.5rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.beauty-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.beauty-button:hover::before {
-  left: 100%;
 }
 
 .beauty-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .beauty-button:active:not(:disabled) {
@@ -570,6 +559,11 @@ const handleSocialLogin = (provider) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+}
+
+.button-content i {
+  font-size: 0.9rem;
 }
 
 /* Loading Spinner */
@@ -577,12 +571,12 @@ const handleSocialLogin = (provider) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .spinner-circle {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border: 2px solid transparent;
   border-top: 2px solid white;
   border-radius: 50%;
@@ -590,16 +584,20 @@ const handleSocialLogin = (provider) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Divider Styles */
 .beauty-divider {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin: 1.5rem 0;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
 }
 
 .divider-line {
@@ -610,7 +608,7 @@ const handleSocialLogin = (provider) => {
 
 .divider-text {
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -619,41 +617,41 @@ const handleSocialLogin = (provider) => {
 .social-login {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .beauty-social {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  border: 2px solid var(--color-border);
-  border-radius: 12px;
+  gap: 0.375rem;
+  padding: 0.75rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  height: 80px;
+  transition: all 0.2s ease;
+  height: 70px;
 }
 
 .beauty-social:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   border-color: var(--color-primary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .social-icon {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--color-bg-elevated);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .social-button--google:hover .social-icon {
@@ -672,7 +670,7 @@ const handleSocialLogin = (provider) => {
 }
 
 .social-text {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* Register Link Styles */
@@ -680,18 +678,19 @@ const handleSocialLogin = (provider) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 1.5rem 0 0.5rem;
+  gap: 0.5rem;
+  padding: 1rem 0 0;
   border-top: 1px solid var(--color-border);
+  margin-top: 1rem;
 }
 
 .register-text {
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 .register-action {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* Error Styles */
@@ -699,28 +698,33 @@ const handleSocialLogin = (provider) => {
   display: flex;
   align-items: center;
   color: var(--color-error);
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-top: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 400;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
   background: var(--color-error-soft);
-  border-radius: 8px;
-  border-left: 3px solid var(--color-error);
+  border-radius: 4px;
+  border-left: 2px solid var(--color-error);
+  gap: 0.25rem;
+}
+
+.form-error i {
+  font-size: 0.65rem;
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
   .login-container {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .login-card {
-    padding: 2rem;
-    margin: 1rem;
+    padding: 1.5rem;
+    margin: 0.5rem;
   }
 
   .login-title {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
   }
 
   .social-login {
@@ -732,31 +736,42 @@ const handleSocialLogin = (provider) => {
     flex-direction: row;
     justify-content: flex-start;
     height: auto;
-    padding: 0.75rem 1rem;
+    padding: 0.625rem 0.75rem;
   }
 
   .beauty-register {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
     text-align: center;
   }
 }
 
 @media (max-width: 480px) {
   .login-card {
-    padding: 1.5rem;
+    padding: 1rem;
+    border-radius: 12px;
   }
 
   .login-title {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .login-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .login-form {
+    gap: 1rem;
   }
 
   .floating-input {
-    height: 52px;
+    height: 42px;
+    font-size: 0.85rem;
   }
 
   .beauty-button {
-    height: 52px;
+    height: 42px;
+    font-size: 0.85rem;
   }
 }
 </style>
