@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     #VK
     VK_CLIENT_ID: str
     VK_REDIRECT_URI: str
+    VK_CLIENT_SECRET: str
 
     class Config:
         """импорт из файла среды"""
