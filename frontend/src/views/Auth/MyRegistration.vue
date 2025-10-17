@@ -376,9 +376,9 @@ import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useValidation } from '@/utils/useValidation'
 import { useNotificationsStore } from '@/stores/useToastStore'
-
+import { useAuthStore } from '@/stores/useAuthStore'
 const toast = useNotificationsStore()
-
+const useAuth = useAuthStore()
 // Список ролей
 const roles = [
   {
@@ -434,7 +434,8 @@ const handleSubmit = async () => {
   try {
     // Имитация API запроса
 
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // await new Promise((resolve) => setTimeout(resolve, 2000))
+    await useAuth.login(form)
     useUser.setUser(form)
     toast.success('вошли')
 

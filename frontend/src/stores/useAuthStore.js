@@ -1,6 +1,5 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
 import { useUserStore } from "./useUserStore";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -52,6 +51,7 @@ export const useAuthStore = defineStore("auth", () => {
     // }
 
     return new Promise((resolve) => {
+      console.log('---------------------------------------------------')
       setAccsessToken("accsess" + Date.now());
       setRefreshToken("refresh" + Date.now());
       resolve(true);
@@ -62,7 +62,7 @@ export const useAuthStore = defineStore("auth", () => {
       clearInterval(refreshInterval);
     }
     refreshTokens().then(() => {
-      refreshInterval = setInterval(refreshTokens, 3000000);
+      refreshInterval = setInterval(refreshTokens, 30000);
     });
   }
 
@@ -78,10 +78,9 @@ export const useAuthStore = defineStore("auth", () => {
     stopTokenRefresh();
   }
   function logout() {
+    stopTokenRefresh();
     removeToken();
     userStore.removeUser();
-    roleStore.removeRole();
-    stopTokenRefresh();
   }
   const getTokenAccsess = computed(() => accsesstoken.value);
   const getTokenRefresh = computed(() => refreshTokens.value);
@@ -101,7 +100,6 @@ export const useAuthStore = defineStore("auth", () => {
     //   } else {
     //     console.log("fff");
     //     userStore.setUser(response.data);
-    //     roleStore.setRole(response.data.is_root);
     //   }
     //   console.log(response.data.is_root, "root");
 

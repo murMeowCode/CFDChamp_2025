@@ -83,147 +83,14 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import ChildCardKarusel from './ChildCardKarusel.vue'
 import CarouselDetails from './CarouselDetails.vue'
-import ph from '@/assets/image.png'
+
+import { storeToRefs } from 'pinia'
+import { useCardStoreData } from '@/stores/useCardStoreData'
 
 // Реактивные данные
 const currentIndex = ref(1)
 const translateDistance = ref(140)
-
-// Данные карточек с полной информацией
-const cards = ref([
-  {
-    id: 1,
-    title: 'CFDChamp Pro Series',
-    subtitle: 'Элитные соревнования с призовым фондом до $50,000',
-    img: ph,
-    description:
-      'Премиальная серия турниров для профессиональных трейдеров. Участвуйте в еженедельных соревнованиях, демонстрируйте свои навыки и соревнуйтесь с лучшими трейдерами со всего мира. Каждый турнир предлагает уникальные условия и вызовы.',
-    duration: '2 недели',
-    participants: '500+ участников',
-    prize: '$50,000',
-    features: [
-      {
-        icon: '🎯',
-        title: 'Профессиональная аналитика',
-        text: 'Доступ к премиум инструментам анализа рынка',
-      },
-      {
-        icon: '📊',
-        title: 'Реальные-time данные',
-        text: 'Работа с актуальными рыночными данными',
-      },
-      {
-        icon: '🏆',
-        title: 'Эксклюзивные награды',
-        text: 'Уникальные призы и признание в сообществе',
-      },
-      {
-        icon: '👨‍💼',
-        title: 'Менторская поддержка',
-        text: 'Консультации от опытных профессионалов',
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Командные баталии',
-    subtitle: 'Объединяйтесь с командой и покоряйте вершины вместе',
-    img: ph,
-    description:
-      'Командные соревнования где стратегия и координация решают все. Соберите команду единомышленников, разрабатывайте совместные стратегии и соревнуйтесь с другими командами за звание лучшей торговой команды сезона.',
-    duration: '1 месяц',
-    participants: '200 команд',
-    prize: '$25,000',
-    features: [
-      {
-        icon: '🤝',
-        title: 'Командная стратегия',
-        text: 'Совместная разработка торговых подходов',
-      },
-      {
-        icon: '📈',
-        title: 'Синхронная торговля',
-        text: 'Координация действий в реальном времени',
-      },
-      {
-        icon: '🎮',
-        title: 'Тактические сессии',
-        text: 'Совместные обсуждения и планирование',
-      },
-      {
-        icon: '🌟',
-        title: 'Лидерборды команд',
-        text: 'Рейтинги и статистика командных результатов',
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: 'Образовательная платформа',
-    subtitle: 'Мастер-классы от профессионалов индустрии',
-    img: ph,
-    description:
-      'Комплексная образовательная программа для трейдеров всех уровней. От начинающих до продвинутых стратегий. Интерактивные курсы, вебинары с экспертами и практические задания помогут вам совершенствовать свои навыки.',
-    duration: 'Постоянно',
-    participants: '1000+ студентов',
-    prize: 'Сертификаты',
-    features: [
-      {
-        icon: '📚',
-        title: 'Структурированные курсы',
-        text: 'Пошаговое обучение от основ до продвинутых техник',
-      },
-      {
-        icon: '🎥',
-        title: 'Экспертные вебинары',
-        text: 'Прямые эфиры с успешными трейдерами',
-      },
-      {
-        icon: '🛠️',
-        title: 'Практические задания',
-        text: 'Реальные кейсы и торговые симуляции',
-      },
-      {
-        icon: '📱',
-        title: 'Мобильное обучение',
-        text: 'Доступ к материалам с любого устройства',
-      },
-    ],
-  },
-  {
-    id: 4,
-    title: 'Еженедельные турниры',
-    subtitle: 'Быстрые соревнования для всех уровней',
-    img: ph,
-    description:
-      'Регулярные турниры с быстрыми результатами. Идеально подходят для начинающих и опытных трейдеров, желающих проверить свои навыки в сжатые сроки.',
-    duration: '1 неделя',
-    participants: '300+ участников',
-    prize: '$10,000',
-    features: [
-      {
-        icon: '⚡',
-        title: 'Быстрый старт',
-        text: 'Начните участвовать сразу после регистрации',
-      },
-      {
-        icon: '📅',
-        title: 'Регулярность',
-        text: 'Новые турниры каждую неделю',
-      },
-      {
-        icon: '🎯',
-        title: 'Разные форматы',
-        text: 'Разнообразные условия и правила',
-      },
-      {
-        icon: '📊',
-        title: 'Мгновенные результаты',
-        text: 'Быстрое подведение итогов',
-      },
-    ],
-  },
-])
+const {getData:cards} = storeToRefs(useCardStoreData())
 
 // Вычисляемые свойства
 const navColor = computed(() => {
@@ -258,14 +125,18 @@ const getCardStyle = (index) => {
   const scale = diff === 0 ? 1 : 0.75
   const translateX = diff * translateDistance.value
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
-  const opacity = Math.max(0.5, 1 - Math.abs(diff) * 0.4)
+  const opacity = Math.max(0.3, 1 - Math.abs(diff) * 0.4) // Уменьшил минимальную opacity
   const blur = diff === 0 ? '0px' : '3px'
+  
+  // Скрываем карточки, которые слишком далеко
+  const display = Math.abs(diff) > 1 ? 'none' : 'block'
 
   return {
     transform: `translate(calc(-50% + ${translateX}px), -50%) scale(${scale})`,
     zIndex: zIndex,
     opacity: opacity,
     filter: `blur(${blur})`,
+    display: display
   }
 }
 
@@ -317,13 +188,13 @@ watch(currentIndex, refreshAOS)
 .carousel-frame {
   position: relative;
   width: 100%;
-  max-width: 1400px; /* Увеличил максимальную ширину */
-  height: 500px; /* Увеличил на 33% с 375px до 500px */
+  max-width: 1400px;
+  height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  padding: 0 120px; /* Увеличил паддинг для стрелок */
+  padding: 0 80px; /* Уменьшил базовый паддинг */
 }
 
 .carousel-cards-wrapper {
@@ -356,7 +227,7 @@ watch(currentIndex, refreshAOS)
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 56px; /* Увеличил размер стрелок */
+  width: 56px;
   height: 56px;
   border: none;
   border-radius: var(--border-radius-full);
@@ -368,7 +239,7 @@ watch(currentIndex, refreshAOS)
   cursor: pointer;
   transition: all var(--transition-normal);
   box-shadow: var(--shadow-xl);
-  z-index: 50; /* Увеличил z-index чтобы стрелки были поверх всего */
+  z-index: 50;
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -403,11 +274,11 @@ watch(currentIndex, refreshAOS)
 }
 
 .carousel-nav-prev {
-  left: 30px; /* Увеличил отступ от края */
+  left: 10px; /* Уменьшил базовый отступ */
 }
 
 .carousel-nav-next {
-  right: 30px; /* Увеличил отступ от края */
+  right: 10px; /* Уменьшил базовый отступ */
 }
 
 .carousel-indicators {
@@ -462,7 +333,7 @@ watch(currentIndex, refreshAOS)
 .details-section {
   flex: 1;
   width: 100%;
-  max-width: 1200px; /* Увеличил максимальную ширину */
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--spacing-xl) var(--spacing-lg);
   background: var(--color-bg);
@@ -489,7 +360,7 @@ watch(currentIndex, refreshAOS)
   .carousel-frame {
     max-width: 1200px;
     height: 450px;
-    padding: 0 100px;
+    padding: 0 70px;
   }
   
   .carousel-nav {
@@ -498,20 +369,20 @@ watch(currentIndex, refreshAOS)
   }
   
   .carousel-nav-prev {
-    left: 25px;
+    left: 15px;
   }
   
   .carousel-nav-next {
-    right: 25px;
+    right: 15px;
   }
 }
 
-/* Большие планшеты и маленькие десктопы */
+/* Средние десктопы */
 @media (max-width: 1200px) {
   .carousel-frame {
     max-width: 1000px;
     height: 420px;
-    padding: 0 90px;
+    padding: 0 60px;
   }
 
   .details-section {
@@ -525,11 +396,11 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: 20px;
+    left: 10px;
   }
 
   .carousel-nav-next {
-    right: 20px;
+    right: 10px;
   }
 }
 
@@ -543,7 +414,7 @@ watch(currentIndex, refreshAOS)
   .carousel-frame {
     max-width: 800px;
     height: 380px;
-    padding: 0 80px;
+    padding: 0 50px;
   }
 
   .carousel-nav {
@@ -552,11 +423,11 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: 15px;
+    left: 5px;
   }
 
   .carousel-nav-next {
-    right: 15px;
+    right: 5px;
   }
 
   .carousel-indicators {
@@ -584,7 +455,7 @@ watch(currentIndex, refreshAOS)
   .carousel-frame {
     max-width: 100%;
     height: 350px;
-    padding: 0 70px;
+    padding: 0 40px;
   }
 
   .carousel-nav {
@@ -593,11 +464,11 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: 12px;
+    left: 2px;
   }
 
   .carousel-nav-next {
-    right: 12px;
+    right: 2px;
   }
 
   .details-section {
@@ -610,7 +481,7 @@ watch(currentIndex, refreshAOS)
 @media (max-width: 640px) {
   .carousel-frame {
     height: 320px;
-    padding: 0 60px;
+    padding: 0 30px;
   }
 
   .carousel-nav {
@@ -619,11 +490,11 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: 8px;
+    left: 0;
   }
 
   .carousel-nav-next {
-    right: 8px;
+    right: 0;
   }
 
   .carousel-indicators {
@@ -649,7 +520,7 @@ watch(currentIndex, refreshAOS)
 
   .carousel-frame {
     height: 300px;
-    padding: 0 50px;
+    padding: 0 20px; /* Уменьшил паддинг контейнера */
   }
 
   .carousel-nav {
@@ -663,11 +534,11 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: 5px;
+    left: -5px; /* Слегка выходим за границы для экономии места */
   }
 
   .carousel-nav-next {
-    right: 5px;
+    right: -5px; /* Слегка выходим за границы для экономии места */
   }
 
   .carousel-indicators {
@@ -690,7 +561,7 @@ watch(currentIndex, refreshAOS)
 @media (max-width: 360px) {
   .carousel-frame {
     height: 280px;
-    padding: 0 40px;
+    padding: 0 15px; /* Минимальный паддинг */
   }
 
   .carousel-nav {
@@ -704,11 +575,28 @@ watch(currentIndex, refreshAOS)
   }
   
   .carousel-nav-prev {
-    left: 3px;
+    left: -8px; /* Еще больше выходим за границы */
   }
   
   .carousel-nav-next {
-    right: 3px;
+    right: -8px; /* Еще больше выходим за границы */
+  }
+}
+
+/* Экстремально маленькие экраны */
+@media (max-width: 320px) {
+  .carousel-frame {
+    padding: 0 10px;
+  }
+  
+  .carousel-nav {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .carousel-nav svg {
+    width: 14px;
+    height: 14px;
   }
 }
 </style>

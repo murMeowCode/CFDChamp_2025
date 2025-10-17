@@ -195,6 +195,8 @@ import { ref, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/useUserStore'
 import { useNotificationsStore } from '@/stores/useToastStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+const useAuth = useAuthStore()
 // Состояние формы
 const form = reactive({
   username: '',
@@ -269,7 +271,9 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // await new Promise((resolve) => setTimeout(resolve, 1500))
+    await useAuth.login({username: form.username,
+      password: form.password})
     useUser.setUser({
       username: form.username,
       password: form.password,

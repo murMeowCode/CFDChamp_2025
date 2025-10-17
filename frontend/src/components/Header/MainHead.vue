@@ -416,7 +416,7 @@ onUnmounted(() => {
   }
 
   .nav-link {
-    width: 100%;
+    width: 80%;
     height: 56px;
     flex-direction: row;
     justify-content: flex-start;
