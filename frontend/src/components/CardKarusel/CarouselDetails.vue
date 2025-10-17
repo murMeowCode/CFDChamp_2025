@@ -351,7 +351,6 @@ defineProps({
     max-width: 1200px;
     margin: 0 auto;
   }
-
 }
 
 /* Планшеты */
@@ -362,37 +361,36 @@ defineProps({
     margin: 0 var(--spacing-md); /* Добавляем отступы по бокам */
     width: calc(100% - var(--spacing-md) * 2); /* Ширина минус отступы */
   }
-  
+
   .details-title {
     font-size: 1.3rem;
     -webkit-line-clamp: 2; /* На планшетах тоже 2 строки */
   }
-  
+
   .details-description {
     -webkit-line-clamp: 3; /* На планшетах 3 строки */
   }
-  
+
   .meta-row {
     gap: var(--spacing-sm);
   }
-  
+
   .meta-item.compact {
     padding: var(--spacing-xs) var(--spacing-sm);
   }
-  
+
   .actions-row {
     gap: var(--spacing-sm);
   }
-  
+
   .action-btn {
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.85rem;
   }
-    .features-scroll {
-  display: flex;
-  flex-direction: column;
-  
-}
+  .features-scroll {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* Большие мобильные */
@@ -403,47 +401,46 @@ defineProps({
     width: calc(100% - var(--spacing-sm) * 2);
     border-radius: var(--border-radius-lg); /* Чуть меньше скругление на мобилках */
   }
-  
+
   .details-title {
     font-size: 1.2rem;
     -webkit-line-clamp: 2;
   }
-  
+
   .details-description {
     font-size: 0.85rem;
     -webkit-line-clamp: 3;
   }
-  
+
   .meta-row {
     flex-wrap: wrap;
     gap: var(--spacing-sm);
   }
-  
+
   .meta-item.compact {
     flex: 1 1 calc(50% - var(--spacing-sm));
     min-width: 120px;
   }
-  
+
   .features-scroll {
     gap: var(--spacing-xs);
   }
-  
+
   .feature-compact {
     padding: var(--spacing-xs) var(--spacing-sm);
     white-space: normal; /* Разрешаем перенос текста */
     min-width: 140px;
   }
-  
+
   .feature-title-small {
     white-space: normal;
     font-size: 0.75rem;
     text-align: center;
   }
   .features-scroll {
-  display: flex;
-  flex-direction: column;
-  
-}
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* Мобильные устройства */
@@ -454,52 +451,52 @@ defineProps({
     width: calc(100% - var(--spacing-xs) * 2);
     gap: var(--spacing-md);
   }
-  
+
   .details-header {
     gap: var(--spacing-xs);
   }
-  
+
   .details-title {
     font-size: 1.1rem;
     -webkit-line-clamp: 2;
   }
-  
+
   .details-description {
     font-size: 0.8rem;
     -webkit-line-clamp: 3;
     line-height: 1.3;
   }
-  
+
   .meta-item.compact {
     flex: 1 1 100%; /* На маленьких экранах - полная ширина */
     margin-bottom: var(--spacing-xs);
   }
-  
+
   .meta-row {
     flex-direction: column;
     gap: var(--spacing-xs);
   }
-  
+
   .features-horizontal {
     gap: var(--spacing-xs);
   }
-  
+
   .features-title {
     font-size: 0.8rem;
   }
-  
+
   .actions-row {
     flex-direction: column;
     gap: var(--spacing-sm);
     margin-top: var(--spacing-md);
   }
-  
+
   .action-btn {
     width: 100%;
     min-height: 48px; /* Увеличиваем для удобства касания */
     font-size: 0.9rem;
   }
-  
+
   .feature-compact {
     min-width: 130px;
     flex-direction: column;
@@ -507,15 +504,14 @@ defineProps({
     text-align: center;
     padding: var(--spacing-sm);
   }
-  
+
   .feature-icon-small {
     font-size: 1rem;
   }
   .features-scroll {
-  display: flex;
-  flex-direction: column;
-  
-}
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* Маленькие мобильные */
@@ -525,34 +521,34 @@ defineProps({
     margin: 0 var(--spacing-xs);
     width: calc(100% - var(--spacing-xs) * 2);
   }
-  
+
   .details-title {
     font-size: 1.1rem;
     -webkit-line-clamp: 2;
   }
-  
+
   .details-description {
     font-size: 0.8rem;
     -webkit-line-clamp: 4; /* На самых маленьких экранах разрешаем 4 строки */
   }
-  
+
   .meta-label {
     font-size: 0.65rem;
   }
-  
+
   .meta-value {
     font-size: 0.8rem;
   }
-  
+
   .features-title {
     font-size: 0.8rem;
   }
-  
+
   .feature-compact {
     min-width: 120px;
     padding: var(--spacing-xs) var(--spacing-sm);
   }
-  
+
   .feature-title-small {
     font-size: 0.7rem;
     line-height: 1.2;
@@ -566,28 +562,27 @@ defineProps({
     margin: 0 8px;
     width: calc(100% - 16px);
   }
-  
+
   .details-title {
     font-size: 1rem;
   }
-  
+
   .details-description {
     font-size: 0.75rem;
   }
-  
+
   .meta-item.compact {
     padding: 8px 10px;
   }
-  
+
   .feature-compact {
     min-width: 110px;
     padding: 6px 8px;
   }
   .features-scroll {
-  display: flex;
-  flex-direction: column;
-  
-}
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* Темная тема */

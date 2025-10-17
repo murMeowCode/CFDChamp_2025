@@ -16,7 +16,7 @@
       <div class="level-badge">
         <span class="level-text">Уровень {{ Level }}</span>
         <div class="level-progress">
-          <div class="progress-fill" :style="{width: '65%'}"></div>
+          <div class="progress-fill" :style="{ width: '65%' }"></div>
         </div>
       </div>
     </header>
@@ -30,7 +30,7 @@
           <span>{{ isEditing ? 'Сохранить' : 'Изменить' }}</span>
         </div>
       </div>
-      
+
       <form @submit.prevent="toggleEdit" class="info-form">
         <!-- Имя -->
         <div class="form-group floating-label">
@@ -84,11 +84,7 @@
                   :placeholder="`Введите ${contact.type}`"
                   class="contact-input"
                 />
-                <button 
-                  type="button" 
-                  class="remove-contact-btn"
-                  @click="removeContact(index)"
-                >
+                <button type="button" class="remove-contact-btn" @click="removeContact(index)">
                   🗑️
                 </button>
               </div>
@@ -113,22 +109,13 @@
         <!-- Дата и пол -->
         <div class="form-row">
           <div class="form-group floating-label half-width">
-            <input
-              :disabled="!isEditing"
-              type="date"
-              v-model="BurthDay"
-              class="floating-input"
-            />
+            <input :disabled="!isEditing" type="date" v-model="BurthDay" class="floating-input" />
             <label>Дата рождения</label>
             <div class="input-decoration"></div>
           </div>
-          
+
           <div class="form-group floating-label half-width">
-            <select
-              :disabled="!isEditing"
-              v-model="selectedOption"
-              class="floating-input"
-            >
+            <select :disabled="!isEditing" v-model="selectedOption" class="floating-input">
               <option value="option1">Мужской</option>
               <option value="option2">Женский</option>
             </select>
@@ -249,11 +236,7 @@
         </div>
 
         <div class="modal-buttons">
-          <button 
-            @click="addContact" 
-            :disabled="!newContactValue.trim()"
-            class="btn-primary"
-          >
+          <button @click="addContact" :disabled="!newContactValue.trim()" class="btn-primary">
             Добавить
           </button>
           <button @click="closeModal" class="btn-secondary">Отмена</button>
@@ -288,59 +271,82 @@ const AboutMe = ref(user.AboutMe)
 import { useAchivesStore } from '@/stores/useAchivesStore';
 import { storeToRefs } from 'pinia';
 
+const { getUser } = storeToRefs(useUserStore())
+
+const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`
+const DateBirthday = getUser.value.birth_Date
+const NickName = getUser.value.username
+const Level = ref(1)
+
+const Profession = getUser.value.role
+const Quote = ref('user.Quote')
+const Email = getUser.value.email
+const Phone = getUser.value.phone
+const BurthDay = getUser.value.birth_Date
+const selectedOption = ref('Мужик')
+const Address = getUser.value.address
+const AboutMe = ref('zzzzzz')
+
+import { useAchivesStore } from '@/stores/useAchivesStore'
+import { storeToRefs } from 'pinia'
+
 const Achives = useAchivesStore()
 
-const isEditing = ref(false);
+const isEditing = ref(false)
 
 // Массив контактов для динамического управления
-const contacts = ref(user.contacts)
+const contacts = ref([
+  { type: 'email', value: Email.value },
+  { type: 'tel', value: Phone.value },
+])
 
-const showContactModal = ref(false);
-const newContactType = ref('email');
-const newContactValue = ref('');
-
-
+const showContactModal = ref(false)
+const newContactType = ref('email')
+const newContactValue = ref('')
 
 function toggleEdit() {
   if (isEditing.value) {
     // Обновляем email и телефон из массива контактов при сохранении
-    const emailContact = contacts.value.find(c => c.type === 'email');
-    const telContact = contacts.value.find(c => c.type === 'tel');
-    Email.value = emailContact ? emailContact.value : '';
-    Phone.value = telContact ? telContact.value : '';
-    alert('Данные сохранены!');
+    const emailContact = contacts.value.find((c) => c.type === 'email')
+    const telContact = contacts.value.find((c) => c.type === 'tel')
+    Email.value = emailContact ? emailContact.value : ''
+    Phone.value = telContact ? telContact.value : ''
+    alert('Данные сохранены!')
   }
-  isEditing.value = !isEditing.value;
+  isEditing.value = !isEditing.value
 }
 
 function addContact() {
   if (newContactValue.value.trim()) {
     contacts.value.push({
       type: newContactType.value,
-      value: newContactValue.value.trim()
-    });
-    closeModal();
+      value: newContactValue.value.trim(),
+    })
+    closeModal()
   }
 }
 
 function closeModal() {
-  showContactModal.value = false;
-  newContactType.value = 'email';
-  newContactValue.value = '';
+  showContactModal.value = false
+  newContactType.value = 'email'
+  newContactValue.value = ''
 }
 </script>
 
-
 <style scoped>
 .main-panel {
-  height: 90vh;
+  height: 80vh;
   display: flex;
   margin: var(--spacing-xl) var(--spacing-2xl);
   background: var(--color-bg);
-  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.1),
+    0 2px 15px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius-2xl);
   overflow: hidden;
-  font-family: var(--font-family-primary);
+  font-family: var(--font-family-sans);
   color: var(--color-text);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -396,6 +402,11 @@ function closeModal() {
   background: linear-gradient(to bottom, transparent 0%, var(--color-bg-subtle) 90%);
 }
 
+.avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
 .avatar-photo {
   width: 140px;
   height: 140px;
@@ -406,8 +417,10 @@ function closeModal() {
   top: 120px;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: var(--shadow-lg);
-  z-index: 2;
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 4px var(--color-primary-soft);
+  z-index: 10;
 }
 
 .avatar-photo img {
@@ -418,13 +431,28 @@ function closeModal() {
 
 .avatar-status {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
+  bottom: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--border-radius-full);
   background: var(--color-success);
-  border: 2px solid var(--color-bg);
+  border: 3px solid var(--color-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+  animation: status-pulse 2s infinite;
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  }
 }
 
 .user-name {
@@ -436,6 +464,7 @@ function closeModal() {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-family: var(--font-family-sans);
 }
 
 .user-profession {
@@ -443,6 +472,7 @@ function closeModal() {
   font-style: italic;
   margin: var(--spacing-xs) 0 var(--spacing-sm);
   font-size: 1.1rem;
+  font-family: var(--font-family-sans);
 }
 
 .user-quote {
@@ -453,6 +483,7 @@ function closeModal() {
   background: var(--color-bg-muted);
   border-radius: var(--border-radius-lg);
   border-left: 4px solid var(--color-primary);
+  font-family: var(--font-family-sans);
 }
 
 .level-badge {
@@ -462,6 +493,7 @@ function closeModal() {
   border-radius: var(--border-radius-full);
   margin: 0 var(--spacing-lg);
   box-shadow: var(--shadow-md);
+  font-family: var(--font-family-sans);
 }
 
 .level-text {
@@ -471,7 +503,7 @@ function closeModal() {
 
 .level-progress {
   height: 4px;
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 2px;
   margin-top: var(--spacing-xs);
   overflow: hidden;
@@ -504,6 +536,7 @@ function closeModal() {
   color: var(--color-text);
   font-weight: var(--font-weight-bold);
   font-size: 1.5rem;
+  font-family: var(--font-family-sans);
 }
 
 .edit-toggle {
@@ -517,6 +550,7 @@ function closeModal() {
   cursor: pointer;
   transition: all var(--transition-normal);
   font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-sans);
 }
 
 .edit-toggle:hover {
@@ -558,6 +592,7 @@ function closeModal() {
   font-size: 1rem;
   transition: all var(--transition-normal);
   color: var(--color-text);
+  font-family: var(--font-family-sans);
 }
 
 .floating-input:focus {
@@ -578,6 +613,7 @@ function closeModal() {
   transition: all var(--transition-normal);
   pointer-events: none;
   font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-sans);
 }
 
 .floating-input:focus + label,
@@ -611,6 +647,7 @@ function closeModal() {
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
   margin-bottom: var(--spacing-md);
+  font-family: var(--font-family-sans);
 }
 
 .contacts-grid {
@@ -638,6 +675,7 @@ function closeModal() {
   font-weight: var(--font-weight-semibold);
   min-width: 60px;
   text-align: center;
+  font-family: var(--font-family-sans);
 }
 
 .contact-input {
@@ -646,6 +684,7 @@ function closeModal() {
   background: transparent;
   color: var(--color-text);
   font-size: 0.9rem;
+  font-family: var(--font-family-sans);
 }
 
 .contact-input:focus {
@@ -661,6 +700,7 @@ function closeModal() {
   transition: background var(--transition-fast);
   width: auto;
   margin: 0;
+  font-family: var(--font-family-sans);
 }
 
 .remove-contact-btn:hover {
@@ -672,6 +712,7 @@ function closeModal() {
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm);
+  font-family: var(--font-family-sans);
 }
 
 .contact-type {
@@ -698,6 +739,7 @@ function closeModal() {
   transition: all var(--transition-normal);
   font-weight: var(--font-weight-medium);
   margin-top: var(--spacing-sm);
+  font-family: var(--font-family-sans);
 }
 
 .add-contact-btn:hover {
@@ -731,6 +773,7 @@ function closeModal() {
   color: var(--color-text);
   font-weight: var(--font-weight-bold);
   font-size: 1.5rem;
+  font-family: var(--font-family-sans);
 }
 
 .online-status {
@@ -739,6 +782,7 @@ function closeModal() {
   gap: var(--spacing-xs);
   font-size: 0.9rem;
   color: var(--color-text-muted);
+  font-family: var(--font-family-sans);
 }
 
 .status-dot {
@@ -750,8 +794,13 @@ function closeModal() {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .profile-stats {
@@ -769,6 +818,7 @@ function closeModal() {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border);
   transition: transform var(--transition-normal);
+  font-family: var(--font-family-sans);
 }
 
 .stat-item:hover {
@@ -804,6 +854,7 @@ function closeModal() {
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-md);
   font-size: 1.1rem;
+  font-family: var(--font-family-sans);
 }
 
 .achievements-grid {
@@ -829,6 +880,7 @@ function closeModal() {
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-border);
   transition: all var(--transition-normal);
+  font-family: var(--font-family-sans);
 }
 
 .achievement-item:hover {
@@ -843,7 +895,7 @@ function closeModal() {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -866,6 +918,7 @@ function closeModal() {
   color: var(--color-text);
   font-weight: var(--font-weight-bold);
   text-align: center;
+  font-family: var(--font-family-sans);
 }
 
 .modal-form {
@@ -881,7 +934,8 @@ function closeModal() {
   justify-content: flex-end;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: var(--spacing-sm) var(--spacing-lg);
   border-radius: var(--border-radius-lg);
   font-weight: var(--font-weight-medium);
@@ -890,6 +944,7 @@ function closeModal() {
   transition: all var(--transition-normal);
   width: auto;
   margin: 0;
+  font-family: var(--font-family-sans);
 }
 
 .btn-primary {
@@ -918,6 +973,7 @@ function closeModal() {
 }
 
 /* Responsive */
+
 @media (max-width: 1080px) {
   .main-panel {
     flex-direction: column;
@@ -936,23 +992,81 @@ function closeModal() {
     padding-bottom: var(--spacing-lg);
   }
 
+  /* ФИКС ДЛЯ SUMMARY-INFO */
+  .summary-info {
+    padding: var(--spacing-lg);
+    box-sizing: border-box;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .profile-stats {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .stat-item {
+    padding: var(--spacing-sm);
+    min-width: 0; /* Важно для ограничения ширины */
+  }
+
+  .stat-value {
+    font-size: 1rem;
+    word-break: break-word;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .achievements-section {
+    min-width: 0; /* Предотвращает выход за границы */
+  }
+
+  .achievements-grid {
+    max-height: 200px;
+    min-width: 0;
+  }
+
+  /* ФИКС ДЛЯ ИНПУТОВ */
+  .personal-info {
+    padding: var(--spacing-lg);
+    box-sizing: border-box;
+  }
+
+  .info-form {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
   .form-row {
     flex-direction: column;
     gap: var(--spacing-lg);
   }
 
-  .profile-stats {
-    grid-template-columns: repeat(4, 1fr);
+  .half-width {
+    width: 100%;
   }
 
-  .achievements-grid {
-    max-height: 200px;
+  .floating-input {
+    max-width: 100%;
+    box-sizing: border-box;
   }
-}
 
-@media (max-width: 768px) {
-  .profile-stats {
-    grid-template-columns: repeat(2, 1fr);
+  input[type='date'].floating-input {
+    min-width: auto;
+    width: 100%;
+  }
+
+  select.floating-input {
+    width: 100%;
+  }
+
+  .textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .section-header {
@@ -960,24 +1074,59 @@ function closeModal() {
     gap: var(--spacing-md);
     align-items: flex-start;
   }
+}
+@media (max-width: 768px) {
+  .summary-info {
+    padding: var(--spacing-md);
+  }
 
-  .contact-item-content {
-    flex-direction: column;
-    align-items: stretch;
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-sm);
   }
 
-  .contact-type-badge {
-    align-self: flex-start;
+  .stat-item {
+    padding: var(--spacing-sm) var(--spacing-xs);
   }
 
-  .modal-buttons {
-    flex-direction: column;
+  .stat-value {
+    font-size: 0.9rem;
   }
 
-  .btn-primary, .btn-secondary {
-    width: 100%;
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .achievements-grid {
+    max-height: 150px;
+  }
+
+  .achievements-section h3 {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-info {
+    padding: var(--spacing-sm);
+  }
+
+  .profile-stats {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  .stat-item {
+    padding: var(--spacing-xs);
+  }
+
+  .online-status {
+    font-size: 0.8rem;
+  }
+
+  .summary-header h2 {
+    font-size: 1.3rem;
   }
 }
 </style>
-

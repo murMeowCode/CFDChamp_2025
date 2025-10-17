@@ -272,8 +272,7 @@ const handleSubmit = async () => {
 
   try {
     // await new Promise((resolve) => setTimeout(resolve, 1500))
-    await useAuth.legacyLogin({username: form.username,
-      password: form.password})
+    await useAuth.legacyLogin({ username: form.username, password: form.password })
     useUser.setUser({
       username: form.username,
       password: form.password,

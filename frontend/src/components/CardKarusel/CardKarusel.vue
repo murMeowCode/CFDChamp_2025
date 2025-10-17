@@ -90,7 +90,7 @@ import { useCardStoreData } from '@/stores/useCardStoreData'
 // Реактивные данные
 const currentIndex = ref(1)
 const translateDistance = ref(140)
-const {getData:cards} = storeToRefs(useCardStoreData())
+const { getData: cards } = storeToRefs(useCardStoreData())
 
 // Вычисляемые свойства
 const navColor = computed(() => {
@@ -127,7 +127,7 @@ const getCardStyle = (index) => {
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
   const opacity = Math.max(0.3, 1 - Math.abs(diff) * 0.4) // Уменьшил минимальную opacity
   const blur = diff === 0 ? '0px' : '3px'
-  
+
   // Скрываем карточки, которые слишком далеко
   const display = Math.abs(diff) > 1 ? 'none' : 'block'
 
@@ -136,7 +136,7 @@ const getCardStyle = (index) => {
     zIndex: zIndex,
     opacity: opacity,
     filter: `blur(${blur})`,
-    display: display
+    display: display,
   }
 }
 
@@ -362,16 +362,16 @@ watch(currentIndex, refreshAOS)
     height: 450px;
     padding: 0 70px;
   }
-  
+
   .carousel-nav {
     width: 52px;
     height: 52px;
   }
-  
+
   .carousel-nav-prev {
     left: 15px;
   }
-  
+
   .carousel-nav-next {
     right: 15px;
   }
@@ -573,11 +573,11 @@ watch(currentIndex, refreshAOS)
     width: 16px;
     height: 16px;
   }
-  
+
   .carousel-nav-prev {
     left: -8px; /* Еще больше выходим за границы */
   }
-  
+
   .carousel-nav-next {
     right: -8px; /* Еще больше выходим за границы */
   }
@@ -588,12 +588,12 @@ watch(currentIndex, refreshAOS)
   .carousel-frame {
     padding: 0 10px;
   }
-  
+
   .carousel-nav {
     width: 24px;
     height: 24px;
   }
-  
+
   .carousel-nav svg {
     width: 14px;
     height: 14px;
