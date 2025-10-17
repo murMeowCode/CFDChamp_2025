@@ -247,12 +247,29 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import UserAchive from '../Achive/UserAchive.vue'
-
-import { useUserStore } from '@/stores/useUserStore'
+import { computed, ref } from 'vue';
+import UserAchive from '../Achive/UserAchive.vue';
+import { useUserStore } from '@/stores/useUserStore';
 import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
+const {getUser} = storeToRefs(useUserStore())
+
+const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`           
+const DateBirthday = getUser.value.birth_Date  
+const NickName = getUser.value.username     
+const Level = ref(user.Level)         
+
+const Profession = getUser.value.role    
+const Quote = ref(user.Quote)         
+const Email = getUser.value.email        
+const Phone = getUser.value.phone         
+const BurthDay = getUser.value.birth_Date        
+const selectedOption = ref(user.selectedOption)       
+const Address = getUser.value.address           
+const AboutMe = ref(user.AboutMe)       
+
+import { useAchivesStore } from '@/stores/useAchivesStore';
+import { storeToRefs } from 'pinia';
 
 const { getUser } = storeToRefs(useUserStore())
 
