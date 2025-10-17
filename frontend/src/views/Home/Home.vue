@@ -1,6 +1,5 @@
 <template>
   <div class="home" data-aos="zoom-out">
-    <h1>Добро</h1>
     <CardKarusel/>
   </div>
 </template>

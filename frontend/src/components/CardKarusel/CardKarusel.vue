@@ -6,30 +6,22 @@
         @click="prevCard"
         aria-label="Предыдущая карточка"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
           <path d="M15 18L9 12L15 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
       
       <div class="carousel-cards">
-        <div 
-          v-for="(card, index) in cards" 
+        <ChildCardKarusel
+          v-for="(card, index) in cards"
           :key="card.id"
-          :class="['card', `card-${index + 1}`, { 'active': currentIndex === index }]"
-          :style="getCardStyle(index)"
-          data-aos="fade-up"
-          :data-aos-duration="500"
-          :data-aos-delay="index * 100"
-        >
-          <div class="card-top"></div>
-          <div class="card-content">
-            <div class="line" style="width: 100%"></div>
-            <div class="line" style="width: 90%"></div>
-            <div class="line" style="width: 70%"></div>
-            <div class="line" style="width: 80%"></div>
-            <div class="line" style="width: 50%"></div>
-          </div>
-        </div>
+          :title="card.title"
+          :subtitle="card.subtitle"
+          :img="card.img"
+          :active="currentIndex === index"
+          :card-style="getCardStyle(index)"
+          @card-click="goToCard(index)"
+        />
       </div>
 
       <button 
@@ -37,7 +29,7 @@
         @click="nextCard"
         aria-label="Следующая карточка"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
           <path d="M9 18L15 12L9 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
@@ -50,24 +42,41 @@
         :class="['indicator', { 'active': currentIndex === index }]"
         @click="goToCard(index)"
         :aria-label="`Перейти к карточке ${index + 1}`"
-      ></button>
+      >
+        <div class="indicator-progress" v-if="currentIndex === index"></div>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { AOS } from 'aos'
 import { ref, computed, onMounted, watch } from 'vue'
+import ChildCardKarusel from './ChildCardKarusel.vue'
 
 // Реактивные данные
 const currentIndex = ref(1) // Начинаем с центральной карточки
-const translateDistance = ref(120)
+const translateDistance = ref(200) // Увеличили расстояние для больших карточек
 
-// Данные карточек
+// Данные карточек с реальным контентом
 const cards = ref([
-  { id: 1, content: 'Card 1' },
-  { id: 2, content: 'Card 2' },
-  { id: 3, content: 'Card 3' }
+  { 
+    id: 1, 
+    title: 'CFDChamp Pro Series', 
+    subtitle: 'Элитные соревнования с призовым фондом до $50,000',
+    img: '/images/tournament.jpg'
+  },
+  { 
+    id: 2, 
+    title: 'Командные баталии', 
+    subtitle: 'Объединяйтесь с командой и покоряйте вершины вместе',
+    img: '/images/team-battle.jpg'
+  },
+  { 
+    id: 3, 
+    title: 'Образовательная платформа', 
+    subtitle: 'Мастер-классы от профессионалов индустрии',
+    img: '/images/education.jpg'
+  }
 ])
 
 // Вычисляемые свойства
@@ -77,26 +86,26 @@ const navColor = computed(() => {
 
 // Методы
 const nextCard = () => {
- 
   currentIndex.value = (currentIndex.value + 1) % cards.value.length
+  refreshAOS()
 }
 
 const prevCard = () => {
- 
   currentIndex.value = currentIndex.value === 0 ? cards.value.length - 1 : currentIndex.value - 1
+  refreshAOS()
 }
 
 const goToCard = (index) => {
-
   currentIndex.value = index
+  refreshAOS()
 }
 
 const getCardStyle = (index) => {
   const diff = index - currentIndex.value
-  const scale = diff === 0 ? 1 : 0.85
+  const scale = diff === 0 ? 1 : 0.75 // Увеличили разницу в масштабе
   const translateX = diff * translateDistance.value
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
-  const opacity = Math.max(0.6, 1 - Math.abs(diff) * 0.3)
+  const opacity = Math.max(0.4, 1 - Math.abs(diff) * 0.4) // Увеличили разницу в прозрачности
 
   return {
     transform: `translateX(${translateX}px) scale(${scale})`,
@@ -105,9 +114,16 @@ const getCardStyle = (index) => {
   }
 }
 
+const refreshAOS = () => {
+  if (typeof AOS !== 'undefined') {
+    setTimeout(() => {
+      AOS.refresh()
+    }, 50)
+  }
+}
+
 // Хуки жизненного цикла
 onMounted(() => {
-  // Инициализируем AOS если еще не инициализирована
   if (typeof AOS !== 'undefined') {
     AOS.init({
       duration: 500,
@@ -117,15 +133,8 @@ onMounted(() => {
   }
 })
 
-// Наблюдатель за изменением currentIndex для обновления AOS
-watch(currentIndex, () => {
-  if (typeof AOS !== 'undefined') {
-    // Небольшая задержка для обновления после смены карточки
-    setTimeout(() => {
-      AOS.refresh()
-    }, 50)
-  }
-})
+// Наблюдатель за изменением currentIndex
+watch(currentIndex, refreshAOS)
 </script>
 
 <style scoped>
@@ -134,15 +143,16 @@ watch(currentIndex, () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-2xl);
   padding: var(--spacing-2xl) 0;
+  position: relative;
 }
 
 .carousel-frame {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  height: 300px;
+  max-width: 1200px;
+  height: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,88 +167,12 @@ watch(currentIndex, () => {
   justify-content: center;
 }
 
-.card {
-  position: absolute;
-  width: 280px;
-  height: 240px;
-  background: var(--color-bg-subtle);
-  border-radius: var(--border-radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-border);
-  transition: all var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-5px) scale(1.02);
-}
-
-.card.active:hover {
-  transform: translateY(-5px) scale(1.05);
-}
-
-.card-top {
-  width: 100%;
-  height: 20%;
-  background: var(--color-primary);
-  position: relative;
-  overflow: hidden;
-}
-
-.card-top::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-}
-
-.card-content {
-  padding: 16% 12%;
-  height: 80%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.line {
-  height: 12px;
-  background: var(--color-bg-muted);
-  border-radius: var(--border-radius-full);
-  transition: all var(--transition-normal);
-  position: relative;
-  overflow: hidden;
-}
-
-.line::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer 2s infinite;
-}
-
-.card:hover .line {
-  background: var(--color-border);
-}
-
-.card.active .line {
-  background: var(--color-primary-soft);
-}
-
 .carousel-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border: none;
   border-radius: var(--border-radius-full);
   background: var(--color-primary);
@@ -248,14 +182,33 @@ watch(currentIndex, () => {
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-xl);
   z-index: 10;
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.carousel-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--border-radius-full);
+  padding: 2px;
+  background: var(--gradient-primary);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: subtract;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.carousel-nav:hover::before {
+  opacity: 1;
 }
 
 .carousel-nav:hover {
   background: var(--color-primary-hover);
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-50%) scale(1.15);
+  box-shadow: var(--shadow-2xl);
 }
 
 .carousel-nav:active {
@@ -263,84 +216,91 @@ watch(currentIndex, () => {
 }
 
 .carousel-nav-prev {
-  left: -24px;
+  left: -32px;
 }
 
 .carousel-nav-next {
-  right: -24px;
-}
-
-.carousel-nav:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: translateY(-50%) scale(1);
-}
-
-.carousel-nav:disabled:hover {
-  background: var(--color-primary);
-  transform: translateY(-50%) scale(1);
+  right: -32px;
 }
 
 .carousel-indicators {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--color-bg-subtle);
+  border-radius: var(--border-radius-2xl);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
 }
 
 .indicator {
-  width: 12px;
-  height: 12px;
+  position: relative;
+  width: 16px;
+  height: 16px;
   border-radius: var(--border-radius-full);
-  border: none;
-  background: var(--color-border);
+  border: 2px solid var(--color-border);
+  background: transparent;
   cursor: pointer;
   transition: all var(--transition-normal);
+  overflow: hidden;
 }
 
 .indicator:hover {
-  background: var(--color-primary);
-  transform: scale(1.2);
+  border-color: var(--color-primary);
+  transform: scale(1.3);
 }
 
 .indicator.active {
+  border-color: var(--color-primary);
   background: var(--color-primary);
-  transform: scale(1.2);
+  transform: scale(1.3);
 }
 
-/* Анимации */
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
+.indicator-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: var(--border-radius-full);
+  animation: pulse 2s infinite;
 }
 
-/* Анимации переключения карточек */
-.card {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
 }
 
 /* Адаптивность */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .carousel-frame {
-    max-width: 400px;
-    height: 280px;
-  }
-  
-  .card {
-    width: 240px;
-    height: 200px;
+    max-width: 1000px;
+    height: 500px;
   }
   
   .translate-distance {
-    transform: translateX(100px);
+    transform: translateX(180px);
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-frame {
+    max-width: 700px;
+    height: 400px;
   }
   
   .carousel-nav {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
   }
   
   .carousel-nav-prev {
@@ -350,64 +310,43 @@ watch(currentIndex, () => {
   .carousel-nav-next {
     right: -20px;
   }
+  
+  .carousel-indicators {
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+  
+  .indicator {
+    width: 14px;
+    height: 14px;
+  }
 }
 
 @media (max-width: 480px) {
   .carousel-container {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-xl) 0;
   }
   
   .carousel-frame {
-    max-width: 320px;
-    height: 250px;
-  }
-  
-  .card {
-    width: 200px;
-    height: 180px;
+    max-width: 350px;
+    height: 300px;
   }
   
   .carousel-nav {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
   
   .carousel-nav-prev {
-    left: -18px;
+    left: -15px;
   }
   
   .carousel-nav-next {
-    right: -18px;
+    right: -15px;
   }
   
-  .card-content {
-    padding: 12% 10%;
+  .carousel-indicators {
+    padding: var(--spacing-sm);
   }
-  
-  .line {
-    height: 10px;
-  }
-}
-
-/* Темная тема */
-[data-theme='dark'] .card {
-  background: var(--color-bg-elevated);
-  border-color: var(--color-border-strong);
-}
-
-[data-theme='dark'] .line {
-  background: var(--color-bg-muted);
-}
-
-[data-theme='dark'] .card:hover .line {
-  background: var(--color-border-hover);
-}
-
-[data-theme='dark'] .card.active .line {
-  background: var(--color-primary-muted);
-}
-
-[data-theme='dark'] .indicator {
-  background: var(--color-border-strong);
 }
 </style>
