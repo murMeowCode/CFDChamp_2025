@@ -52,9 +52,9 @@ const router = createRouter({
       name: 'forgot',
       component: MyForgotPassword,
     },
-     {
-      path: "/:any(.*)",
-      name: "e404",
+    {
+      path: '/:any(.*)',
+      name: 'e404',
       component: NotFound,
     },
   ],

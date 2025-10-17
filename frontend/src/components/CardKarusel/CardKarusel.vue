@@ -3,16 +3,22 @@
     <!-- Карусель карточек -->
     <div class="carousel-section">
       <div class="carousel-frame">
-        <button 
-          class="carousel-nav carousel-nav-prev" 
+        <button
+          class="carousel-nav carousel-nav-prev"
           @click="prevCard"
           aria-label="Предыдущая карточка"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18L9 12L15 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M15 18L9 12L15 6"
+              :stroke="navColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </button>
-        
+
         <div class="carousel-cards-wrapper">
           <div class="carousel-cards">
             <ChildCardKarusel
@@ -28,13 +34,19 @@
           </div>
         </div>
 
-        <button 
-          class="carousel-nav carousel-nav-next" 
+        <button
+          class="carousel-nav carousel-nav-next"
           @click="nextCard"
           aria-label="Следующая карточка"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M9 18L15 12L9 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M9 18L15 12L9 6"
+              :stroke="navColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </button>
       </div>
@@ -44,7 +56,7 @@
         <button
           v-for="(card, index) in cards"
           :key="`indicator-${card.id}`"
-          :class="['indicator', { 'active': currentIndex === index }]"
+          :class="['indicator', { active: currentIndex === index }]"
           @click="goToCard(index)"
           :aria-label="`Перейти к карточке ${index + 1}`"
         >
@@ -71,19 +83,21 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import ChildCardKarusel from './ChildCardKarusel.vue'
 import CarouselDetails from './CarouselDetails.vue'
+import ph from '@/assets/image.png'
 
 // Реактивные данные
 const currentIndex = ref(1)
-const translateDistance = ref(140) // Уменьшил расстояние для компактной карусели
+const translateDistance = ref(140)
 
 // Данные карточек с полной информацией
 const cards = ref([
-  { 
-    id: 1, 
-    title: 'CFDChamp Pro Series', 
+  {
+    id: 1,
+    title: 'CFDChamp Pro Series',
     subtitle: 'Элитные соревнования с призовым фондом до $50,000',
-    img: '/images/tournament.jpg',
-    description: 'Премиальная серия турниров для профессиональных трейдеров. Участвуйте в еженедельных соревнованиях, демонстрируйте свои навыки и соревнуйтесь с лучшими трейдерами со всего мира. Каждый турнир предлагает уникальные условия и вызовы.',
+    img: ph,
+    description:
+      'Премиальная серия турниров для профессиональных трейдеров. Участвуйте в еженедельных соревнованиях, демонстрируйте свои навыки и соревнуйтесь с лучшими трейдерами со всего мира. Каждый турнир предлагает уникальные условия и вызовы.',
     duration: '2 недели',
     participants: '500+ участников',
     prize: '$50,000',
@@ -91,31 +105,32 @@ const cards = ref([
       {
         icon: '🎯',
         title: 'Профессиональная аналитика',
-        text: 'Доступ к премиум инструментам анализа рынка'
+        text: 'Доступ к премиум инструментам анализа рынка',
       },
       {
         icon: '📊',
         title: 'Реальные-time данные',
-        text: 'Работа с актуальными рыночными данными'
+        text: 'Работа с актуальными рыночными данными',
       },
       {
         icon: '🏆',
         title: 'Эксклюзивные награды',
-        text: 'Уникальные призы и признание в сообществе'
+        text: 'Уникальные призы и признание в сообществе',
       },
       {
         icon: '👨‍💼',
         title: 'Менторская поддержка',
-        text: 'Консультации от опытных профессионалов'
-      }
-    ]
+        text: 'Консультации от опытных профессионалов',
+      },
+    ],
   },
-  { 
-    id: 2, 
-    title: 'Командные баталии', 
+  {
+    id: 2,
+    title: 'Командные баталии',
     subtitle: 'Объединяйтесь с командой и покоряйте вершины вместе',
-    img: '/images/team-battle.jpg',
-    description: 'Командные соревнования где стратегия и координация решают все. Соберите команду единомышленников, разрабатывайте совместные стратегии и соревнуйтесь с другими командами за звание лучшей торговой команды сезона.',
+    img: ph,
+    description:
+      'Командные соревнования где стратегия и координация решают все. Соберите команду единомышленников, разрабатывайте совместные стратегии и соревнуйтесь с другими командами за звание лучшей торговой команды сезона.',
     duration: '1 месяц',
     participants: '200 команд',
     prize: '$25,000',
@@ -123,31 +138,32 @@ const cards = ref([
       {
         icon: '🤝',
         title: 'Командная стратегия',
-        text: 'Совместная разработка торговых подходов'
+        text: 'Совместная разработка торговых подходов',
       },
       {
         icon: '📈',
         title: 'Синхронная торговля',
-        text: 'Координация действий в реальном времени'
+        text: 'Координация действий в реальном времени',
       },
       {
         icon: '🎮',
         title: 'Тактические сессии',
-        text: 'Совместные обсуждения и планирование'
+        text: 'Совместные обсуждения и планирование',
       },
       {
         icon: '🌟',
         title: 'Лидерборды команд',
-        text: 'Рейтинги и статистика командных результатов'
-      }
-    ]
+        text: 'Рейтинги и статистика командных результатов',
+      },
+    ],
   },
-  { 
-    id: 3, 
-    title: 'Образовательная платформа', 
+  {
+    id: 3,
+    title: 'Образовательная платформа',
     subtitle: 'Мастер-классы от профессионалов индустрии',
-    img: '/images/education.jpg',
-    description: 'Комплексная образовательная программа для трейдеров всех уровней. От начинающих до продвинутых стратегий. Интерактивные курсы, вебинары с экспертами и практические задания помогут вам совершенствовать свои навыки.',
+    img: ph,
+    description:
+      'Комплексная образовательная программа для трейдеров всех уровней. От начинающих до продвинутых стратегий. Интерактивные курсы, вебинары с экспертами и практические задания помогут вам совершенствовать свои навыки.',
     duration: 'Постоянно',
     participants: '1000+ студентов',
     prize: 'Сертификаты',
@@ -155,31 +171,32 @@ const cards = ref([
       {
         icon: '📚',
         title: 'Структурированные курсы',
-        text: 'Пошаговое обучение от основ до продвинутых техник'
+        text: 'Пошаговое обучение от основ до продвинутых техник',
       },
       {
         icon: '🎥',
         title: 'Экспертные вебинары',
-        text: 'Прямые эфиры с успешными трейдерами'
+        text: 'Прямые эфиры с успешными трейдерами',
       },
       {
         icon: '🛠️',
         title: 'Практические задания',
-        text: 'Реальные кейсы и торговые симуляции'
+        text: 'Реальные кейсы и торговые симуляции',
       },
       {
         icon: '📱',
         title: 'Мобильное обучение',
-        text: 'Доступ к материалам с любого устройства'
-      }
-    ]
+        text: 'Доступ к материалам с любого устройства',
+      },
+    ],
   },
-  { 
-    id: 4, 
-    title: 'Еженедельные турниры', 
+  {
+    id: 4,
+    title: 'Еженедельные турниры',
     subtitle: 'Быстрые соревнования для всех уровней',
-    img: '/images/weekly-tournament.jpg',
-    description: 'Регулярные турниры с быстрыми результатами. Идеально подходят для начинающих и опытных трейдеров, желающих проверить свои навыки в сжатые сроки.',
+    img: ph,
+    description:
+      'Регулярные турниры с быстрыми результатами. Идеально подходят для начинающих и опытных трейдеров, желающих проверить свои навыки в сжатые сроки.',
     duration: '1 неделя',
     participants: '300+ участников',
     prize: '$10,000',
@@ -187,30 +204,33 @@ const cards = ref([
       {
         icon: '⚡',
         title: 'Быстрый старт',
-        text: 'Начните участвовать сразу после регистрации'
+        text: 'Начните участвовать сразу после регистрации',
       },
       {
         icon: '📅',
         title: 'Регулярность',
-        text: 'Новые турниры каждую неделю'
+        text: 'Новые турниры каждую неделю',
       },
       {
         icon: '🎯',
         title: 'Разные форматы',
-        text: 'Разнообразные условия и правила'
+        text: 'Разнообразные условия и правила',
       },
       {
         icon: '📊',
         title: 'Мгновенные результаты',
-        text: 'Быстрое подведение итогов'
-      }
-    ]
-  }
+        text: 'Быстрое подведение итогов',
+      },
+    ],
+  },
 ])
 
 // Вычисляемые свойства
 const navColor = computed(() => {
-  return getComputedStyle(document.documentElement).getPropertyValue('--color-text-inverted').trim() || '#ffffff'
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue('--color-text-inverted').trim() ||
+    '#ffffff'
+  )
 })
 
 const currentCard = computed(() => {
@@ -235,19 +255,17 @@ const goToCard = (index) => {
 
 const getCardStyle = (index) => {
   const diff = index - currentIndex.value
-  const scale = diff === 0 ? 1 : 0.75 // Уменьшил масштаб неактивных карточек
+  const scale = diff === 0 ? 1 : 0.75
   const translateX = diff * translateDistance.value
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
   const opacity = Math.max(0.5, 1 - Math.abs(diff) * 0.4)
-  
-  // Добавляем blur для неактивных карточек
   const blur = diff === 0 ? '0px' : '3px'
 
   return {
     transform: `translate(calc(-50% + ${translateX}px), -50%) scale(${scale})`,
     zIndex: zIndex,
     opacity: opacity,
-    filter: `blur(${blur})`
+    filter: `blur(${blur})`,
   }
 }
 
@@ -265,7 +283,7 @@ onMounted(() => {
     AOS.init({
       duration: 500,
       once: false,
-      mirror: true
+      mirror: true,
     })
   }
 })
@@ -299,13 +317,13 @@ watch(currentIndex, refreshAOS)
 .carousel-frame {
   position: relative;
   width: 100%;
-  max-width: 1200px;
-  height: 375px; /* Уменьшил на 25% с 500px до 375px */
+  max-width: 1400px; /* Увеличил максимальную ширину */
+  height: 500px; /* Увеличил на 33% с 375px до 500px */
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  padding: 0 100px;
+  padding: 0 120px; /* Увеличил паддинг для стрелок */
 }
 
 .carousel-cards-wrapper {
@@ -338,8 +356,8 @@ watch(currentIndex, refreshAOS)
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
+  width: 56px; /* Увеличил размер стрелок */
+  height: 56px;
   border: none;
   border-radius: var(--border-radius-full);
   background: var(--color-primary);
@@ -349,10 +367,10 @@ watch(currentIndex, refreshAOS)
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: var(--shadow-lg);
-  z-index: 20;
+  box-shadow: var(--shadow-xl);
+  z-index: 50; /* Увеличил z-index чтобы стрелки были поверх всего */
   backdrop-filter: var(--backdrop-blur);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .carousel-nav::before {
@@ -362,7 +380,9 @@ watch(currentIndex, refreshAOS)
   border-radius: var(--border-radius-full);
   padding: 2px;
   background: var(--gradient-primary);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: subtract;
   opacity: 0;
   transition: opacity var(--transition-normal);
@@ -374,8 +394,8 @@ watch(currentIndex, refreshAOS)
 
 .carousel-nav:hover {
   background: var(--color-primary-hover);
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-50%) scale(1.15);
+  box-shadow: var(--shadow-2xl);
 }
 
 .carousel-nav:active {
@@ -383,15 +403,16 @@ watch(currentIndex, refreshAOS)
 }
 
 .carousel-nav-prev {
-  left: 20px;
+  left: 30px; /* Увеличил отступ от края */
 }
 
 .carousel-nav-next {
-  right: 20px;
+  right: 30px; /* Увеличил отступ от края */
 }
 
 .carousel-indicators {
   display: flex;
+  margin-top: 2rem;
   gap: var(--spacing-md);
   align-items: center;
   padding: var(--spacing-md);
@@ -441,7 +462,7 @@ watch(currentIndex, refreshAOS)
 .details-section {
   flex: 1;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px; /* Увеличил максимальную ширину */
   margin: 0 auto;
   padding: var(--spacing-xl) var(--spacing-lg);
   background: var(--color-bg);
@@ -450,7 +471,8 @@ watch(currentIndex, refreshAOS)
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -463,29 +485,51 @@ watch(currentIndex, refreshAOS)
 /* ========== АДАПТИВНОСТЬ ========== */
 
 /* Большие планшеты и маленькие десктопы */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .carousel-frame {
-    max-width: 1000px;
-    height: 350px;
-    padding: 0 80px;
-  }
-  
-  .details-section {
-    max-width: 900px;
-    padding: var(--spacing-lg) var(--spacing-md);
+    max-width: 1200px;
+    height: 450px;
+    padding: 0 100px;
   }
   
   .carousel-nav {
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
   }
   
   .carousel-nav-prev {
-    left: 15px;
+    left: 25px;
   }
   
   .carousel-nav-next {
-    right: 15px;
+    right: 25px;
+  }
+}
+
+/* Большие планшеты и маленькие десктопы */
+@media (max-width: 1200px) {
+  .carousel-frame {
+    max-width: 1000px;
+    height: 420px;
+    padding: 0 90px;
+  }
+
+  .details-section {
+    max-width: 1000px;
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .carousel-nav {
+    width: 48px;
+    height: 48px;
+  }
+
+  .carousel-nav-prev {
+    left: 20px;
+  }
+
+  .carousel-nav-next {
+    right: 20px;
   }
 }
 
@@ -495,36 +539,36 @@ watch(currentIndex, refreshAOS)
     padding: var(--spacing-lg) 0;
     gap: var(--spacing-md);
   }
-  
+
   .carousel-frame {
     max-width: 800px;
-    height: 320px;
-    padding: 0 70px;
+    height: 380px;
+    padding: 0 80px;
   }
-  
+
   .carousel-nav {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
   }
-  
+
   .carousel-nav-prev {
-    left: 10px;
+    left: 15px;
   }
-  
+
   .carousel-nav-next {
-    right: 10px;
+    right: 15px;
   }
-  
+
   .carousel-indicators {
     padding: var(--spacing-sm);
     gap: var(--spacing-sm);
   }
-  
+
   .indicator {
     width: 10px;
     height: 10px;
   }
-  
+
   .details-section {
     max-width: 800px;
     padding: var(--spacing-lg) var(--spacing-md);
@@ -536,30 +580,26 @@ watch(currentIndex, refreshAOS)
   .carousel-section {
     padding: var(--spacing-md) 0;
   }
-  
+
   .carousel-frame {
     max-width: 100%;
-    height: 280px;
-    padding: 0 60px;
+    height: 350px;
+    padding: 0 70px;
   }
-  
+
   .carousel-nav {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
-  
+
   .carousel-nav-prev {
-    left: 8px;
+    left: 12px;
   }
-  
+
   .carousel-nav-next {
-    right: 8px;
+    right: 12px;
   }
-  
-  .translate-distance {
-    transform: translateX(100px);
-  }
-  
+
   .details-section {
     padding: var(--spacing-md);
     max-width: 100%;
@@ -569,27 +609,27 @@ watch(currentIndex, refreshAOS)
 /* Мобильные устройства */
 @media (max-width: 640px) {
   .carousel-frame {
-    height: 250px;
-    padding: 0 50px;
+    height: 320px;
+    padding: 0 60px;
   }
-  
+
   .carousel-nav {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
   }
-  
+
   .carousel-nav-prev {
-    left: 5px;
+    left: 8px;
   }
-  
+
   .carousel-nav-next {
-    right: 5px;
+    right: 8px;
   }
-  
+
   .carousel-indicators {
-    padding: 10px 12px;
+    padding: 12px 14px;
   }
-  
+
   .indicator {
     width: 8px;
     height: 8px;
@@ -601,38 +641,46 @@ watch(currentIndex, refreshAOS)
   .carousel-container {
     min-height: auto;
   }
-  
+
   .carousel-section {
     padding: var(--spacing-sm) 0;
     gap: var(--spacing-sm);
   }
-  
+
   .carousel-frame {
-    height: 220px;
-    padding: 0 40px;
+    height: 300px;
+    padding: 0 50px;
   }
-  
+
   .carousel-nav {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
-  
+
   .carousel-nav svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
-  
+
+  .carousel-nav-prev {
+    left: 5px;
+  }
+
+  .carousel-nav-next {
+    right: 5px;
+  }
+
   .carousel-indicators {
-    padding: 8px 10px;
-    gap: 8px;
+    padding: 10px 12px;
+    gap: 10px;
   }
-  
+
   .indicator {
-    width: 6px;
-    height: 6px;
-    border-width: 1px;
+    width: 7px;
+    height: 7px;
+    border-width: 1.5px;
   }
-  
+
   .details-section {
     padding: var(--spacing-sm);
   }
@@ -641,18 +689,26 @@ watch(currentIndex, refreshAOS)
 /* Очень маленькие экраны */
 @media (max-width: 360px) {
   .carousel-frame {
-    height: 200px;
-    padding: 0 30px;
+    height: 280px;
+    padding: 0 40px;
   }
-  
+
   .carousel-nav {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .carousel-nav svg {
+    width: 16px;
+    height: 16px;
   }
   
-  .carousel-nav svg {
-    width: 14px;
-    height: 14px;
+  .carousel-nav-prev {
+    left: 3px;
+  }
+  
+  .carousel-nav-next {
+    right: 3px;
   }
 }
 </style>

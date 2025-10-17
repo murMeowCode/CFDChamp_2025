@@ -5,18 +5,18 @@
       <div class="error-glow error-glow-2"></div>
       <div class="error-glow error-glow-3"></div>
     </div>
-    
+
     <div class="error-container">
       <div class="error-content">
         <div class="error-header">
           <div class="error-number">
             <span class="number-digit">4</span>
             <div class="error-orb">
-              <svg 
-                class="face" 
-                viewBox="0 0 320 380" 
-                width="120" 
-                height="142" 
+              <svg
+                class="face"
+                viewBox="0 0 320 380"
+                width="120"
+                height="142"
                 aria-label="Анимированное лицо 404"
               >
                 <g
@@ -29,40 +29,40 @@
                   <g class="face__eyes" transform="translate(0, 112.5)">
                     <g transform="translate(15, 0)">
                       <polyline class="face__eye-lid" points="37,0 0,120 75,120" />
-                      <polyline 
-                        class="face__pupil" 
-                        points="55,120 55,155" 
-                        stroke-dasharray="35 35" 
+                      <polyline
+                        class="face__pupil"
+                        points="55,120 55,155"
+                        stroke-dasharray="35 35"
                       />
                     </g>
                     <g transform="translate(230, 0)">
                       <polyline class="face__eye-lid" points="37,0 0,120 75,120" />
-                      <polyline 
-                        class="face__pupil" 
-                        points="55,120 55,155" 
-                        stroke-dasharray="35 35" 
+                      <polyline
+                        class="face__pupil"
+                        points="55,120 55,155"
+                        stroke-dasharray="35 35"
                       />
                     </g>
                   </g>
-                  <rect 
-                    class="face__nose" 
-                    rx="4" 
-                    ry="4" 
-                    x="132.5" 
-                    y="112.5" 
-                    width="55" 
-                    height="155" 
+                  <rect
+                    class="face__nose"
+                    rx="4"
+                    ry="4"
+                    x="132.5"
+                    y="112.5"
+                    width="55"
+                    height="155"
                   />
                   <g stroke-dasharray="102 102" transform="translate(65, 334)">
-                    <path 
-                      class="face__mouth-left" 
-                      d="M 0 30 C 0 30 40 0 95 0" 
-                      stroke-dashoffset="-102" 
+                    <path
+                      class="face__mouth-left"
+                      d="M 0 30 C 0 30 40 0 95 0"
+                      stroke-dashoffset="-102"
                     />
-                    <path 
-                      class="face__mouth-right" 
-                      d="M 95 0 C 150 0 190 30 190 30" 
-                      stroke-dashoffset="102" 
+                    <path
+                      class="face__mouth-right"
+                      d="M 95 0 C 150 0 190 30 190 30"
+                      stroke-dashoffset="102"
                     />
                   </g>
                 </g>
@@ -75,8 +75,8 @@
         <div class="error-text">
           <h1 class="error-title">Страница не найдена</h1>
           <p class="error-description">
-            Кажется, мы не можем найти то, что вы ищете. 
-            Возможно, страница была перемещена или удалена.
+            Кажется, мы не можем найти то, что вы ищете. Возможно, страница была перемещена или
+            удалена.
           </p>
         </div>
 
@@ -90,8 +90,6 @@
             На главную страницу
           </button>
         </div>
-
-       
       </div>
     </div>
   </div>
@@ -102,21 +100,24 @@ export default {
   name: 'Error404',
   computed: {
     currentColor() {
-      return getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#3b82f6';
-    }
+      return (
+        getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() ||
+        '#3b82f6'
+      )
+    },
   },
   methods: {
     goBack() {
       if (window.history.length > 2) {
-        this.$router.go(-1);
+        this.$router.go(-1)
       } else {
-        this.goHome();
+        this.goHome()
       }
     },
     goHome() {
-      this.$router.push('/');
-    }
-  }
+      this.$router.push('/')
+    },
+  },
 }
 </script>
 
@@ -222,7 +223,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
+  box-shadow:
     var(--shadow-xl),
     inset 0 2px 4px rgba(255, 255, 255, 0.1);
   border: 1px solid var(--color-border);
@@ -237,7 +238,7 @@ export default {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 .face {
@@ -301,7 +302,7 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left var(--transition-slow);
 }
 
@@ -384,7 +385,8 @@ export default {
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) scale(1);
   }
   50% {
@@ -512,34 +514,34 @@ export default {
   .error-number {
     gap: var(--spacing-sm);
   }
-  
+
   .number-digit {
     font-size: 6rem;
   }
-  
+
   .error-orb {
     width: 120px;
     height: 120px;
   }
-  
+
   .error-title {
     font-size: 2rem;
   }
-  
+
   .error-description {
     font-size: 1.125rem;
   }
-  
+
   .error-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .btn {
     width: 220px;
     justify-content: center;
   }
-  
+
   .face {
     width: 100px;
     height: 118px;
@@ -550,28 +552,28 @@ export default {
   .error-page {
     padding: var(--spacing-md);
   }
-  
+
   .number-digit {
     font-size: 4rem;
   }
-  
+
   .error-orb {
     width: 100px;
     height: 100px;
   }
-  
+
   .error-title {
     font-size: 1.75rem;
   }
-  
+
   .error-description {
     font-size: 1rem;
   }
-  
+
   .error-suggestions {
     padding: var(--spacing-lg);
   }
-  
+
   .face {
     width: 80px;
     height: 95px;
@@ -581,7 +583,7 @@ export default {
 /* Dark theme enhancements */
 [data-theme='dark'] .error-orb {
   background: var(--color-bg-elevated);
-  box-shadow: 
+  box-shadow:
     var(--shadow-xl),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }

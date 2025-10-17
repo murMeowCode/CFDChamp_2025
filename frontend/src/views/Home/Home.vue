@@ -1,11 +1,11 @@
 <template>
   <div class="home" data-aos="zoom-out">
-    <CardKarusel/>
+    <CardKarusel />
   </div>
 </template>
 
 <script setup>
-import CardKarusel from '@/components/CardKarusel/CardKarusel.vue';
+import CardKarusel from '@/components/CardKarusel/CardKarusel.vue'
 import MyNotifi from '@/components/Notyfi/MyNotifi.vue'
 </script>
 

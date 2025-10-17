@@ -20,7 +20,7 @@ import MainHead from './components/Header/MainHead.vue'
 
 .page-container {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1800px;
   margin: 0 auto;
 }
 </style>

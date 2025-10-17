@@ -31,11 +31,11 @@
               @focus="handleInputFocus('email')"
               @blur="handleInputBlur('email')"
             />
-            <label 
-              for="email" 
+            <label
+              for="email"
               class="floating-label"
               :class="{
-                'floating-label--active': form.email || isFocused.email
+                'floating-label--active': form.email || isFocused.email,
               }"
             >
               <i class="pi pi-envelope"></i>
@@ -71,10 +71,7 @@
 
         <!-- Дополнительные действия -->
         <div class="form-actions">
-          <RouterLink 
-            :to="{ name: 'login' }" 
-            class="back-link beauty-link"
-          >
+          <RouterLink :to="{ name: 'login' }" class="back-link beauty-link">
             <i class="pi pi-arrow-left"></i>
             Вернуться к входу
           </RouterLink>
@@ -89,13 +86,13 @@
         <div class="success-content">
           <h3 class="success-title">Письмо отправлено!</h3>
           <p class="success-description">
-            Мы отправили ссылку для сброса пароля на адрес 
-            <strong>{{ form.email }}</strong>. 
-            Проверьте вашу почту.
+            Мы отправили ссылку для сброса пароля на адрес
+            <strong>{{ form.email }}</strong
+            >. Проверьте вашу почту.
           </p>
           <div class="success-actions">
-            <button 
-              @click="handleResend" 
+            <button
+              @click="handleResend"
               class="resend-button beauty-button beauty-button--outline"
               :disabled="isResending"
             >
@@ -121,12 +118,12 @@ const notifications = useNotificationsStore()
 
 // Состояние формы
 const form = reactive({
-  email: ''
+  email: '',
 })
 
 // Ошибки валидации
 const errors = reactive({
-  email: ''
+  email: '',
 })
 
 // Состояние UI
@@ -138,7 +135,7 @@ let cooldownTimer = null
 
 // Отслеживание фокуса
 const isFocused = reactive({
-  email: false
+  email: false,
 })
 
 // Обработчики фокуса
@@ -194,22 +191,15 @@ const handleSubmit = async () => {
   try {
     // Имитация API запроса
     await new Promise((resolve) => setTimeout(resolve, 1500))
-    
+
     // Успешная отправка
     isSuccess.value = true
     startCooldown()
-    
-    notifications.success(
-      'Ссылка для восстановления отправлена на вашу почту',
-      'Проверьте email'
-    )
-    
+
+    notifications.success('Ссылка для восстановления отправлена на вашу почту', 'Проверьте email')
   } catch (error) {
     console.error('Ошибка восстановления:', error)
-    notifications.error(
-      'Произошла ошибка при отправке ссылки',
-      'Попробуйте еще раз'
-    )
+    notifications.error('Произошла ошибка при отправке ссылки', 'Попробуйте еще раз')
   } finally {
     isSubmitting.value = false
   }
@@ -223,10 +213,9 @@ const handleResend = async () => {
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    
+
     startCooldown()
     notifications.info('Ссылка отправлена повторно', 'Проверьте почту')
-    
   } catch (error) {
     notifications.error('Ошибка при повторной отправке')
   } finally {
@@ -465,8 +454,12 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Form Actions */
