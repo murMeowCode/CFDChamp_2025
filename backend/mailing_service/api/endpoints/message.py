@@ -15,7 +15,7 @@ from shared.database.database import get_db
 router = APIRouter(prefix="/mailing", tags=["mailing"])
 logger = logging.getLogger(__name__)
 
-CHECK_INTERVAL = 2
+CHECK_INTERVAL = 1
 
 @router.websocket("/ws/me/messages")
 async def websocket_get_my_messages(
