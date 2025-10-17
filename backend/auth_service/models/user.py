@@ -20,7 +20,8 @@ class AuthUser(Base):
 
     def __repr__(self):
         return f"<AuthUser {self.username}>"
-    
+
     @property
     def is_oauth_user(self):
+        """property checking"""
         return self.vk_id is not None and self.hashed_password is None

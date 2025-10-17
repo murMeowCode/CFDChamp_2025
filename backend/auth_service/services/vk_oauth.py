@@ -1,6 +1,7 @@
+"""служба oauth для vk""" #pylint: disable=E0401, W0718
 import secrets
-import httpx
 from typing import Optional, Dict, Any
+import httpx
 from shared.config.base import settings
 
 class VKOAuthService:
