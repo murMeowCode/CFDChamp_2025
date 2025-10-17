@@ -1,5 +1,6 @@
 """апи для аутентификации""" #pylint: disable=E0401, C0412
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from auth_service.messaging.producers import UserProducer, get_producer
 from auth_service.services.registration_service import RegistrationService
@@ -83,6 +84,29 @@ async def refresh_tokens(refresh_data: RefreshTokenRequest, db: AsyncSession = D
         success=True,
         tokens=result["tokens"]
     )
+
+@router.get("/vk")
+async def vk_oauth_start(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    producer: UserProducer = Depends(get_producer)
+):
+    """Начало OAuth flow - редирект на VK"""
+    oauth_service = OAuthService(db, producer)
+
+    # Создаем state и получаем URL для VK
+    state = await oauth_service.create_oauth_state()
+    vk_auth_url = f"http://localhost:8000/auth/vk/callback?state={state}"
+
+    # Для фронтенда возвращаем URL
+    if request.headers.get("accept") == "application/json":
+        return JSONResponse({
+            "auth_url": vk_auth_url,
+            "state": state
+        })
+
+    # Для прямого доступа - редирект
+    return RedirectResponse(vk_auth_url)
 
 @router.get("/vk/callback")
 async def vk_oauth_callback(
