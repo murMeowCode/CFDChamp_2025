@@ -1,58 +1,73 @@
 <template>
   <div class="details-container" data-aos="fade-up" data-aos-duration="600">
     <div class="details-content">
+      <!-- Заголовок и мета-информация в одну строку -->
       <div class="details-header">
-        <h3 class="details-title">{{ title }}</h3>
-        <div class="details-meta">
-          <div class="meta-item">
-            <div class="meta-icon">⏱️</div>
-            <span class="meta-text">{{ duration }}</span>
-          </div>
-          <div class="meta-item">
-            <div class="meta-icon">👥</div>
-            <span class="meta-text">{{ participants }}</span>
-          </div>
-          <div class="meta-item">
-            <div class="meta-icon">💰</div>
-            <span class="meta-text">{{ prize }}</span>
-          </div>
+        <div class="header-main">
+          <h3 class="details-title">{{ title }}</h3>
+          <p class="details-description">{{ description }}</p>
         </div>
-      </div>
-
-      <div class="details-body">
-        <p class="details-description">{{ description }}</p>
         
-        <div class="details-features">
-          <div class="feature-grid">
-            <div 
-              v-for="(feature, index) in features" 
-              :key="index"
-              class="feature-item"
-              data-aos="fade-right"
-              :data-aos-delay="index * 100"
-            >
-              <div class="feature-icon-wrapper">
-                <div class="feature-icon">{{ feature.icon }}</div>
+        <div class="header-meta">
+          <div class="meta-grid">
+            <div class="meta-item">
+              <div class="meta-icon">⏱️</div>
+              <div class="meta-content">
+                <span class="meta-label">Длительность</span>
+                <span class="meta-value">{{ duration }}</span>
               </div>
-              <div class="feature-content">
-                <h4 class="feature-title">{{ feature.title }}</h4>
-                <p class="feature-text">{{ feature.text }}</p>
+            </div>
+            <div class="meta-item">
+              <div class="meta-icon">👥</div>
+              <div class="meta-content">
+                <span class="meta-label">Участники</span>
+                <span class="meta-value">{{ participants }}</span>
+              </div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-icon">💰</div>
+              <div class="meta-content">
+                <span class="meta-label">Призовой фонд</span>
+                <span class="meta-value">{{ prize }}</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="details-actions">
-          <button class="details-btn primary">
-            <span>Принять участие</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button class="details-btn secondary">
-            <span>Подробнее</span>
-          </button>
+      <!-- Особенности в компактном виде -->
+      <div class="details-features">
+        <h4 class="features-title">Ключевые особенности</h4>
+        <div class="features-grid">
+          <div 
+            v-for="(feature, index) in features" 
+            :key="index"
+            class="feature-item"
+            data-aos="fade-right"
+            :data-aos-delay="index * 100"
+          >
+            <div class="feature-icon-wrapper">
+              <div class="feature-icon">{{ feature.icon }}</div>
+            </div>
+            <div class="feature-content">
+              <h5 class="feature-title">{{ feature.title }}</h5>
+              <p class="feature-text">{{ feature.text }}</p>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Кнопки действий -->
+      <div class="details-actions">
+        <button class="details-btn primary">
+          <span>Принять участие</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="details-btn secondary">
+          <span>Подробнее о правилах</span>
+        </button>
       </div>
     </div>
   </div>
@@ -91,9 +106,7 @@ defineProps({
 <style scoped>
 .details-container {
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: var(--spacing-2xl) 0;
+  height: 100%;
 }
 
 .details-content {
@@ -104,6 +117,9 @@ defineProps({
   box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .details-content::before {
@@ -117,76 +133,102 @@ defineProps({
 }
 
 .details-header {
-  display: flex;
-  justify-content: between;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-2xl);
   margin-bottom: var(--spacing-xl);
-  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+.header-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
 .details-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
   margin: 0;
-  flex: 1;
+  line-height: 1.2;
   background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text-muted) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.details-meta {
+.details-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  margin: 0;
+  opacity: 0.9;
+}
+
+.header-meta {
   display: flex;
-  gap: var(--spacing-lg);
-  flex-shrink: 0;
+  justify-content: flex-end;
+}
+
+.meta-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-width: 200px;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
   background: var(--color-primary-soft);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-primary-muted);
 }
 
 .meta-icon {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
-.meta-text {
-  font-size: 0.9rem;
+.meta-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 0.8rem;
   font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.meta-value {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
 }
 
-.details-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2xl);
-}
-
-.details-description {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: var(--color-text);
-  margin: 0;
-  padding: var(--spacing-lg);
-  background: var(--color-bg-muted);
-  border-radius: var(--border-radius-xl);
-  border-left: 4px solid var(--color-primary);
-}
-
 .details-features {
-  margin: var(--spacing-xl) 0;
+  flex: 1;
+  margin-bottom: var(--spacing-xl);
 }
 
-.feature-grid {
+.features-title {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
 }
 
 .feature-item {
@@ -198,6 +240,7 @@ defineProps({
   border-radius: var(--border-radius-xl);
   border: 1px solid var(--color-border);
   transition: all var(--transition-normal);
+  height: fit-content;
 }
 
 .feature-item:hover {
@@ -223,15 +266,15 @@ defineProps({
 }
 
 .feature-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
   margin: 0 0 var(--spacing-xs) 0;
 }
 
 .feature-text {
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.85rem;
+  line-height: 1.4;
   color: var(--color-text-muted);
   margin: 0;
 }
@@ -243,6 +286,7 @@ defineProps({
   justify-content: center;
   padding-top: var(--spacing-xl);
   border-top: 1px solid var(--color-border);
+  margin-top: auto;
 }
 
 .details-btn {
@@ -282,32 +326,39 @@ defineProps({
 }
 
 /* Адаптивность */
-@media (max-width: 768px) {
-  .details-container {
-    padding: var(--spacing-xl) var(--spacing-md);
+@media (max-width: 968px) {
+  .details-header {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
   }
   
+  .header-meta {
+    justify-content: flex-start;
+  }
+  
+  .meta-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .meta-item {
+    flex: 1;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
   .details-content {
     padding: var(--spacing-xl);
-  }
-  
-  .details-header {
-    flex-direction: column;
-    gap: var(--spacing-lg);
   }
   
   .details-title {
     font-size: 1.5rem;
   }
   
-  .details-meta {
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .feature-grid {
+  .features-grid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-md);
   }
   
   .details-actions {
@@ -325,23 +376,12 @@ defineProps({
     padding: var(--spacing-lg);
   }
   
-  .details-title {
-    font-size: 1.3rem;
-  }
-  
-  .details-meta {
+  .meta-grid {
     flex-direction: column;
-    align-items: center;
   }
   
   .meta-item {
     width: 100%;
-    justify-content: center;
-  }
-  
-  .details-description {
-    padding: var(--spacing-md);
-    font-size: 1rem;
   }
   
   .feature-item {
@@ -353,10 +393,6 @@ defineProps({
 [data-theme='dark'] .details-content {
   background: var(--color-bg-elevated);
   border-color: var(--color-border-strong);
-}
-
-[data-theme='dark'] .details-description {
-  background: var(--color-bg-muted);
 }
 
 [data-theme='dark'] .feature-item {

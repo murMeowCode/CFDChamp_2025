@@ -1,63 +1,69 @@
 <template>
   <div class="carousel-container">
     <!-- Карусель карточек -->
-    <div class="carousel-frame">
-      <button 
-        class="carousel-nav carousel-nav-prev" 
-        @click="prevCard"
-        aria-label="Предыдущая карточка"
-      >
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <path d="M15 18L9 12L15 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      
-      <div class="carousel-cards">
-        <ChildCardKarusel
-          v-for="(card, index) in cards"
-          :key="card.id"
-          :title="card.title"
-          :subtitle="card.subtitle"
-          :img="card.img"
-          :active="currentIndex === index"
-          :card-style="getCardStyle(index)"
-          @card-click="goToCard(index)"
-        />
+    <div class="carousel-section">
+      <div class="carousel-frame">
+        <button 
+          class="carousel-nav carousel-nav-prev" 
+          @click="prevCard"
+          aria-label="Предыдущая карточка"
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18L9 12L15 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        
+        <div class="carousel-cards-wrapper">
+          <div class="carousel-cards">
+            <ChildCardKarusel
+              v-for="(card, index) in cards"
+              :key="card.id"
+              :title="card.title"
+              :subtitle="card.subtitle"
+              :img="card.img"
+              :active="currentIndex === index"
+              :card-style="getCardStyle(index)"
+              @card-click="goToCard(index)"
+            />
+          </div>
+        </div>
+
+        <button 
+          class="carousel-nav carousel-nav-next" 
+          @click="nextCard"
+          aria-label="Следующая карточка"
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
 
-      <button 
-        class="carousel-nav carousel-nav-next" 
-        @click="nextCard"
-        aria-label="Следующая карточка"
-      >
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <path d="M9 18L15 12L9 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Индикаторы -->
-    <div class="carousel-indicators">
-      <button
-        v-for="(card, index) in cards"
-        :key="`indicator-${card.id}`"
-        :class="['indicator', { 'active': currentIndex === index }]"
-        @click="goToCard(index)"
-        :aria-label="`Перейти к карточке ${index + 1}`"
-      >
-        <div class="indicator-progress" v-if="currentIndex === index"></div>
-      </button>
+      <!-- Индикаторы -->
+      <div class="carousel-indicators">
+        <button
+          v-for="(card, index) in cards"
+          :key="`indicator-${card.id}`"
+          :class="['indicator', { 'active': currentIndex === index }]"
+          @click="goToCard(index)"
+          :aria-label="`Перейти к карточке ${index + 1}`"
+        >
+          <div class="indicator-progress" v-if="currentIndex === index"></div>
+        </button>
+      </div>
     </div>
 
     <!-- Детальная информация -->
-    <CarouselDetails
-      :title="currentCard.title"
-      :description="currentCard.description"
-      :duration="currentCard.duration"
-      :participants="currentCard.participants"
-      :prize="currentCard.prize"
-      :features="currentCard.features"
-    />
+    <div class="details-section">
+      <CarouselDetails
+        :title="currentCard.title"
+        :description="currentCard.description"
+        :duration="currentCard.duration"
+        :participants="currentCard.participants"
+        :prize="currentCard.prize"
+        :features="currentCard.features"
+      />
+    </div>
   </div>
 </template>
 
@@ -68,7 +74,7 @@ import CarouselDetails from './CarouselDetails.vue'
 
 // Реактивные данные
 const currentIndex = ref(1)
-const translateDistance = ref(200)
+const translateDistance = ref(180)
 
 // Данные карточек с полной информацией
 const cards = ref([
@@ -167,6 +173,38 @@ const cards = ref([
         text: 'Доступ к материалам с любого устройства'
       }
     ]
+  },
+  { 
+    id: 4, 
+    title: 'Еженедельные турниры', 
+    subtitle: 'Быстрые соревнования для всех уровней',
+    img: '/images/weekly-tournament.jpg',
+    description: 'Регулярные турниры с быстрыми результатами. Идеально подходят для начинающих и опытных трейдеров, желающих проверить свои навыки в сжатые сроки.',
+    duration: '1 неделя',
+    participants: '300+ участников',
+    prize: '$10,000',
+    features: [
+      {
+        icon: '⚡',
+        title: 'Быстрый старт',
+        text: 'Начните участвовать сразу после регистрации'
+      },
+      {
+        icon: '📅',
+        title: 'Регулярность',
+        text: 'Новые турниры каждую неделю'
+      },
+      {
+        icon: '🎯',
+        title: 'Разные форматы',
+        text: 'Разнообразные условия и правила'
+      },
+      {
+        icon: '📊',
+        title: 'Мгновенные результаты',
+        text: 'Быстрое подведение итогов'
+      }
+    ]
   }
 ])
 
@@ -197,13 +235,13 @@ const goToCard = (index) => {
 
 const getCardStyle = (index) => {
   const diff = index - currentIndex.value
-  const scale = diff === 0 ? 1 : 0.75
+  const scale = diff === 0 ? 1 : 0.8
   const translateX = diff * translateDistance.value
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
-  const opacity = Math.max(0.4, 1 - Math.abs(diff) * 0.4)
+  const opacity = Math.max(0.6, 1 - Math.abs(diff) * 0.3)
 
   return {
-    transform: `translateX(${translateX}px) scale(${scale})`,
+    transform: `translate(calc(-50% + ${translateX}px), -50%) scale(${scale})`,
     zIndex: zIndex,
     opacity: opacity
   }
@@ -235,23 +273,42 @@ watch(currentIndex, refreshAOS)
 <style scoped>
 .carousel-container {
   width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-2xl);
-  padding: var(--spacing-2xl) 0;
+  padding: 0;
   position: relative;
 }
 
-/* Остальные стили остаются такими же как в предыдущей версии */
+.carousel-section {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-2xl) 0;
+  background: var(--color-bg);
+  position: relative;
+  z-index: 1;
+}
+
 .carousel-frame {
   position: relative;
   width: 100%;
-  max-width: 1200px;
-  height: 600px;
+  max-width: 1400px;
+  height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
+  padding: 0 120px; /* Увеличил отступы для крайних карточек */
+}
+
+.carousel-cards-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: visible;
 }
 
 .carousel-cards {
@@ -261,6 +318,15 @@ watch(currentIndex, refreshAOS)
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Правильное позиционирование карточек */
+.carousel-cards > * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: all var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .carousel-nav {
@@ -279,7 +345,7 @@ watch(currentIndex, refreshAOS)
   cursor: pointer;
   transition: all var(--transition-normal);
   box-shadow: var(--shadow-xl);
-  z-index: 10;
+  z-index: 20;
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -312,11 +378,11 @@ watch(currentIndex, refreshAOS)
 }
 
 .carousel-nav-prev {
-  left: -32px;
+  left: 20px;
 }
 
 .carousel-nav-next {
-  right: -32px;
+  right: 20px;
 }
 
 .carousel-indicators {
@@ -329,6 +395,8 @@ watch(currentIndex, refreshAOS)
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
+  z-index: 10;
+  position: relative;
 }
 
 .indicator {
@@ -365,6 +433,17 @@ watch(currentIndex, refreshAOS)
   animation: pulse 2s infinite;
 }
 
+.details-section {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  background: var(--color-bg);
+  position: relative;
+  z-index: 2;
+}
+
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -379,28 +458,57 @@ watch(currentIndex, refreshAOS)
 /* Адаптивность */
 @media (max-width: 1200px) {
   .carousel-frame {
+    max-width: 1100px;
+    height: 450px;
+    padding: 0 100px;
+  }
+  
+  .details-section {
     max-width: 1000px;
-    height: 500px;
+  }
+}
+
+@media (max-width: 968px) {
+  .carousel-frame {
+    padding: 0 80px;
+  }
+  
+  .carousel-nav {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .carousel-nav-prev {
+    left: 15px;
+  }
+  
+  .carousel-nav-next {
+    right: 15px;
   }
 }
 
 @media (max-width: 768px) {
+  .carousel-section {
+    padding: var(--spacing-xl) 0;
+  }
+  
   .carousel-frame {
-    max-width: 700px;
+    max-width: 100%;
     height: 400px;
+    padding: 0 70px;
   }
   
   .carousel-nav {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
   }
   
   .carousel-nav-prev {
-    left: -20px;
+    left: 10px;
   }
   
   .carousel-nav-next {
-    right: -20px;
+    right: 10px;
   }
   
   .carousel-indicators {
@@ -412,29 +520,33 @@ watch(currentIndex, refreshAOS)
     width: 14px;
     height: 14px;
   }
+  
+  .details-section {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
 }
 
 @media (max-width: 480px) {
-  .carousel-container {
-    padding: var(--spacing-xl) 0;
+  .carousel-section {
+    padding: var(--spacing-lg) 0;
   }
   
   .carousel-frame {
-    max-width: 350px;
-    height: 300px;
+    height: 350px;
+    padding: 0 60px;
   }
   
   .carousel-nav {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
   }
   
   .carousel-nav-prev {
-    left: -15px;
+    left: 5px;
   }
   
   .carousel-nav-next {
-    right: -15px;
+    right: 5px;
   }
   
   .carousel-indicators {
