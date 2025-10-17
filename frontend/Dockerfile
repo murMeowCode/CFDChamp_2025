@@ -1,11 +1,10 @@
-FROM node:20-alpine
+FROM node:20-alpine as builder
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm i
-RUN npm install aos
+RUN npm i && npm list aos
 
 COPY . .
 
@@ -13,10 +12,8 @@ RUN npm run build
 
 FROM nginx:alpine
 
-COPY --from=0 /app/dist /usr/share/nginx/html
-
+COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
-
 COPY ssl/ /etc/nginx/ssl/
 
 EXPOSE 80
