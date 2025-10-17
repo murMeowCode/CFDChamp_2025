@@ -40,9 +40,8 @@ services:
     volumes:
       - ./frontend/ssl:/etc/nginx/ssl:ro
       - ./frontend/src:/app/src:ro
-    environment:
-      - NODE_ENV=production
-    restart: unless-stopped
+    networks:
+      - prod-network
 
 volumes:
   postgres_data:
