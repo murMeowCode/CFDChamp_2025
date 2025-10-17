@@ -1,4 +1,4 @@
-"""основной файл сервиса"""#pylint: disable=E0401, W0621
+"""основной файл сервиса"""#pylint: disable=E0401, W0621, C0413
 from contextlib import asynccontextmanager
 import sys
 import os

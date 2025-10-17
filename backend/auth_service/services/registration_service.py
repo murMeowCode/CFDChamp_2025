@@ -32,7 +32,8 @@ class RegistrationService:
                 birth_date=user_data.birth_date,
                 phone=user_data.phone,
                 address=user_data.address,
-                created_at=datetime.utcnow()
+                created_at=datetime.utcnow(),
+                avatar_url=None
             )
 
             # Отправляем событие в RabbitMQ

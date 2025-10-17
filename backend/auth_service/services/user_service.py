@@ -74,3 +74,63 @@ class UserService:
         if user:
             user.last_login = datetime.utcnow()
             await self.db.commit()
+
+    async def get_user_by_vk_id(self, vk_id: int) -> Optional[AuthUser]:
+        """Получение пользователя по VK ID"""
+        stmt = select(AuthUser).where(AuthUser.vk_id == vk_id)
+        result = await self.db.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def create_oauth_user(
+        self,
+        vk_id: int,
+        email: str,
+    ) -> AuthUser:
+        """Создание пользователя через OAuth"""
+        # Генерируем уникальный username
+        base_username = f"vk_{vk_id}"
+        username = base_username
+        counter = 1
+
+        while await self.get_user_by_username(username):
+            username = f"{base_username}_{counter}"
+            counter += 1
+
+        # Если email не предоставлен VK, создаем временный
+        if not email:
+            email = f"{username}@temp.vk"
+
+        # Создаем пользователя (только базовые поля)
+        user = AuthUser(
+            username=username,
+            email=email,
+            role=1,  # Обычный пользователь
+            hashed_password=None,  # Пароль не задан
+            vk_id=vk_id,
+            oauth_provider="vk"
+        )
+
+        self.db.add(user)
+        await self.db.commit()
+        await self.db.refresh(user)
+
+        return user
+
+    async def find_or_create_oauth_user(
+        self,
+        vk_id: int,
+        email: str,
+    ) -> AuthUser:
+        """Поиск или создание пользователя OAuth"""
+        # Ищем существующего пользователя
+        user = await self.get_user_by_vk_id(vk_id)
+        if user:
+            # Обновляем email если нужно
+            if email and email != user.email:
+                user.email = email
+                await self.db.commit()
+                await self.db.refresh(user)
+            return user
+
+        # Создаем нового пользователя
+        return await self.create_oauth_user(vk_id, email)
