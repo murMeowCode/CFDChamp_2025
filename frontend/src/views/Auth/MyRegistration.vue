@@ -435,7 +435,7 @@ const handleSubmit = async () => {
     // Имитация API запроса
 
     // await new Promise((resolve) => setTimeout(resolve, 2000))
-    await useAuth.login(form)
+    await useAuth.legacyLogin(form)
     useUser.setUser(form)
     toast.success('вошли')
 
