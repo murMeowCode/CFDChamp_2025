@@ -266,11 +266,9 @@
 <script setup>
 import { computed, ref } from 'vue';
 import UserAchive from '../Achive/UserAchive.vue';
-import { useUse } from '@/stores/User';
 import { useUserStore } from '@/stores/useUserStore';
 import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
-const user = useUse()
 const {getUser} = storeToRefs(useUserStore())
 
 const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`           
