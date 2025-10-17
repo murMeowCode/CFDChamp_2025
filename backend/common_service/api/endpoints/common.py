@@ -63,13 +63,13 @@ async def update_item(
     item = db.query(Item).filter(Item.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    
+
     # Обновление полей, если они предоставлены
     if item_data.title is not None:
         item.title = item_data.title
     if item_data.description is not None:
         item.description = item_data.description
-    
+
     db.commit()
     db.refresh(item)
     return item
