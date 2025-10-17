@@ -252,6 +252,7 @@ import UserAchive from '../Achive/UserAchive.vue';
 import { useUserStore } from '@/stores/useUserStore';
 import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
+import { useAchivesStore } from '@/stores/useAchivesStore'
 import { storeToRefs } from 'pinia';
 const {getUser} = storeToRefs(useUserStore())
 
@@ -269,11 +270,6 @@ const selectedOption = ref(user.selectedOption)
 const Address = getUser.value.address           
 const AboutMe = ref(user.AboutMe)       
 
-import { useAchivesStore } from '@/stores/useAchivesStore';
-
-
-import { useAchivesStore } from '@/stores/useAchivesStore'
-import { storeToRefs } from 'pinia'
 
 const Achives = useAchivesStore()
 
