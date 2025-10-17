@@ -9,6 +9,7 @@ from auth_service.models.user import AuthUser
 from auth_service.models.token import RefreshToken
 from auth_service.models.password_reset_token import PasswordResetToken
 from auth_service.models.role_change_request import RoleChangeRequest
+from auth_service.models.oauth import OAuthState
 from profile_service.models.profile import Profile
 from mailing_service.models.message import Message
 from common_service.models.common import Item
