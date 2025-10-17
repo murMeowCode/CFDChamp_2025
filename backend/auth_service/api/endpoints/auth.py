@@ -133,7 +133,7 @@ async def vk_oauth_start(
 
     # Создаем state и получаем URL для VK
     state = await oauth_service.create_oauth_state()
-    vk_auth_url = oauth_service.vk_oauth.get_auth_url()
+    vk_auth_url = oauth_service.vk_oauth.get_auth_url(state)
 
     # Для фронтенда возвращаем URL
     if request.headers.get("accept") == "application/json":
