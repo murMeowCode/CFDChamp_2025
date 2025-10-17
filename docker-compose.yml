@@ -12,14 +12,37 @@ services:
       dockerfile: profile_service/Dockerfile
     networks:
       - prod-network
-      
+
   mailing-service:
     build:
       context: ./backend
       dockerfile: mailing_service/Dockerfile
     networks:
       - prod-network
-      
+
+  celery-mailing-worker:
+    build: 
+      context: ./backend
+      dockerfile: mailing_service/Dockerfile
+    command: celery -A celery_mail.tasks worker --loglevel=info
+    depends_on:
+      - mailing-service
+    networks:
+      - prod-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/ssl:/etc/nginx/ssl:ro
+      - ./frontend/src:/app/src:ro
+    networks:
+      - prod-network
+
 volumes:
   postgres_data:
 
