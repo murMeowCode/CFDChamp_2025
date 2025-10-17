@@ -15,7 +15,6 @@ class AuthUser(Base):
     role = Column(Integer,nullable = False)
     hashed_password = Column(String(255), nullable=False)
     last_login = Column(DateTime, nullable=True)
-  
     password_reset_tokens = relationship("PasswordResetToken", back_populates="user")
 
     def __repr__(self):

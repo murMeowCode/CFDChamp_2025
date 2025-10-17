@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth_service.messaging.producers import UserProducer, get_producer
 from auth_service.services.registration_service import RegistrationService
 from auth_service.schemas.auth import (LoginRequest, LoginResponse, RefreshTokenRequest,
-RefreshTokenResponse, UserRegisterResponse, UserResponse, ForgotPasswordRequest, 
+RefreshTokenResponse, UserRegisterResponse, UserResponse, ForgotPasswordRequest,
 ForgotPasswordResponse, ResetPasswordRequest, ResetPasswordResponse)
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService

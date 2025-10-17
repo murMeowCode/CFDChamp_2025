@@ -125,7 +125,7 @@ class MailingConsumer(BaseConsumer):
             "role_approved": f"Уважаемый {username}! Ваша новая роль подтверждена администратором",
             "role_rejected": f"Уважаемый {username}! Ваша новая роль отклонена администратором",
             "password_reset": f"""Уважаемый {username}! 
-            Для сброса пароля перейдите по ссылке: {data.get('reset_link', 'Ссылка недоступна')}. 
+            Для сброса пароля перейдите по ссылке: {data.get('reset_link', 'Ссылка недоступна')}.
             Токен действителен 1 час.""",
             "custom_notification": custom_content or "У вас новое уведомление."
         }
