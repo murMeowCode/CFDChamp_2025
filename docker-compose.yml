@@ -30,6 +30,20 @@ services:
     networks:
       - prod-network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/ssl:/etc/nginx/ssl:ro
+      - ./frontend/src:/app/src:ro
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 
