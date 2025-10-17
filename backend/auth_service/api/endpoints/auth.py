@@ -97,15 +97,7 @@ async def vk_oauth_start(
 
     # Создаем state и получаем URL для VK
     state = await oauth_service.create_oauth_state()
-    vk_auth_url = (
-        "https://oauth.vk.com/authorize?"
-        f"client_id={settings.VK_CLIENT_ID}&"
-        f"redirect_uri={settings.VK_REDIRECT_URI}&"  # наш callback
-        "display=page&"
-        "scope=email&"
-        "response_type=code&"
-        f"state={state}"
-    )
+    vk_auth_url = oauth_service.vk_oauth.get_auth_url()
 
     # Для фронтенда возвращаем URL
     if request.headers.get("accept") == "application/json":
