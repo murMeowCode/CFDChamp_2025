@@ -8,7 +8,7 @@
           @click="prevCard"
           aria-label="Предыдущая карточка"
         >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M15 18L9 12L15 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
@@ -33,7 +33,7 @@
           @click="nextCard"
           aria-label="Следующая карточка"
         >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M9 18L15 12L9 6" :stroke="navColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
@@ -74,7 +74,7 @@ import CarouselDetails from './CarouselDetails.vue'
 
 // Реактивные данные
 const currentIndex = ref(1)
-const translateDistance = ref(180)
+const translateDistance = ref(140) // Уменьшил расстояние для компактной карусели
 
 // Данные карточек с полной информацией
 const cards = ref([
@@ -235,13 +235,13 @@ const goToCard = (index) => {
 
 const getCardStyle = (index) => {
   const diff = index - currentIndex.value
-  const scale = diff === 0 ? 1 : 0.8
+  const scale = diff === 0 ? 1 : 0.75 // Уменьшил масштаб неактивных карточек
   const translateX = diff * translateDistance.value
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
-  const opacity = Math.max(0.6, 1 - Math.abs(diff) * 0.3)
+  const opacity = Math.max(0.5, 1 - Math.abs(diff) * 0.4)
   
   // Добавляем blur для неактивных карточек
-  const blur = diff === 0 ? '0px' : '4px'
+  const blur = diff === 0 ? '0px' : '3px'
 
   return {
     transform: `translate(calc(-50% + ${translateX}px), -50%) scale(${scale})`,
@@ -289,8 +289,8 @@ watch(currentIndex, refreshAOS)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-2xl) 0;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl) 0;
   background: var(--color-bg);
   position: relative;
   z-index: 1;
@@ -299,13 +299,13 @@ watch(currentIndex, refreshAOS)
 .carousel-frame {
   position: relative;
   width: 100%;
-  max-width: 1400px;
-  height: 500px;
+  max-width: 1200px;
+  height: 375px; /* Уменьшил на 25% с 500px до 375px */
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  padding: 0 120px;
+  padding: 0 100px;
 }
 
 .carousel-cards-wrapper {
@@ -331,7 +331,6 @@ watch(currentIndex, refreshAOS)
   left: 50%;
   transform-origin: center;
   transition: all var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
-  /* Базовый blur для плавного перехода */
   filter: blur(0px);
 }
 
@@ -339,8 +338,8 @@ watch(currentIndex, refreshAOS)
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   border: none;
   border-radius: var(--border-radius-full);
   background: var(--color-primary);
@@ -350,7 +349,7 @@ watch(currentIndex, refreshAOS)
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
   z-index: 20;
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -375,8 +374,8 @@ watch(currentIndex, refreshAOS)
 
 .carousel-nav:hover {
   background: var(--color-primary-hover);
-  transform: translateY(-50%) scale(1.15);
-  box-shadow: var(--shadow-2xl);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: var(--shadow-xl);
 }
 
 .carousel-nav:active {
@@ -395,9 +394,9 @@ watch(currentIndex, refreshAOS)
   display: flex;
   gap: var(--spacing-md);
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   background: var(--color-bg-subtle);
-  border-radius: var(--border-radius-2xl);
+  border-radius: var(--border-radius-xl);
   backdrop-filter: var(--backdrop-blur);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-md);
@@ -407,8 +406,8 @@ watch(currentIndex, refreshAOS)
 
 .indicator {
   position: relative;
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   border-radius: var(--border-radius-full);
   border: 2px solid var(--color-border);
   background: transparent;
@@ -419,13 +418,13 @@ watch(currentIndex, refreshAOS)
 
 .indicator:hover {
   border-color: var(--color-primary);
-  transform: scale(1.3);
+  transform: scale(1.2);
 }
 
 .indicator.active {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  transform: scale(1.3);
+  transform: scale(1.2);
 }
 
 .indicator-progress {
@@ -442,9 +441,9 @@ watch(currentIndex, refreshAOS)
 .details-section {
   flex: 1;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: var(--spacing-2xl) var(--spacing-xl);
+  padding: var(--spacing-xl) var(--spacing-lg);
   background: var(--color-bg);
   position: relative;
   z-index: 2;
@@ -461,27 +460,24 @@ watch(currentIndex, refreshAOS)
   }
 }
 
-/* Адаптивность */
+/* ========== АДАПТИВНОСТЬ ========== */
+
+/* Большие планшеты и маленькие десктопы */
 @media (max-width: 1200px) {
   .carousel-frame {
-    max-width: 1100px;
-    height: 450px;
-    padding: 0 100px;
-  }
-  
-  .details-section {
     max-width: 1000px;
-  }
-}
-
-@media (max-width: 968px) {
-  .carousel-frame {
+    height: 350px;
     padding: 0 80px;
   }
   
+  .details-section {
+    max-width: 900px;
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+  
   .carousel-nav {
-    width: 56px;
-    height: 56px;
+    width: 44px;
+    height: 44px;
   }
   
   .carousel-nav-prev {
@@ -493,20 +489,22 @@ watch(currentIndex, refreshAOS)
   }
 }
 
-@media (max-width: 768px) {
+/* Планшеты */
+@media (max-width: 968px) {
   .carousel-section {
-    padding: var(--spacing-xl) 0;
+    padding: var(--spacing-lg) 0;
+    gap: var(--spacing-md);
   }
   
   .carousel-frame {
-    max-width: 100%;
-    height: 400px;
+    max-width: 800px;
+    height: 320px;
     padding: 0 70px;
   }
   
   .carousel-nav {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
   }
   
   .carousel-nav-prev {
@@ -518,33 +516,66 @@ watch(currentIndex, refreshAOS)
   }
   
   .carousel-indicators {
+    padding: var(--spacing-sm);
     gap: var(--spacing-sm);
-    padding: var(--spacing-md);
   }
   
   .indicator {
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
   }
   
   .details-section {
-    padding: var(--spacing-xl) var(--spacing-md);
+    max-width: 800px;
+    padding: var(--spacing-lg) var(--spacing-md);
   }
 }
 
-@media (max-width: 480px) {
+/* Большие мобильные */
+@media (max-width: 768px) {
   .carousel-section {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-md) 0;
   }
   
   .carousel-frame {
-    height: 350px;
+    max-width: 100%;
+    height: 280px;
     padding: 0 60px;
   }
   
   .carousel-nav {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .carousel-nav-prev {
+    left: 8px;
+  }
+  
+  .carousel-nav-next {
+    right: 8px;
+  }
+  
+  .translate-distance {
+    transform: translateX(100px);
+  }
+  
+  .details-section {
+    padding: var(--spacing-md);
+    max-width: 100%;
+  }
+}
+
+/* Мобильные устройства */
+@media (max-width: 640px) {
+  .carousel-frame {
+    height: 250px;
+    padding: 0 50px;
+  }
+  
+  .carousel-nav {
+    width: 32px;
+    height: 32px;
   }
   
   .carousel-nav-prev {
@@ -556,7 +587,72 @@ watch(currentIndex, refreshAOS)
   }
   
   .carousel-indicators {
+    padding: 10px 12px;
+  }
+  
+  .indicator {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Маленькие мобильные */
+@media (max-width: 480px) {
+  .carousel-container {
+    min-height: auto;
+  }
+  
+  .carousel-section {
+    padding: var(--spacing-sm) 0;
+    gap: var(--spacing-sm);
+  }
+  
+  .carousel-frame {
+    height: 220px;
+    padding: 0 40px;
+  }
+  
+  .carousel-nav {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .carousel-nav svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .carousel-indicators {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  
+  .indicator {
+    width: 6px;
+    height: 6px;
+    border-width: 1px;
+  }
+  
+  .details-section {
     padding: var(--spacing-sm);
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+  .carousel-frame {
+    height: 200px;
+    padding: 0 30px;
+  }
+  
+  .carousel-nav {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .carousel-nav svg {
+    width: 14px;
+    height: 14px;
   }
 }
 </style>
