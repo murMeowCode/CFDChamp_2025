@@ -13,7 +13,7 @@ dist
 dist-ssr
 coverage
 *.local
-
+*.pyc
 /cypress/videos/
 /cypress/screenshots/
 
@@ -164,7 +164,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-
+__pycache__
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
 #  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data

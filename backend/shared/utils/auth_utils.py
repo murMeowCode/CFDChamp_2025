@@ -1,7 +1,7 @@
-"""общий модуль для аутентификации"""#pylint: disable=E0401, E0611, W0707
+"""общий модуль для аутентификации"""#pylint: disable=E0401, E0611, W0707, W0718
 import uuid
 from aiohttp import ClientResponseError
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, Query, WebSocket, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from shared.messaging.producers import AuthProducer
 from shared.config.base import settings
@@ -60,6 +60,22 @@ class AuthDependency:
         if user.get("role", 0) != required_role:
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         return user
+
+    async def get_current_user_websocket(self,
+        websocket: WebSocket,
+        token: str = Query(...),
+    ):
+        """Аутентификация пользователя для WebSocket"""
+        try:
+            # Извлекаем токен из query параметров
+            user = await self.producer.verify_token(token)
+            if not user:
+                await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+                return None
+            return user
+        except Exception:
+            await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+            return None
 
 def get_auth_dependency() -> AuthDependency:
     """Фабрика для создания AuthDependency"""
