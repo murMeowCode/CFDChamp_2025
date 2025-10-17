@@ -171,7 +171,7 @@ onUnmounted(() => {
 <style scoped>
 /* === Контейнер шапки === */
 .header {
-  background: var(--color-bg-elevated);
+  background: var(--color-bg-subtle);
   border-bottom: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
   position: sticky;
