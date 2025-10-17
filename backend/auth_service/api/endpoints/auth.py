@@ -5,9 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth_service.messaging.producers import UserProducer, get_producer
 from auth_service.services.registration_service import RegistrationService
 from auth_service.schemas.auth import (LoginRequest, LoginResponse, RefreshTokenRequest,
-RefreshTokenResponse, UserRegisterResponse, UserResponse)
+RefreshTokenResponse, UserRegisterResponse, UserResponse, ForgotPasswordRequest,
+ForgotPasswordResponse, ResetPasswordRequest, ResetPasswordResponse)
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
+from auth_service.services.password_reset_service import PasswordResetService
 from auth_service.services.oauth_service import OAuthService
 from shared.database.database import get_db
 from shared.schemas.messaging import UserRegister
@@ -85,6 +87,42 @@ async def refresh_tokens(refresh_data: RefreshTokenRequest, db: AsyncSession = D
         tokens=result["tokens"]
     )
 
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+async def forgot_password(
+    request: ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db),
+    producer: UserProducer = Depends(get_producer)
+):
+    """Запрос на сброс пароля по email"""
+    service = PasswordResetService(db, producer)
+    result = await service.request_password_reset(request.email)
+
+    if not result["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result["error"]
+        )
+
+    return ForgotPasswordResponse(success=True, message=result["message"])
+
+@router.post("/reset-password", response_model=ResetPasswordResponse)
+async def reset_password(
+    request: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """Сброс пароля с новым паролем"""
+    service = PasswordResetService(db)
+    result = await service.reset_password(request.token, request.new_password)
+
+    if not result["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result["error"]
+        )
+
+    return ResetPasswordResponse(success=True, message=result["message"])
+ 
+ 
 @router.get("/vk")
 async def vk_oauth_start(
     request: Request,
