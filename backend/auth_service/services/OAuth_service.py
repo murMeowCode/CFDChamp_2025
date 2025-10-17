@@ -1,8 +1,10 @@
 """Служба OAuth"""
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Dict
+from sqlalchemy import select
 from shared.schemas.messaging import UserCreatedMessage
 from shared.database.database import AsyncSession
+from auth_service.models.oauth import OAuthState
 from auth_service.messaging.producers import UserProducer
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
@@ -16,6 +18,46 @@ class OAuthService:
         self.token_service = TokenService(db)
         self.vk_oauth = VKOAuthService()
         self.producer = producer
+
+    async def create_oauth_state(self) -> str:
+        """Создание и сохранение OAuth state в базе"""
+        state = self.vk_oauth.generate_state()
+
+        state_record = OAuthState(
+            state=state,
+            expires_at=datetime.utcnow() + timedelta(minutes=10)
+        )
+
+        self.db.add(state_record)
+        await self.db.commit()
+        return state
+
+    async def validate_oauth_state(self, state: str) -> bool:
+        """Валидация OAuth state из базы"""
+        try:
+            stmt = select(OAuthState).where(OAuthState.state == state)
+            result = await self.db.execute(stmt)
+            state_record = result.scalar_one_or_none()
+
+            if not state_record:
+                print(f"State not found: {state}")
+                return False
+
+            if state_record.is_expired():
+                print(f"State expired: {state}")
+                # Удаляем просроченный state
+                await self.db.delete(state_record)
+                await self.db.commit()
+                return False
+
+            # Удаляем использованный state
+            await self.db.delete(state_record)
+            await self.db.commit()
+            return True
+
+        except Exception as e:
+            print(f"Error validating state: {e}")
+            return False
 
     async def handle_vk_oauth_callback(self, code: str) -> Dict[str, Any]:
         """Обработка callback от VK OAuth"""
