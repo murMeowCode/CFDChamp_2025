@@ -1,22 +1,23 @@
-"""файл запуска сервиса"""#pylint: disable=E0401, E0611, W0621
+"""файл запуска сервиса"""
 import sys
 import os
 from contextlib import asynccontextmanager
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from shared.utils.redis_client import RedisManager
-from shared.messaging.producers import AuthProducer
-from shared.database.database import AsyncSessionLocal
-from shared.config.base import settings
+from shared.utils.redis_client import RedisManager  # pylint: disable=import-error
+from shared.messaging.producers import AuthProducer  # pylint: disable=import-error
+from shared.database.database import AsyncSessionLocal  # pylint: disable=import-error
+from shared.config.base import settings  # pylint: disable=import-error
 # from profile_service.messaging.consumers import ProfileConsumer
-from common_service.services.service import ProfileService
-from common_service.api.endpoints.common import router as common_router
-from common_service.services.file_service import FileService
+from common_service.services.service import ProfileService  # pylint: disable=import-error
+from common_service.api.endpoints.common import router as common_router  # pylint: disable=import-error
+from common_service.services.file_service import FileService  # pylint: disable=import-error
 from fastapi import FastAPI
 
+
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI):  # pylint: disable=redefined-outer-name
     """функция инициализации"""
 
     # Инициализация Redis
