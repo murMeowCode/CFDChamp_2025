@@ -1,9 +1,13 @@
-"""объявления моделей"""#pylint: disable=E0401, E0611, E1123
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Column, Date, String, Integer
-from shared.database.database import Base
+"""объявления моделей"""
+from sqlalchemy import Column, Integer, String  # pylint: disable=import-error
+
+from shared.database.database import Base  # pylint: disable=import-error
+
 
 class Item(Base):
+    """
+    Модель общего назначения
+    """
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
