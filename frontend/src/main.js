@@ -12,7 +12,7 @@ import 'notivue/notification.css' // Only needed if using built-in notifications
 import 'notivue/animations.css' // Only needed if using built-in animations
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
-
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
 const app = createApp(App)
 const notivue = createNotivue({
   position: 'top-right',
@@ -41,6 +41,14 @@ app.use(Toast, {
   icon: true,
   rtl: false,
 })
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 минут кеш
+      cacheTime: 10 * 60 * 1000, // 10 минут жизнь кеша
+    }
+  }
+})
 app.use(notivue)
 export const apiClient = axios.create({
   baseURL: 'http://192.168.3.116:8000',
@@ -52,4 +60,5 @@ AOS.init({
 app.use(createPinia())
 app.use(router)
 
+app.use(VueQueryPlugin,{queryClient})
 app.mount('#app')
