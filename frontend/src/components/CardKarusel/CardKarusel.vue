@@ -239,11 +239,15 @@ const getCardStyle = (index) => {
   const translateX = diff * translateDistance.value
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
   const opacity = Math.max(0.6, 1 - Math.abs(diff) * 0.3)
+  
+  // Добавляем blur для неактивных карточек
+  const blur = diff === 0 ? '0px' : '4px'
 
   return {
     transform: `translate(calc(-50% + ${translateX}px), -50%) scale(${scale})`,
     zIndex: zIndex,
-    opacity: opacity
+    opacity: opacity,
+    filter: `blur(${blur})`
   }
 }
 
@@ -301,7 +305,7 @@ watch(currentIndex, refreshAOS)
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  padding: 0 120px; /* Увеличил отступы для крайних карточек */
+  padding: 0 120px;
 }
 
 .carousel-cards-wrapper {
@@ -320,13 +324,15 @@ watch(currentIndex, refreshAOS)
   justify-content: center;
 }
 
-/* Правильное позиционирование карточек */
+/* Правильное позиционирование карточек с blur эффектом */
 .carousel-cards > * {
   position: absolute;
   top: 50%;
   left: 50%;
   transform-origin: center;
   transition: all var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+  /* Базовый blur для плавного перехода */
+  filter: blur(0px);
 }
 
 .carousel-nav {
