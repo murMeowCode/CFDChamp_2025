@@ -45,7 +45,7 @@ class PasswordResetService:
             await self.producer.send_notification({
                 "type": "password_reset",
                 "user_email": email,
-                "user_id": 1,
+                "user_id": "1",
                 "data": {
                     "reset_token": token,
                     "reset_link": f"https://yourapp.com/reset-password?token={token}"
