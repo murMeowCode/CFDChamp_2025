@@ -46,8 +46,8 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // 5 минут кеш
       cacheTime: 10 * 60 * 1000, // 10 минут жизнь кеша
-    }
-  }
+    },
+  },
 })
 app.use(notivue)
 export const apiClient = axios.create({
@@ -60,5 +60,5 @@ AOS.init({
 app.use(createPinia())
 app.use(router)
 
-app.use(VueQueryPlugin,{queryClient})
+app.use(VueQueryPlugin, { queryClient })
 app.mount('#app')

@@ -1,13 +1,13 @@
 <template>
-  <div 
-    :class="['carousel-card', { 'active': active }]"
+  <div
+    :class="['carousel-card', { active: active }]"
     :style="cardStyle"
     data-aos="fade-up"
     :data-aos-duration="600"
     @click="$emit('card-click')"
   >
     <div class="card-glow"></div>
-    
+
     <div class="card-header">
       <div class="card-image" v-if="img">
         <img :src="img" :alt="title" />
@@ -16,22 +16,22 @@
       <div class="card-top" v-else>
         <div class="pattern"></div>
       </div>
-      
+
       <div class="card-badge" v-if="active">
         <span>🔥 Активно</span>
       </div>
     </div>
-    
+
     <div class="card-body">
       <div class="card-content">
         <div class="card-meta">
           <div class="meta-dot"></div>
           <span class="meta-text">Премиум</span>
         </div>
-        
+
         <h3 class="card-title">{{ title }}</h3>
         <p class="card-subtitle" v-if="subtitle">{{ subtitle }}</p>
-        
+
         <div class="card-features">
           <div class="feature">
             <div class="feature-icon">⭐</div>
@@ -43,13 +43,13 @@
           </div>
         </div>
       </div>
-      
+
       <div class="card-actions" v-if="active">
         <button class="action-btn primary">Участвовать</button>
         <button class="action-btn secondary">Подробнее</button>
       </div>
     </div>
-    
+
     <div class="card-glow-effect" v-if="active"></div>
   </div>
 </template>
@@ -61,24 +61,24 @@ import { computed } from 'vue'
 const props = defineProps({
   title: {
     type: String,
-    default: ''
+    default: '',
   },
   subtitle: {
     type: String,
-    default: ''
+    default: '',
   },
   img: {
     type: String,
-    default: ''
+    default: '',
   },
   active: {
     type: Boolean,
-    default: false
+    default: false,
   },
   cardStyle: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 })
 
 // Emits
@@ -112,7 +112,9 @@ defineEmits(['card-click'])
   border-radius: var(--border-radius-2xl);
   padding: 2px;
   background: var(--gradient-primary);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: subtract;
   opacity: 0;
   transition: opacity var(--transition-normal);
@@ -171,9 +173,9 @@ defineEmits(['card-click'])
 .pattern {
   width: 100%;
   height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  background:
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
 }
 
 .card-image {
@@ -193,7 +195,7 @@ defineEmits(['card-click'])
 .image-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
 }
 
 .carousel-card:hover .card-image img {
@@ -371,7 +373,7 @@ defineEmits(['card-click'])
   position: absolute;
   inset: -8px;
   border-radius: var(--border-radius-2xl);
-  box-shadow: 
+  box-shadow:
     0 0 60px 15px rgba(59, 130, 246, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   pointer-events: none;
@@ -400,7 +402,7 @@ defineEmits(['card-click'])
     width: 380px;
     height: 440px;
   }
-  
+
   .card-body {
     padding: var(--spacing-lg);
   }
@@ -411,11 +413,11 @@ defineEmits(['card-click'])
     width: 350px;
     height: 420px;
   }
-  
+
   .card-title {
     font-size: 1.4rem;
   }
-  
+
   .card-body {
     padding: var(--spacing-lg);
     min-height: 260px;
@@ -427,31 +429,31 @@ defineEmits(['card-click'])
     width: 320px;
     height: 390px;
   }
-  
+
   .card-header {
     height: 180px;
   }
-  
+
   .card-body {
     height: calc(100% - 180px);
     padding: var(--spacing-md);
     min-height: 210px;
   }
-  
+
   .card-title {
     font-size: 1.3rem;
   }
-  
+
   .card-subtitle {
     font-size: 0.95rem;
   }
-  
+
   .card-actions {
     flex-direction: column;
     gap: var(--spacing-sm);
     margin-top: var(--spacing-md);
   }
-  
+
   .action-btn {
     min-height: 40px;
     padding: var(--spacing-sm) var(--spacing-md);
@@ -463,28 +465,28 @@ defineEmits(['card-click'])
     width: 300px;
     height: 370px;
   }
-  
+
   .card-header {
     height: 160px;
   }
-  
+
   .card-body {
     height: calc(100% - 160px);
     min-height: 210px;
   }
-  
+
   .card-title {
     font-size: 1.2rem;
   }
-  
+
   .card-features {
     gap: var(--spacing-xs);
   }
-  
+
   .feature {
     font-size: 0.85rem;
   }
-  
+
   .feature-icon {
     width: 20px;
     height: 20px;
@@ -496,25 +498,25 @@ defineEmits(['card-click'])
     width: 280px;
     height: 350px;
   }
-  
+
   .card-header {
     height: 150px;
   }
-  
+
   .card-body {
     height: calc(100% - 150px);
     padding: var(--spacing-sm);
     min-height: 200px;
   }
-  
+
   .card-title {
     font-size: 1.1rem;
   }
-  
+
   .card-subtitle {
     font-size: 0.9rem;
   }
-  
+
   .card-features {
     display: none; /* Скрываем фичи на очень маленьких экранах */
   }
@@ -525,16 +527,16 @@ defineEmits(['card-click'])
     width: 260px;
     height: 330px;
   }
-  
+
   .card-header {
     height: 140px;
   }
-  
+
   .card-body {
     height: calc(100% - 140px);
     min-height: 190px;
   }
-  
+
   .card-actions {
     margin-top: var(--spacing-sm);
   }
