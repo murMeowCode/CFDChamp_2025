@@ -1,5 +1,6 @@
-"""апи для аутентификации""" #pylint: disable=E0401, C0412
-from fastapi import APIRouter, Depends, HTTPException, status
+"""апи для аутентификации""" #pylint: disable=E0401, C0412, W0707
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from auth_service.messaging.producers import UserProducer, get_producer
 from auth_service.services.registration_service import RegistrationService
@@ -9,6 +10,7 @@ ForgotPasswordResponse, ResetPasswordRequest, ResetPasswordResponse)
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
 from auth_service.services.password_reset_service import PasswordResetService
+from auth_service.services.oauth_service import OAuthService
 from shared.database.database import get_db
 from shared.schemas.messaging import UserRegister
 
@@ -119,3 +121,83 @@ async def reset_password(
         )
 
     return ResetPasswordResponse(success=True, message=result["message"])
+ 
+ 
+@router.get("/vk")
+async def vk_oauth_start(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    producer: UserProducer = Depends(get_producer)
+):
+    """Начало OAuth flow - редирект на VK"""
+    oauth_service = OAuthService(db, producer)
+
+    # Создаем state и получаем URL для VK
+    state = await oauth_service.create_oauth_state()
+    vk_auth_url = oauth_service.vk_oauth.get_auth_url()
+
+    # Для фронтенда возвращаем URL
+    if request.headers.get("accept") == "application/json":
+        return JSONResponse({
+            "auth_url": vk_auth_url,
+            "state": state
+        })
+
+    # Для прямого доступа - редирект
+    return RedirectResponse(vk_auth_url)
+
+@router.get("/vk/callback")
+async def vk_oauth_callback(
+    code: str = None,
+    state: str = None,
+    error: str = None,
+    db: AsyncSession = Depends(get_db),
+    producer: UserProducer = Depends(get_producer)
+):
+    """Callback от VK OAuth"""
+    if error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"VK OAuth error: {error}"
+        )
+
+    if not code or not state:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing code or state parameters"
+        )
+
+    oauth_service = OAuthService(db, producer)
+
+    # Валидируем state
+    if not await oauth_service.validate_oauth_state(state):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired state"
+        )
+
+    try:
+        result = await oauth_service.handle_vk_oauth_callback(code)
+
+        return {
+            "success": True,
+            "tokens": result["tokens"],
+            "user": {
+                "id": result["user"].id,
+                "username": result["user"].username,
+                "email": result["user"].email,
+                "is_oauth": result["user"].is_oauth_user
+            },
+            "is_new_user": result["is_new_user"]
+        }
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )

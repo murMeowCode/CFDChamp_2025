@@ -90,6 +90,9 @@ class MailingConsumer(BaseConsumer):
             case "user_registered":
                 return self._create_welcome_template(username)
 
+            case "user_registered_oauth":
+                return self._create_oauth_welcome_template(data)
+
             case "role_approved":
                 return self._create_role_approved_template(username, data)
 
@@ -107,6 +110,7 @@ class MailingConsumer(BaseConsumer):
         """Получение темы сообщения по типу уведомления"""
         subjects = {
             "user_registered": "Добро пожаловать на платформу!",
+            "user_registered_oauth": "Добро пожаловать на платформу!",
             "role_approved": "Положительный ответ на вашу заявку.",
             "role_rejected": "Отрицательный ответ на вашу заявку.",
             "password_reset": "Сброс пароля на CFDChamp",
@@ -121,6 +125,8 @@ class MailingConsumer(BaseConsumer):
 
         contents = {
             "user_registered": f"""Добро пожаловать, {username}!
+                    Спасибо за регистрацию на нашем ресурсе.""",
+            "user_registered_oauth": f"""Добро пожаловать, {username}!
                     Спасибо за регистрацию на нашем ресурсе.""",
             "role_approved": f"Уважаемый {username}! Ваша новая роль подтверждена администратором",
             "role_rejected": f"Уважаемый {username}! Ваша новая роль отклонена администратором",
@@ -203,6 +209,51 @@ class MailingConsumer(BaseConsumer):
         </body>
         </html>
         """
+
+    def _create_oauth_welcome_template(self, data: dict) -> str:
+        """Создание HTML шаблона для приветствия OAuth пользователя"""
+        username = data.get("username", "Пользователь")
+        oauth_provider = data.get("oauth_provider", "социальной сети")
+        first_name = data.get("first_name", "")
+        last_name = data.get("last_name", "")
+
+        # Форматируем имя, если есть и имя и фамилия
+        full_name = f"{first_name} {last_name}".strip() if first_name or last_name else username
+
+        provider_names = {
+            "vk": "ВКонтакте",
+            "google": "Google",
+            "yandex": "Яндекс",
+            "github": "GitHub"
+        }
+        provider_display = provider_names.get(oauth_provider, oauth_provider)
+
+        html_content = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #333;">Добро пожаловать на платформу CFDChamp!</h2>
+            
+            <p>Уважаемый {full_name},</p>
+            
+            <p>Вы успешно зарегистрировались на нашей платформе с помощью {provider_display}.</p>
+            
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <p><strong>Ваш логин:</strong> {username}</p>
+                <p><strong>Способ регистрации:</strong> {provider_display}</p>
+            </div>
+            
+            <p>Теперь вы можете воспользоваться всеми возможностями нашей платформы:</p>
+            <ul>
+                <li>Доступ к обучающим материалам</li>
+                <li>Участие в соревнованиях</li>
+                <li>Взаимодействие с сообществом</li>
+            </ul>
+            
+            <p>Если у вас возникнут вопросы, не стесняйтесь обращаться в службу поддержки.</p>
+            
+            <p>С уважением,<br>Команда CFDChamp</p>
+        </div>
+        """
+        return html_content
 
     def _create_role_approved_template(self, username: str, data: dict) -> str:
         """Красивый шаблон для уведомления об одобрении роли"""

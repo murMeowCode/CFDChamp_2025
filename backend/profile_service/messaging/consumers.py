@@ -43,7 +43,8 @@ class ProfileConsumer(BaseConsumer):
             "middle_name": user_message.middle_name,
             "birth_date": user_message.birth_date,
             "phone": user_message.phone,
-            "address": user_message.address
+            "address": user_message.address,
+            "avatar_filename":user_message.avatar_url
         }
 
         # Создаем профиль

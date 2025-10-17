@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_CELERY}"
     CELERY_RESULT_BACKEND: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB_CELERY}"
 
+    #VK
+    VK_CLIENT_ID: str= "asdasdsad"
+    VK_REDIRECT_URI: str = "asdasdasd"
+    VK_CLIENT_SECRET: str = "asdasdds"
+
     class Config:
         """импорт из файла среды"""
         env_file = ".env"

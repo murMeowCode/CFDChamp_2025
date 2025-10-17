@@ -98,7 +98,8 @@ class ProfileService:
             middle_name=profile_data.get("middle_name"),
             birth_date=profile_data.get("birth_date"),
             phone=profile_data.get("phone"),
-            address=profile_data.get("address")
+            address=profile_data.get("address"),
+            avatar_url=profile_data.get("avatar_url")
         )
 
         self.db.add(profile)
