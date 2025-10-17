@@ -11,6 +11,7 @@ from auth_service.services.user_service import UserService
 from auth_service.services.OAuth_service import OAuthService
 from shared.database.database import get_db
 from shared.schemas.messaging import UserRegister
+from shared.config.base import settings
 
 router = APIRouter()
 
@@ -96,7 +97,15 @@ async def vk_oauth_start(
 
     # Создаем state и получаем URL для VK
     state = await oauth_service.create_oauth_state()
-    vk_auth_url = f"http://localhost:8000/auth/vk/callback?state={state}"
+    vk_auth_url = (
+        "https://oauth.vk.com/authorize?"
+        f"client_id={settings.VK_CLIENT_ID}&"
+        f"redirect_uri={settings.VK_REDIRECT_URI}&"  # наш callback
+        "display=page&"
+        "scope=email&"
+        "response_type=code&"
+        f"state={state}"
+    )
 
     # Для фронтенда возвращаем URL
     if request.headers.get("accept") == "application/json":
