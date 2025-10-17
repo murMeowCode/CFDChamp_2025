@@ -1,8 +1,9 @@
 """служба работы с сообщениями""" #pylint: disable=E0401,E1102
+from datetime import datetime
 import logging
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from mailing_service.models.message import Message
 
 logger = logging.getLogger(__name__)
@@ -11,6 +12,7 @@ class MessageService:
     """класс службы"""
     def __init__(self, db: AsyncSession):
         self.db = db
+        self._last_check_times = {}
 
     async def create_message(self, user_id: str, subject: str, content: str) -> Message:
         """Создание нового сообщения"""
@@ -28,6 +30,7 @@ class MessageService:
     async def get_user_messages(
         self,
         user_id: str,
+        only_unread: bool = True
     ) -> List[Message]:
         """Получение сообщений пользователя с фильтрацией"""
         logger.info(
@@ -36,13 +39,17 @@ class MessageService:
         )
 
         try:
-            stmt = select(Message).where(
-                Message.user_id == user_id,
-                Message.is_read is False
-            )
+            conditions = [Message.user_id == user_id]
 
+            if only_unread:
+                conditions.append(Message.is_read is False)
+
+            stmt = select(Message).where(and_(*conditions))
             result = await self.db.execute(stmt)
             messages = result.scalars().all()
+
+            # Обновляем время последней проверки
+            self._last_check_times[user_id] = datetime.utcnow()
 
             logger.info(
                 "✅ Успешно получены сообщения из базы данных",
