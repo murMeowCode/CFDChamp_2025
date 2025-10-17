@@ -121,8 +121,7 @@ async def reset_password(
         )
 
     return ResetPasswordResponse(success=True, message=result["message"])
- 
- 
+
 @router.get("/vk")
 async def vk_oauth_start(
     request: Request,
