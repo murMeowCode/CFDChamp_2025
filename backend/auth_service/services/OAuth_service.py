@@ -1,4 +1,4 @@
-"""Служба OAuth"""
+"""Служба OAuth""" #pylint: disable=E0401,E0611, W0718
 from datetime import datetime, timedelta
 from typing import Any, Dict
 from sqlalchemy import select
@@ -12,6 +12,7 @@ from auth_service.services.vk_oauth import VKOAuthService
 from auth_service.models.user import AuthUser
 
 class OAuthService:
+    """Класс службы"""
     def __init__(self, db: AsyncSession, producer: UserProducer):
         self.db = db
         self.user_service = UserService(db)
@@ -89,7 +90,7 @@ class OAuthService:
 
         # Отправляем событие в основной сервис для создания профиля
         is_new_user = user.created_at.date() == datetime.utcnow().date()
-        
+
         if is_new_user:
             await self._send_oauth_user_created_event(
                 user=user,
@@ -114,10 +115,10 @@ class OAuthService:
         }
 
     async def _send_oauth_user_created_event(
-        self, 
+        self,
         user: AuthUser,
         first_name: str,
-        last_name: str, 
+        last_name: str,
         avatar_url: str = None
     ):
         """Отправка события создания OAuth пользователя"""
@@ -129,6 +130,7 @@ class OAuthService:
             role=user.role,
             first_name=first_name,
             last_name=last_name,
+            avatar_url=avatar_url,
             middle_name=None,  # Для VK не предоставляется
             birth_date=None,   # Для VK не предоставляется
             phone=None,        # Для VK не предоставляется

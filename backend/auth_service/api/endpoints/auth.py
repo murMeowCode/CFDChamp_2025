@@ -1,4 +1,4 @@
-"""апи для аутентификации""" #pylint: disable=E0401, C0412
+"""апи для аутентификации""" #pylint: disable=E0401, C0412, W0707
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,10 +8,9 @@ from auth_service.schemas.auth import (LoginRequest, LoginResponse, RefreshToken
 RefreshTokenResponse, UserRegisterResponse, UserResponse)
 from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
-from auth_service.services.OAuth_service import OAuthService
+from auth_service.services.oauth_service import OAuthService
 from shared.database.database import get_db
 from shared.schemas.messaging import UserRegister
-from shared.config.base import settings
 
 router = APIRouter()
 
@@ -123,7 +122,7 @@ async def vk_oauth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"VK OAuth error: {error}"
         )
-    
+
     if not code or not state:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -131,7 +130,7 @@ async def vk_oauth_callback(
         )
 
     oauth_service = OAuthService(db, producer)
-    
+
     # Валидируем state
     if not await oauth_service.validate_oauth_state(state):
         raise HTTPException(
@@ -141,7 +140,7 @@ async def vk_oauth_callback(
 
     try:
         result = await oauth_service.handle_vk_oauth_callback(code)
-        
+
         return {
             "success": True,
             "tokens": result["tokens"],
@@ -153,13 +152,13 @@ async def vk_oauth_callback(
             },
             "is_new_user": result["is_new_user"]
         }
-        
+
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error"

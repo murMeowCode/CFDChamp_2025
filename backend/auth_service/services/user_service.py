@@ -82,9 +82,9 @@ class UserService:
         return result.scalar_one_or_none()
 
     async def create_oauth_user(
-        self, 
-        vk_id: int, 
-        email: str, 
+        self,
+        vk_id: int,
+        email: str,
     ) -> AuthUser:
         """Создание пользователя через OAuth"""
         # Генерируем уникальный username
@@ -113,7 +113,7 @@ class UserService:
         self.db.add(user)
         await self.db.commit()
         await self.db.refresh(user)
-        
+
         return user
 
     async def find_or_create_oauth_user(
