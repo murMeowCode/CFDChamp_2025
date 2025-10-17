@@ -28,7 +28,7 @@ app.use(Toast, {
   transition: 'Vue-Toastification__bounce',
   maxToasts: 20,
   newestOnTop: true,
-  position: "top-center",
+  position: 'top-center',
   timeout: 5000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
@@ -37,9 +37,9 @@ app.use(Toast, {
   draggablePercent: 0.6,
   showCloseButtonOnHover: false,
   hideProgressBar: true,
-  closeButton: "button",
+  closeButton: 'button',
   icon: true,
-  rtl: false
+  rtl: false,
 })
 app.use(notivue)
 export const apiClient = axios.create({

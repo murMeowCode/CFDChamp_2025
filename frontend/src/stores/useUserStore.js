@@ -26,7 +26,6 @@ export const useUserStore = defineStore('user', () => {
     user.value = null
     isauth.value = false // ✅
     console.log('sss')
-    localStorage.removeItem('user')
   }
   function updateUser(updatedFields) {
     if (user.value && typeof updatedFields === 'object') {

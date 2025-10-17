@@ -1,3 +1,4 @@
+import NotFound from '@/components/NotFound/NotFound.vue'
 import MyLogin from '@/views/Auth/MyLogin.vue'
 import MyRegistration from '@/views/Auth/MyRegistration.vue'
 import Mycabinet from '@/views/Cabinet/Mycabinet.vue'
@@ -50,6 +51,11 @@ const router = createRouter({
       path: '/forgot-password',
       name: 'forgot',
       component: MyForgotPassword,
+    },
+    {
+      path: '/:any(.*)',
+      name: 'e404',
+      component: NotFound,
     },
   ],
 })
