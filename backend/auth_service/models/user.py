@@ -2,6 +2,7 @@
 import uuid
 from sqlalchemy import Column, String, DateTime, Integer
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from shared.database.database import Base
 
 class AuthUser(Base):
@@ -14,6 +15,8 @@ class AuthUser(Base):
     role = Column(Integer,nullable = False)
     hashed_password = Column(String(255), nullable=False)
     last_login = Column(DateTime, nullable=True)
+  
+    password_reset_tokens = relationship("PasswordResetToken", back_populates="user")
 
     def __repr__(self):
         return f"<AuthUser {self.username}>"

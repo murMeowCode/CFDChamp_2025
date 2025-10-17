@@ -96,6 +96,9 @@ class MailingConsumer(BaseConsumer):
             case "role_rejected":
                 return self._create_role_rejected_template(username, data)
 
+            case "password_reset":
+                return self._create_password_reset_template(username, data)
+
             case _:
                 logger.warning(f"Unknown notification type: {notification_type}")
                 return self._create_custom_template("У вас новое уведомление.")
@@ -106,6 +109,7 @@ class MailingConsumer(BaseConsumer):
             "user_registered": "Добро пожаловать на платформу!",
             "role_approved": "Положительный ответ на вашу заявку.",
             "role_rejected": "Отрицательный ответ на вашу заявку.",
+            "password_reset": "Сброс пароля на CFDChamp",
             "custom_notification": data.get("subject", "Уведомление от CFDChamp")
         }
         return subjects.get(notification_type, "Уведомление от CFDChamp")
@@ -120,6 +124,9 @@ class MailingConsumer(BaseConsumer):
                     Спасибо за регистрацию на нашем ресурсе.""",
             "role_approved": f"Уважаемый {username}! Ваша новая роль подтверждена администратором",
             "role_rejected": f"Уважаемый {username}! Ваша новая роль отклонена администратором",
+            "password_reset": f"""Уважаемый {username}! 
+            Для сброса пароля перейдите по ссылке: {data.get('reset_link', 'Ссылка недоступна')}. 
+            Токен действителен 1 час.""",
             "custom_notification": custom_content or "У вас новое уведомление."
         }
         return contents.get(notification_type, "У вас новое уведомление.")
@@ -357,6 +364,33 @@ class MailingConsumer(BaseConsumer):
                         <span style="color: #D1D5DB;">© 2024 CFDChamp. Все права защищены.</span>
                     </p>
                 </div>
+            </div>
+        </body>
+        </html>
+        """
+
+    def _create_password_reset_template(self, username: str, data: dict) -> str:
+        """Шаблон для сброса пароля"""
+        reset_link = data.get("reset_link", "#")
+        return f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }}
+                .container {{ max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }}
+                .button {{ display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; }}
+                .warning {{ color: #dc3545; font-weight: bold; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h2>Сброс пароля на CFDChamp</h2>
+                <p>Уважаемый {username},</p>
+                <p>Вы запросили сброс пароля для вашей учетной записи. Чтобы установить новый пароль, нажмите на кнопку ниже:</p>
+                <p><a href="{reset_link}" class="button">Сбросить пароль</a></p>
+                <p class="warning">Внимание: Эта ссылка действительна только 1 час. Не передавайте её третьим лицам.</p>
+                <p>Если вы не запрашивали сброс пароля, проигнорируйте это письмо.</p>
+                <p>С уважением,<br>Команда CFDChamp</p>
             </div>
         </body>
         </html>

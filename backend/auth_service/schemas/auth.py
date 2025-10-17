@@ -2,7 +2,7 @@
 from datetime import datetime
 import uuid
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class UserRegisterResponse(BaseModel):
     """ответ апи на регистрацию"""
@@ -53,3 +53,22 @@ class LoginResponse(BaseModel):
     success: bool
     tokens: Optional[TokenPair] = None
     error: Optional[str] = None
+
+class ForgotPasswordRequest(BaseModel):
+    """Запрос на восстановление"""
+    email: EmailStr
+
+class ForgotPasswordResponse(BaseModel):
+    """Ответ на восстановление"""
+    success: bool
+    message: str
+
+class ResetPasswordRequest(BaseModel):
+    """Запрос на сброс"""
+    token: str
+    new_password: str
+
+class ResetPasswordResponse(BaseModel):
+    """Ответ на сброс"""
+    success: bool
+    message: str

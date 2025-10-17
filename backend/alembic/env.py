@@ -7,6 +7,7 @@ from shared.config.base import settings
 from shared.database.database import Base
 from auth_service.models.user import AuthUser
 from auth_service.models.token import RefreshToken
+from auth_service.models.password_reset_token import PasswordResetToken
 from auth_service.models.role_change_request import RoleChangeRequest
 from profile_service.models.profile import Profile
 from mailing_service.models.message import Message
