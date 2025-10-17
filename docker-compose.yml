@@ -23,8 +23,9 @@ services:
       - prod-network
 
   celery-mailing-worker:
-    build: ./backend
-    dockerfile: mailing_service/Dockerfile
+    build: 
+      context: ./backend
+      dockerfile: mailing_service/Dockerfile
     command: celery -A celery_mail.tasks worker --loglevel=info
     depends_on:
       - mailing-service
