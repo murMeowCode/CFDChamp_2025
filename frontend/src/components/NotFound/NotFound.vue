@@ -207,7 +207,7 @@ export default {
 .number-digit {
   font-size: 8rem;
   font-weight: var(--font-weight-bold);
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -238,7 +238,7 @@ export default {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .face {
@@ -258,7 +258,7 @@ export default {
   color: var(--color-text);
   margin: 0;
   line-height: 1.2;
-  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text-muted) 100%);
+  background: var(--color-text) ;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -302,7 +302,7 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background:  rgba(255, 255, 255, 0.2);
   transition: left var(--transition-slow);
 }
 
@@ -311,7 +311,7 @@ export default {
 }
 
 .btn-primary {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: var(--color-text-inverted);
   border: none;
   box-shadow: var(--shadow-lg);

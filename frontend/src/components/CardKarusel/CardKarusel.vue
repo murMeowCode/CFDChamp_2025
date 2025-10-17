@@ -250,10 +250,11 @@ watch(currentIndex, refreshAOS)
   inset: 0;
   border-radius: var(--border-radius-full);
   padding: 2px;
-  background: var(--gradient-primary);
+   background: var(--gradient-primary);
   mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
+ 
   mask-composite: subtract;
   opacity: 0;
   transition: opacity var(--transition-normal);

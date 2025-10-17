@@ -312,7 +312,7 @@ const handleSocialLogin = (provider) => {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-primary-soft) 100%);
+  background:var(--color-bg-muted) ;
 }
 
 .login-card {
@@ -336,7 +336,7 @@ const handleSocialLogin = (provider) => {
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
 }
 
 .login-header {
@@ -358,7 +358,7 @@ const handleSocialLogin = (provider) => {
   font-weight: 600;
   color: var(--color-text);
   margin: 0 0 0.5rem;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -446,7 +446,7 @@ const handleSocialLogin = (provider) => {
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   transform: scaleX(0);
   transition: transform 0.2s ease;
 }
@@ -461,7 +461,7 @@ const handleSocialLogin = (provider) => {
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   transform: scaleX(0);
   transition: transform 0.2s ease;
 }
@@ -576,7 +576,7 @@ const handleSocialLogin = (provider) => {
 
 /* Button Styles */
 .beauty-button {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -652,7 +652,7 @@ const handleSocialLogin = (provider) => {
 .divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+  background:  var(--color-border);
 }
 
 .divider-text {

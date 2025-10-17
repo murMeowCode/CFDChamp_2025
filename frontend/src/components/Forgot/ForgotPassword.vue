@@ -238,7 +238,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   padding: var(--spacing-xl);
-  background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-primary-soft) 100%);
+  background: var(--color-bg-muted) ;
 }
 
 .forgot-password-card {
@@ -261,7 +261,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
 }
 
 .forgot-password-header {
@@ -276,7 +276,7 @@ onUnmounted(() => {
 .logo-wrapper i {
   font-size: 2.5rem;
   color: var(--color-primary);
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -287,7 +287,7 @@ onUnmounted(() => {
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
   margin: 0 0 var(--spacing-sm);
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -375,7 +375,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   transform: scaleX(0);
   transition: transform var(--transition-normal);
 }
@@ -386,7 +386,7 @@ onUnmounted(() => {
 
 /* Button Styles */
 .beauty-button {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: var(--color-text-inverted);
   border: none;
   border-radius: var(--border-radius-md);
