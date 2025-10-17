@@ -1,12 +1,10 @@
-"""объявления моделей""" # pylint: disable=E0401
-from sqlalchemy import Column, Integer, String
-
+"""объявления моделей"""#pylint: disable=E0401, E0611, E1123
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String
 from shared.database.database import Base
 
 class Item(Base):
-    """
-    Модель общего назначения
-    """
+    """абстрактный класс"""
     __tablename__ = "items"
     id = Column(UUID(as_uuid=True), primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False)
