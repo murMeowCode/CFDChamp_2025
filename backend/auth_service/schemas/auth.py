@@ -72,3 +72,8 @@ class ResetPasswordResponse(BaseModel):
     """Ответ на сброс"""
     success: bool
     message: str
+
+class VKExchangeRequest(BaseModel):
+    """Схема для OAuth VK"""
+    code: str
+    device_id: str
