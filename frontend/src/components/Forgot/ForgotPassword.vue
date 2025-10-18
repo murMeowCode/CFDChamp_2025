@@ -238,7 +238,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   padding: var(--spacing-xl);
-  background: var(--color-bg-muted) ;
+  background: var(--color-bg-muted);
 }
 
 .forgot-password-card {

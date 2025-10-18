@@ -169,8 +169,8 @@ defineEmits(['card-click'])
 .pattern {
   width: 100%;
   height: 100%;
-  background:
-  rgba(255, 255, 255, 0.1) }
+  background: rgba(255, 255, 255, 0.1);
+}
 
 .card-image {
   width: 100%;
@@ -189,7 +189,7 @@ defineEmits(['card-click'])
 .image-overlay {
   position: absolute;
   inset: 0;
-  background:  rgba(0, 0, 0, 0.3) ;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .carousel-card:hover .card-image img {
@@ -265,7 +265,7 @@ defineEmits(['card-click'])
   margin: 0;
   line-height: 1.3;
   background: var(--color-text);
-    -webkit-background-clip: text;
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: -webkit-box;

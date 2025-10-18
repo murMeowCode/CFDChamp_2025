@@ -258,7 +258,7 @@ export default {
   color: var(--color-text);
   margin: 0;
   line-height: 1.2;
-  background: var(--color-text) ;
+  background: var(--color-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -302,7 +302,7 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background:  rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.2);
   transition: left var(--transition-slow);
 }
 

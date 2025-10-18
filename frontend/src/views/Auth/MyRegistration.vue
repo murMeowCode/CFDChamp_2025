@@ -435,7 +435,8 @@ const handleSubmit = async () => {
     // Имитация API запроса
 
     // await new Promise((resolve) => setTimeout(resolve, 2000))
-    await useAuth.legacyLogin(form)
+    // await useAuth.legacyLogin(form)
+    await useAuth.register(form)
     useUser.setUser(form)
     toast.success('вошли')
 
@@ -457,7 +458,7 @@ const handleSubmit = async () => {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background:  var(--color-bg-muted) ;
+  background: var(--color-bg-muted);
 }
 
 .register-card {
@@ -680,7 +681,7 @@ const handleSubmit = async () => {
 
 .role-checkbox-label--selected {
   border-color: var(--color-primary);
-  background: var(--color-bg-elevated) ;
+  background: var(--color-bg-elevated);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 

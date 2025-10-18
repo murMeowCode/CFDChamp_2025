@@ -247,29 +247,28 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import UserAchive from '../Achive/UserAchive.vue';
-import { useUserStore } from '@/stores/useUserStore';
+import { computed, ref } from 'vue'
+import UserAchive from '../Achive/UserAchive.vue'
+import { useUserStore } from '@/stores/useUserStore'
 import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
 import { useAchivesStore } from '@/stores/useAchivesStore'
-import { storeToRefs } from 'pinia';
-const {getUser} = storeToRefs(useUserStore())
+import { storeToRefs } from 'pinia'
+const { getUser } = storeToRefs(useUserStore())
 
-const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`           
-const DateBirthday = getUser.value.birth_Date  
-const NickName = getUser.value.username     
-const Level = ref(1)         
+const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`
+const DateBirthday = getUser.value.birth_Date
+const NickName = getUser.value.username
+const Level = ref(1)
 
-const Profession = getUser.value.role    
-const Quote = ref('Мужчина')         
-const Email = getUser.value.email        
-const Phone = getUser.value.phone         
-const BurthDay = getUser.value.birth_Date        
-const selectedOption = ref('Мужчина')       
-const Address = getUser.value.address           
-const AboutMe = ref('user.AboutMe')       
-
+const Profession = getUser.value.role
+const Quote = ref('Мужчина')
+const Email = getUser.value.email
+const Phone = getUser.value.phone
+const BurthDay = getUser.value.birth_Date
+const selectedOption = ref('Мужчина')
+const Address = getUser.value.address
+const AboutMe = ref('user.AboutMe')
 
 const Achives = useAchivesStore()
 
@@ -278,7 +277,7 @@ const isEditing = ref(false)
 // Массив контактов для динамического управления
 const contacts = ref([
   { type: 'email', value: Email },
-  { type: 'tel', value: Phone},
+  { type: 'tel', value: Phone },
 ])
 
 const showContactModal = ref(false)
@@ -737,7 +736,7 @@ function closeModal() {
 .summary-info {
   width: 25%;
   padding: var(--spacing-2xl);
-  background: var(--color-bg-subtle) ;
+  background: var(--color-bg-subtle);
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;

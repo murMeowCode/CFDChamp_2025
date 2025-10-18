@@ -1,7 +1,7 @@
 <template>
   <div class="vk-auth-simple">
     <button @click="openVKAuth" class="vk-auth-button">
-      <img src="https://vk.com/images/icons/favicons/fav_logo.ico" alt="VK" class="vk-icon">
+      <img src="https://vk.com/images/icons/favicons/fav_logo.ico" alt="VK" class="vk-icon" />
       Войти через VK ID
     </button>
   </div>
@@ -14,12 +14,11 @@ import { ref, computed } from 'vue'
 
 const emit = defineEmits(['success', 'error'])
 
-
 const redirectUrl = computed(() => {
   // Для разработки используем localhost, для продакшена - ваш домен
   return 'http://codedepartament.ru/api/auth/auth/vk'
 })
-const openVKAuth =async () => {
+const openVKAuth = async () => {
   try {
     // Сохраняем state в localStorage для проверки после редиректа
     const response = await axios.get(redirectUrl.value)
@@ -29,18 +28,18 @@ const openVKAuth =async () => {
     const height = 600
     const left = (screen.width - width) / 2
     const top = (screen.height - height) / 2
-    
+
     const authWindow = window.open(
-      url.toString(), 
-      'vk_auth', 
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`
+      url.toString(),
+      'vk_auth',
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`,
     )
-    
+
     if (!authWindow) {
       alert('Пожалуйста, разрешите всплывающие окна для этого сайта')
       return
     }
-    
+
     // Слушаем сообщения от popup окна (если нужно)
     const messageHandler = (event) => {
       if (event.data?.type === 'vk_auth_success') {
@@ -48,9 +47,9 @@ const openVKAuth =async () => {
         window.removeEventListener('message', messageHandler)
       }
     }
-    
+
     window.addEventListener('message', messageHandler)
-    
+
     // Проверяем закрытие окна каждую секунду
     const checkInterval = setInterval(() => {
       if (authWindow.closed) {
@@ -59,14 +58,11 @@ const openVKAuth =async () => {
         console.log('VK auth window closed')
       }
     }, 1000)
-    
   } catch (error) {
     console.error('Error opening VK auth:', error)
     emit('error', error)
   }
 }
-
-
 </script>
 
 <style scoped>
@@ -82,7 +78,7 @@ const openVKAuth =async () => {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #0077FF;
+  background: #0077ff;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -95,7 +91,7 @@ const openVKAuth =async () => {
 }
 
 .vk-auth-button:hover {
-  background: #0055CC;
+  background: #0055cc;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 119, 255, 0.4);
 }

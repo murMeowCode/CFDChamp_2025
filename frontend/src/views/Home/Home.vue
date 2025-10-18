@@ -6,7 +6,16 @@
 
 <script setup>
 import CardKarusel from '@/components/CardKarusel/CardKarusel.vue'
-import MyNotifi from '@/components/Notyfi/MyNotifi.vue'
+import { onMounted } from 'vue'
+import { useApiGet } from '@/utils/api/useApiGet'
+import { apiUsersMe } from '@/main'
+
+const {useGet} = useApiGet()
+onMounted(()=>{
+
+  const dat = useGet(apiUsersMe)
+     console.log(dat,'dataUser')
+})
 </script>
 
 <style scoped>

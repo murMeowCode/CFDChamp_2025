@@ -147,7 +147,7 @@ defineProps({
   color: var(--color-text);
   margin: 0;
   line-height: 1.2;
-  background: var(--color-text) ;
+  background: var(--color-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

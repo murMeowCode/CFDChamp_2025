@@ -165,7 +165,7 @@
             <span class="social-text">GitHub</span>
           </button>
 
-          <MyVk/>
+          <MyVk />
         </div>
 
         <!-- Ссылка на регистрацию -->
@@ -264,7 +264,9 @@ const handleSubmit = async () => {
 
   try {
     // await new Promise((resolve) => setTimeout(resolve, 1500))
-    await useAuth.legacyLogin({ username: form.username, password: form.password })
+    // await useAuth.legacyLogin({ username: form.username, password: form.password })
+    await useAuth.login({ username: form.username, password: form.password })
+   
     useUser.setUser({
       username: form.username,
       password: form.password,
@@ -283,7 +285,7 @@ const handleSubmit = async () => {
       errors.username = 'Неверный логин или пароль'
       errors.password = 'Неверный логин или пароль'
     } else {
-      alert('Произошла ошибка при входе. Попробуйте еще раз.')
+     
     }
   } finally {
     isSubmitting.value = false
@@ -304,7 +306,7 @@ const handleSocialLogin = (provider) => {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background:var(--color-bg-muted) ;
+  background: var(--color-bg-muted);
 }
 
 .login-card {
@@ -644,7 +646,7 @@ const handleSocialLogin = (provider) => {
 .divider-line {
   flex: 1;
   height: 1px;
-  background:  var(--color-border);
+  background: var(--color-border);
 }
 
 .divider-text {
@@ -754,7 +756,7 @@ const handleSocialLogin = (provider) => {
 }
 
 .social-login :deep(.beauty-social):hover .social-icon {
-  background: #0077FF;
+  background: #0077ff;
   color: white;
 }
 

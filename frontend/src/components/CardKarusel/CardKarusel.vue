@@ -75,7 +75,6 @@
         :prize="currentCard.prize"
         :features="currentCard.features"
       />
-
     </div>
   </div>
 </template>
