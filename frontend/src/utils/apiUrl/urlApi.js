@@ -1,9 +1,9 @@
 export const apiLogin = 
-  '/api/auth/login'
+  '/api'
 export const apiRegistr = 
-   '/api/auth/register'
+   '/api'
 
 export const apiProfilesMe = 
-  '/api/profiles/me'
+  '/api'
 
-export const apiRefresh = '/api/auth/refresh'
+export const apiRefresh = '/api'

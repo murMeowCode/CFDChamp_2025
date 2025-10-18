@@ -10,22 +10,28 @@
         <img :src="ph2" alt="User Avatar" />
         <div class="avatar-status"></div>
       </div>
-      <h1 class="user-name">{{ FIO }}</h1>
-      <p class="user-profession">{{ Profession }}</p>
-      <blockquote class="user-quote" v-if="Quote">"{{ Quote }}"</blockquote>
+      <h1 class="user-name cyber-heading">{{ FIO }}</h1>
+      <p class="user-profession futurism-elegant">{{ Profession }}</p>
+      <blockquote class="user-quote futurism-elegant" v-if="Quote">"{{ Quote }}"</blockquote>
       <div class="level-badge">
-        <span class="level-text">Уровень {{ Level }}</span>
+        <span class="level-text cyber-mono">Уровень {{ Level }}</span>
         <div class="level-progress">
           <div class="progress-fill" :style="{ width: '65%' }"></div>
         </div>
       </div>
+      
+      <!-- Кнопка выхода -->
+      <button class="logout-btn cyber-dynamic" @click="handleLogout">
+        <span class="btn-icon">🚪</span>
+        <span class="btn-text">Выйти</span>
+      </button>
     </header>
 
     <!-- Персональная информация -->
     <section class="personal-info">
       <div class="section-header">
-        <h2>Персональная информация</h2>
-        <div class="edit-toggle" @click="toggleEdit">
+        <h2 class="cyber-heading">Персональная информация</h2>
+        <div class="edit-toggle cyber-dynamic" @click="toggleEdit">
           <span class="edit-icon">{{ isEditing ? '💾' : '✏️' }}</span>
           <span>{{ isEditing ? 'Сохранить' : 'Изменить' }}</span>
         </div>
@@ -39,9 +45,9 @@
             type="text"
             v-model="Name"
             placeholder=" "
-            class="floating-input"
+            class="floating-input futurism-elegant"
           />
-          <label>Имя</label>
+          <label class="cyber-dynamic">Имя</label>
           <div class="input-decoration"></div>
         </div>
 
@@ -52,9 +58,9 @@
             type="text"
             v-model="Profession"
             placeholder=" "
-            class="floating-input"
+            class="floating-input futurism-elegant"
           />
-          <label>Профессия</label>
+          <label class="cyber-dynamic">Профессия</label>
           <div class="input-decoration"></div>
         </div>
 
@@ -65,32 +71,32 @@
             type="text"
             v-model="Quote"
             placeholder=" "
-            class="floating-input"
+            class="floating-input futurism-elegant"
           />
-          <label>Цитата</label>
+          <label class="cyber-dynamic">Цитата</label>
           <div class="input-decoration"></div>
         </div>
 
         <!-- Контакты -->
         <div class="form-group communication">
-          <label class="section-label">Контакты</label>
+          <label class="section-label cyber-dynamic">Контакты</label>
           <div class="contacts-grid">
             <div v-for="(contact, index) in contacts" :key="index" class="contact-item">
               <div class="contact-item-content" v-if="isEditing">
-                <div class="contact-type-badge">{{ contact.type }}</div>
+                <div class="contact-type-badge cyber-mono">{{ contact.type }}</div>
                 <input
                   v-model="contact.value"
                   :type="contact.type === 'email' ? 'email' : 'text'"
                   :placeholder="`Введите ${contact.type}`"
-                  class="contact-input"
+                  class="contact-input futurism-elegant"
                 />
-                <button type="button" class="remove-contact-btn" @click="removeContact(index)">
+                <button type="button" class="remove-contact-btn cyber-dynamic" @click="removeContact(index)">
                   🗑️
                 </button>
               </div>
               <div v-else class="contact-display">
-                <span class="contact-type">{{ contact.type }}:</span>
-                <span class="contact-value">{{ contact.value }}</span>
+                <span class="contact-type cyber-dynamic">{{ contact.type }}:</span>
+                <span class="contact-value futurism-elegant">{{ contact.value }}</span>
               </div>
             </div>
           </div>
@@ -98,7 +104,7 @@
           <button
             v-if="isEditing"
             type="button"
-            class="add-contact-btn"
+            class="add-contact-btn cyber-dynamic"
             @click="showContactModal = true"
           >
             <span class="btn-icon">+</span>
@@ -109,17 +115,17 @@
         <!-- Дата и пол -->
         <div class="form-row">
           <div class="form-group floating-label half-width">
-            <input :disabled="!isEditing" type="date" v-model="BurthDay" class="floating-input" />
-            <label>Дата рождения</label>
+            <input :disabled="!isEditing" type="date" v-model="BurthDay" class="floating-input futurism-elegant" />
+            <label class="cyber-dynamic">Дата рождения</label>
             <div class="input-decoration"></div>
           </div>
 
           <div class="form-group floating-label half-width">
-            <select :disabled="!isEditing" v-model="selectedOption" class="floating-input">
+            <select :disabled="!isEditing" v-model="selectedOption" class="floating-input futurism-elegant">
               <option value="option1">Мужской</option>
               <option value="option2">Женский</option>
             </select>
-            <label>Пол</label>
+            <label class="cyber-dynamic">Пол</label>
             <div class="input-decoration"></div>
           </div>
         </div>
@@ -131,9 +137,9 @@
             type="text"
             v-model="Address"
             placeholder=" "
-            class="floating-input"
+            class="floating-input futurism-elegant"
           />
-          <label>Адрес</label>
+          <label class="cyber-dynamic">Адрес</label>
           <div class="input-decoration"></div>
         </div>
 
@@ -143,9 +149,9 @@
             :disabled="!isEditing"
             v-model="AboutMe"
             placeholder=" "
-            class="floating-input textarea"
+            class="floating-input textarea futurism-elegant"
           ></textarea>
-          <label>О себе</label>
+          <label class="cyber-dynamic">О себе</label>
           <div class="input-decoration"></div>
         </div>
       </form>
@@ -154,8 +160,8 @@
     <!-- Краткие данные -->
     <section class="summary-info">
       <div class="summary-header">
-        <h2>Профиль</h2>
-        <div class="online-status">
+        <h2 class="cyber-heading">Профиль</h2>
+        <div class="online-status cyber-dynamic">
           <div class="status-dot"></div>
           <span>Online</span>
         </div>
@@ -163,25 +169,25 @@
 
       <div class="profile-stats">
         <div class="stat-item">
-          <div class="stat-value">{{ FIO.split(' ')[0] }}</div>
-          <div class="stat-label">Имя</div>
+          <div class="stat-value cyber-mono">{{ FIO.split(' ')[0] }}</div>
+          <div class="stat-label cyber-dynamic">Имя</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value">{{ DateBirthday }}</div>
-          <div class="stat-label">Дата рождения</div>
+          <div class="stat-value cyber-mono">{{ DateBirthday }}</div>
+          <div class="stat-label cyber-dynamic">Дата рождения</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value">@{{ NickName }}</div>
-          <div class="stat-label">Никнейм</div>
+          <div class="stat-value cyber-mono">@{{ NickName }}</div>
+          <div class="stat-label cyber-dynamic">Никнейм</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value level-stat">{{ Level }}</div>
-          <div class="stat-label">Уровень</div>
+          <div class="stat-value level-stat cyber-mono">{{ Level }}</div>
+          <div class="stat-label cyber-dynamic">Уровень</div>
         </div>
       </div>
 
       <div class="achievements-section">
-        <h3>Достижения</h3>
+        <h3 class="cyber-heading">Достижения</h3>
         <div class="achievements-grid">
           <UserAchive
             v-for="(achive, index) in Achives.ACHIVES"
@@ -196,15 +202,15 @@
     <!-- Модальное окно для добавления контакта -->
     <div v-if="showContactModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
-        <h3>Добавить контакт</h3>
+        <h3 class="cyber-heading">Добавить контакт</h3>
         <div class="modal-form">
           <div class="form-group floating-label">
-            <select v-model="newContactType" class="floating-input">
+            <select v-model="newContactType" class="floating-input futurism-elegant">
               <option value="email">Email</option>
               <option value="tel">Телефон</option>
               <option value="website">Сайт</option>
             </select>
-            <label>Тип контакта</label>
+            <label class="cyber-dynamic">Тип контакта</label>
             <div class="input-decoration"></div>
           </div>
 
@@ -214,32 +220,32 @@
               type="email"
               v-model="newContactValue"
               placeholder=" "
-              class="floating-input"
+              class="floating-input futurism-elegant"
             />
             <input
               v-else-if="newContactType === 'tel'"
               type="tel"
               v-model="newContactValue"
               placeholder=" "
-              class="floating-input"
+              class="floating-input futurism-elegant"
             />
             <input
               v-else-if="newContactType === 'website'"
               type="url"
               v-model="newContactValue"
               placeholder=" "
-              class="floating-input"
+              class="floating-input futurism-elegant"
             />
-            <label>Значение</label>
+            <label class="cyber-dynamic">Значение</label>
             <div class="input-decoration"></div>
           </div>
         </div>
 
         <div class="modal-buttons">
-          <button @click="addContact" :disabled="!newContactValue.trim()" class="btn-primary">
+          <button @click="addContact" :disabled="!newContactValue.trim()" class="btn-primary cyber-dynamic">
             Добавить
           </button>
-          <button @click="closeModal" class="btn-secondary">Отмена</button>
+          <button @click="closeModal" class="btn-secondary cyber-dynamic">Отмена</button>
         </div>
       </div>
     </div>
@@ -254,6 +260,11 @@ import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
 import { useAchivesStore } from '@/stores/useAchivesStore'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/useAuthStore'
+const useAuStore = useAuthStore()
+const useUsStore = useUserStore()
+const router = useRouter()
 const { getUser } = storeToRefs(useUserStore())
 
 const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`
@@ -306,10 +317,23 @@ function addContact() {
   }
 }
 
+function removeContact(index) {
+  contacts.value.splice(index, 1)
+}
+
 function closeModal() {
   showContactModal.value = false
   newContactType.value = 'email'
   newContactValue.value = ''
+}
+
+function handleLogout() {
+    // Здесь можно добавить логику выхода (очистка стора, токенов и т.д.)
+    console.log('Выход из системы')
+    useAuStore.removeToken()
+    useUsStore.removeUser()
+    router.push('/login') // Перенаправление на страницу входа
+  
 }
 </script>
 
@@ -359,11 +383,15 @@ function closeModal() {
   padding-bottom: var(--spacing-xl);
   background: var(--color-bg-subtle);
   border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .bg-photo {
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .bg-photo img {
@@ -379,12 +407,8 @@ function closeModal() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--color-bg-subtle);
-}
-
-.avatar-container {
-  position: relative;
-  display: inline-block;
+  background: var(--gradient-midnight);
+  opacity: 0.3;
 }
 
 .avatar-photo {
@@ -399,7 +423,7 @@ function closeModal() {
   transform: translateX(-50%);
   box-shadow:
     var(--shadow-lg),
-    0 0 0 4px var(--color-primary-soft);
+    0 0 0 4px var(--color-primary);
   z-index: 10;
 }
 
@@ -439,12 +463,10 @@ function closeModal() {
   margin-top: 100px;
   font-size: 1.8rem;
   font-weight: var(--font-weight-bold);
-  color: var(--color-text);
-  background: var(--color-text);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-family: var(--font-family-sans);
 }
 
 .user-profession {
@@ -452,7 +474,6 @@ function closeModal() {
   font-style: italic;
   margin: var(--spacing-xs) 0 var(--spacing-sm);
   font-size: 1.1rem;
-  font-family: var(--font-family-sans);
 }
 
 .user-quote {
@@ -463,17 +484,15 @@ function closeModal() {
   background: var(--color-bg-muted);
   border-radius: var(--border-radius-lg);
   border-left: 4px solid var(--color-primary);
-  font-family: var(--font-family-sans);
 }
 
 .level-badge {
-  background: var(--color-primary);
+  background: var(--gradient-primary);
   color: var(--color-text-inverted);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-full);
-  margin: 0 var(--spacing-lg);
+  margin: 0 var(--spacing-lg) var(--spacing-lg);
   box-shadow: var(--shadow-md);
-  font-family: var(--font-family-sans);
 }
 
 .level-text {
@@ -496,6 +515,40 @@ function closeModal() {
   transition: width 0.3s ease;
 }
 
+/* Кнопка выхода */
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-error-soft);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-weight: var(--font-weight-medium);
+  margin-top: auto;
+  margin-bottom: var(--spacing-lg);
+  width: calc(100% - var(--spacing-xl));
+  justify-content: center;
+}
+
+.logout-btn:hover {
+  background: var(--color-error);
+  color: var(--color-text-inverted);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.btn-text {
+  font-weight: var(--font-weight-semibold);
+}
+
 /* Personal Info */
 .personal-info {
   padding: var(--spacing-2xl);
@@ -516,7 +569,6 @@ function closeModal() {
   color: var(--color-text);
   font-weight: var(--font-weight-bold);
   font-size: 1.5rem;
-  font-family: var(--font-family-sans);
 }
 
 .edit-toggle {
@@ -525,12 +577,12 @@ function closeModal() {
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
   background: var(--color-primary-soft);
+  color: var(--color-primary);
   border: 1px solid var(--color-primary-muted);
   border-radius: var(--border-radius-lg);
   cursor: pointer;
   transition: all var(--transition-normal);
   font-weight: var(--font-weight-medium);
-  font-family: var(--font-family-sans);
 }
 
 .edit-toggle:hover {
@@ -572,7 +624,6 @@ function closeModal() {
   font-size: 1rem;
   transition: all var(--transition-normal);
   color: var(--color-text);
-  font-family: var(--font-family-sans);
 }
 
 .floating-input:focus {
@@ -593,7 +644,6 @@ function closeModal() {
   transition: all var(--transition-normal);
   pointer-events: none;
   font-weight: var(--font-weight-medium);
-  font-family: var(--font-family-sans);
 }
 
 .floating-input:focus + label,
@@ -627,7 +677,6 @@ function closeModal() {
   font-weight: var(--font-weight-semibold);
   color: var(--color-text);
   margin-bottom: var(--spacing-md);
-  font-family: var(--font-family-sans);
 }
 
 .contacts-grid {
@@ -655,7 +704,6 @@ function closeModal() {
   font-weight: var(--font-weight-semibold);
   min-width: 60px;
   text-align: center;
-  font-family: var(--font-family-sans);
 }
 
 .contact-input {
@@ -664,7 +712,6 @@ function closeModal() {
   background: transparent;
   color: var(--color-text);
   font-size: 0.9rem;
-  font-family: var(--font-family-sans);
 }
 
 .contact-input:focus {
@@ -680,7 +727,6 @@ function closeModal() {
   transition: background var(--transition-fast);
   width: auto;
   margin: 0;
-  font-family: var(--font-family-sans);
 }
 
 .remove-contact-btn:hover {
@@ -692,7 +738,6 @@ function closeModal() {
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm);
-  font-family: var(--font-family-sans);
 }
 
 .contact-type {
@@ -719,17 +764,11 @@ function closeModal() {
   transition: all var(--transition-normal);
   font-weight: var(--font-weight-medium);
   margin-top: var(--spacing-sm);
-  font-family: var(--font-family-sans);
 }
 
 .add-contact-btn:hover {
   background: var(--color-primary-muted);
   border-style: solid;
-}
-
-.btn-icon {
-  font-size: 1.2rem;
-  font-weight: var(--font-weight-bold);
 }
 
 /* Summary Info */
@@ -753,7 +792,6 @@ function closeModal() {
   color: var(--color-text);
   font-weight: var(--font-weight-bold);
   font-size: 1.5rem;
-  font-family: var(--font-family-sans);
 }
 
 .online-status {
@@ -762,7 +800,6 @@ function closeModal() {
   gap: var(--spacing-xs);
   font-size: 0.9rem;
   color: var(--color-text-muted);
-  font-family: var(--font-family-sans);
 }
 
 .status-dot {
@@ -798,7 +835,6 @@ function closeModal() {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border);
   transition: transform var(--transition-normal);
-  font-family: var(--font-family-sans);
 }
 
 .stat-item:hover {
@@ -834,7 +870,6 @@ function closeModal() {
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-md);
   font-size: 1.1rem;
-  font-family: var(--font-family-sans);
 }
 
 .achievements-grid {
@@ -860,7 +895,6 @@ function closeModal() {
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-border);
   transition: all var(--transition-normal);
-  font-family: var(--font-family-sans);
 }
 
 .achievement-item:hover {
@@ -898,7 +932,6 @@ function closeModal() {
   color: var(--color-text);
   font-weight: var(--font-weight-bold);
   text-align: center;
-  font-family: var(--font-family-sans);
 }
 
 .modal-form {
@@ -924,7 +957,6 @@ function closeModal() {
   transition: all var(--transition-normal);
   width: auto;
   margin: 0;
-  font-family: var(--font-family-sans);
 }
 
 .btn-primary {
@@ -1054,7 +1086,13 @@ function closeModal() {
     gap: var(--spacing-md);
     align-items: flex-start;
   }
+
+  .logout-btn {
+    width: calc(100% - var(--spacing-lg));
+    margin: var(--spacing-lg) auto;
+  }
 }
+
 @media (max-width: 768px) {
   .summary-info {
     padding: var(--spacing-md);
@@ -1107,6 +1145,11 @@ function closeModal() {
 
   .summary-header h2 {
     font-size: 1.3rem;
+  }
+
+  .logout-btn {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 0.9rem;
   }
 }
 </style>
