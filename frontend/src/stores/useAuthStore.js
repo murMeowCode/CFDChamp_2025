@@ -14,14 +14,14 @@ export const useAuthStore = defineStore('auth', () => {
   const { usePost } = useApiMutations()
 
   // Мутация для регистрации
-  const registerMutation = usePost(apiRegistr, {
+  const registerMutation = usePost(`${apiRegistr}/auth/register`, {
     onSuccess: (data) => {
       console.log('✅ Регистрация успешна:', data)
 
       // Если бэкенд возвращает токены при регистрации
-      if (data.access && data.refresh) {
-        setAccsessToken(data.access)
-        setRefreshToken(data.refresh)
+      if (data.tokens.access_token && data.tokens.refresh_token) {
+        setAccsessToken(data.tokens.access_token)
+        setRefreshToken(data.tokens.refresh_token)
         startTokenRefresh()
       }
 
@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   // Мутация для логина
-  const loginMutation = usePost(apiLogin, {
+  const loginMutation = usePost(`${apiLogin}/auth/login`, {
     onSuccess: (data) => {
       console.log('✅ Логин успешен:', data.tokens)
 
@@ -83,7 +83,7 @@ async function refreshTokens() {
   }
 
   try {
-    const response = await fetch(apiRefresh, {
+    const response = await fetch(`${apiRefresh}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

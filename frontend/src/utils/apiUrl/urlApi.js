@@ -1,9 +1,9 @@
 export const apiLogin = 
-  '/api/auth/login'
+  'http://10.32.237.12:8000'
 export const apiRegistr = 
-   '/api/auth/register'
+   'http://10.32.237.12:8000'
 
 export const apiProfilesMe = 
-  '/api/profiles/me'
+  'http://10.32.237.12:8001'
 
-export const apiRefresh = '/api/auth/refresh'
+export const apiRefresh = 'http://10.32.237.12:8000'

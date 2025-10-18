@@ -1,10 +1,12 @@
 <script setup>
 import MainHead from './components/Header/MainHead.vue'
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 </script>
 
 <template>
   <div class="app">
     <MainHead />
+    <VueQueryDevtools />
     <div class="page-container">
       <RouterView />
     </div>

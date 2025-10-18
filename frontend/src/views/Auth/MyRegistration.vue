@@ -176,26 +176,26 @@
           <div class="form-group floating-group">
             <div class="input-container">
               <input
-                id="birth_Date"
-                v-model="form.birth_Date"
+                id="birth_date"
+                v-model="form.birth_date"
                 type="date"
                 class="form-input floating-input"
                 :class="{
-                  'form-input--error': errors.birth_Date,
-                  'form-input--filled': form.birth_Date,
+                  'form-input--error': errors.birth_date,
+                  'form-input--filled': form.birth_date,
                 }"
                 placeholder=" "
                 required
               />
-              <label for="birth_Date" class="floating-label">
+              <label for="birth_date" class="floating-label">
                 <i class="pi pi-calendar"></i>
                 Дата рождения
               </label>
               <div class="input-decoration"></div>
             </div>
-            <span v-if="errors.birth_Date" class="form-error">
+            <span v-if="errors.birth_date" class="form-error">
               <i class="pi pi-exclamation-circle"></i>
-              {{ errors.birth_Date }}
+              {{ errors.birth_date }}
             </span>
           </div>
         </div>
@@ -382,17 +382,17 @@ const useAuth = useAuthStore()
 // Список ролей
 const roles = [
   {
-    value: 'role1',
+    value: 1,
     title: 'Роль 1',
     description: 'Базовый доступ',
   },
   {
-    value: 'role2',
+    value: 2,
     title: 'Роль 2',
     description: 'Расширенный доступ',
   },
   {
-    value: 'role3',
+    value: 3,
     title: 'Роль 3',
     description: 'Полный доступ',
   },
@@ -406,7 +406,7 @@ const form = reactive({
   middle_Name: '',
   username: '',
   email: '',
-  birth_Date: '',
+  birth_date: '',
   phone: '',
   address: '',
   role: '',
@@ -437,14 +437,14 @@ const handleSubmit = async () => {
     // await new Promise((resolve) => setTimeout(resolve, 2000))
     // await useAuth.legacyLogin(form)
     await useAuth.register(form)
-    useUser.setUser(form)
-    toast.success('вошли')
+    
+    toast.success('Вы успешно зарегестрировались')
 
-    router.push({ name: 'home' })
+    router.push({ name: 'login' })
     formSubmitted.value = false
   } catch (error) {
     console.error('Ошибка регистрации:', error)
-    toast.error('ошибка')
+    toast.error('Ошибка')
   } finally {
     isSubmitting.value = false
   }
@@ -555,7 +555,7 @@ const handleSubmit = async () => {
   border-radius: 8px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: 0.8rem;
   transition: all 0.2s ease;
   outline: none;
   width: 100%;

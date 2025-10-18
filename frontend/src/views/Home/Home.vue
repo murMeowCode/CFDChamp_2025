@@ -15,10 +15,10 @@ const { getTokenAccsess} = storeToRefs(useAuthStore())
 const {useGet} = useApiGet()
 onMounted(()=>{
 
-  const dat = useGet(apiProfilesMe,{},{
+  const dat = useGet(`${apiProfilesMe}/profiles/me`,{},{
      headers: {
     'Authorization': `Bearer ${getTokenAccsess.value}`,
-  }
+  },witchCredentials:true
   })
      console.log(dat,'dataUser')
 })

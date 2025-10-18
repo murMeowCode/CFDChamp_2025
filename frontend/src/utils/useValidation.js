@@ -6,7 +6,7 @@ export function useValidation() {
     username: '',
     email: '',
     phone: '',
-    birth_Date: '',
+    birth_date: '',
     address: '',
     role: '',
     password: '',
@@ -65,20 +65,20 @@ export function useValidation() {
     }
 
     // Валидация даты рождения
-    if (!form.birth_Date) {
-      errors.birth_Date = 'Дата рождения обязательна'
+    if (!form.birth_date) {
+      errors.birth_date = 'Дата рождения обязательна'
       isValid = false
     } else {
-      const birth_Date = new Date(form.birth_Date)
+      const birth_date = new Date(form.birth_date)
       const today = new Date()
       const minDate = new Date()
       minDate.setFullYear(today.getFullYear() - 100)
 
-      if (birth_Date > today) {
-        errors.birth_Date = 'Дата рождения не может быть в будущем'
+      if (birth_date > today) {
+        errors.birth_date = 'Дата рождения не может быть в будущем'
         isValid = false
-      } else if (birth_Date < minDate) {
-        errors.birth_Date = 'Проверьте корректность даты рождения'
+      } else if (birth_date < minDate) {
+        errors.birth_date = 'Проверьте корректность даты рождения'
         isValid = false
       }
     }
