@@ -4,8 +4,8 @@ services:
       context: ./backend
       dockerfile: auth_service/Dockerfile
     container_name: auth-service
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     networks:
       - prod-network
 

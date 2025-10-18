@@ -1,6 +1,6 @@
 // composables/useApiGet.js
 import { useQuery } from '@tanstack/vue-query'
-import { apiClient } from '@/api/client'
+import axios from 'axios'
 
 export function useApiGet() {
   const useGet = (endpoint, params = {}, options = {}) => {
@@ -13,7 +13,7 @@ export function useApiGet() {
         console.log(`🔄 GET ${endpoint}`, { params })
 
         try {
-          const response = await apiClient.get(endpoint, { params })
+          const response = await axios.get(endpoint, { params })
           const duration = Date.now() - startTime
 
           console.log(`✅ Успех: GET ${endpoint}`, {

@@ -1,18 +1,37 @@
 // composables/useApiMutations.js
 import { useMutation } from '@tanstack/vue-query'
-import { apiClient } from '@/main'
+import { useNotificationsStore } from '@/stores/useToastStore'
 
 const createMutation =
   (method) =>
-  (endpoint, options = {}) => {
+  (url, options = {}) => {
+    const toast = useNotificationsStore()
+    console.log(url,'url')
     return useMutation({
-      mutationFn: (data) => apiClient[method](endpoint, data).then((res) => res.data),
+      mutationFn: (data) => {
+        return fetch(url, {
+          method: method.toUpperCase(),
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+          },
+          body: data ? JSON.stringify(data) : undefined,
+        })
+        .then(async (response) => {
+          if (!response.ok) {
+            const error = await response.text()
+            throw new Error(error || `HTTP error! status: ${response.status}`)
+          }
+          return response.json()
+        })
+      },
       onSuccess: (data, variables, context) => {
-        console.log(`✅ ${method.toUpperCase()} Success: ${endpoint}`, data)
+        console.log(`✅ ${method.toUpperCase()} Success: ${url}`, data)
         options.onSuccess?.(data, variables, context)
       },
       onError: (error, variables, context) => {
-        console.error(`❌ ${method.toUpperCase()} Error: ${endpoint}`, error.response?.data)
+        toast.error('Не вошли')
+        console.error(`❌ ${method.toUpperCase()} Error: ${url}`, error.message)
         options.onError?.(error, variables, context)
       },
       ...options,

@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useUserStore } from './useUserStore'
 import { useApiMutations } from '@/utils/api/useApiMutation'
+import { apiLogin, apiRegistr } from '@/main'
 
 export const useAuthStore = defineStore('auth', () => {
   const accsesstoken = ref(localStorage.getItem('jwtTokenAccsess'))
@@ -12,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
   const { usePost } = useApiMutations()
 
   // Мутация для регистрации
-  const registerMutation = usePost('auth/register/', {
+  const registerMutation = usePost(apiRegistr, {
     onSuccess: (data) => {
       console.log('✅ Регистрация успешна:', data)
 
@@ -34,13 +35,13 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   // Мутация для логина
-  const loginMutation = usePost('auth/login/', {
+  const loginMutation = usePost(apiLogin, {
     onSuccess: (data) => {
-      console.log('✅ Логин успешен:', data)
+      console.log('✅ Логин успешен:', data.tokens)
 
-      if (data.access && data.refresh) {
-        setAccsessToken(data.access)
-        setRefreshToken(data.refresh)
+      if (data.tokens.access_token && data.tokens.refresh_token) {
+        setAccsessToken(data.tokens.access_token)
+        setRefreshToken(data.tokens.refresh_token)
         startTokenRefresh()
       }
 
@@ -55,6 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Существующие функции
   function setAccsessToken(newToken) {
+    console.log(newToken,'token')
     accsesstoken.value = newToken
     localStorage.setItem('jwtTokenAccsess', newToken)
   }
@@ -73,19 +75,51 @@ export const useAuthStore = defineStore('auth', () => {
 
   let refreshInterval = null
 
-  async function refreshTokens() {
-    if (!accsesstoken.value || !refreshtoken.value) {
-      stopTokenRefresh()
-      return false
+async function refreshTokens() {
+  if (!accsesstoken.value || !refreshtoken.value) {
+    stopTokenRefresh()
+    return false
+  }
+
+  try {
+    const response = await fetch('http://10.0.219.6:8000/auth/refresh', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${refreshtoken.value}`
+      },
+      body: JSON.stringify({
+        refresh_token: refreshtoken.value
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    return new Promise((resolve) => {
-      console.log('---------------------------------------------------')
-      setAccsessToken('accsess' + Date.now())
-      setRefreshToken('refresh' + Date.now())
-      resolve(true)
-    })
+    const data = await response.json()
+    
+    // Предполагаем, что API возвращает новые токены в таком формате
+    if (data.access_token && data.refresh_token) {
+      setAccsessToken(data.access_token)
+      setRefreshToken(data.refresh_token)
+      console.log('✅ Токены успешно обновлены')
+      return true
+    } else {
+      throw new Error('Неверный формат ответа от сервера')
+    }
+    
+  } catch (error) {
+    console.error('❌ Ошибка обновления токенов:', error)
+    stopTokenRefresh()
+    
+    // Можно добавить логику для выхода пользователя при неудачном обновлении
+    // logoutUser()
+    
+    return false
   }
+}
+
 
   function startTokenRefresh() {
     if (refreshInterval) {

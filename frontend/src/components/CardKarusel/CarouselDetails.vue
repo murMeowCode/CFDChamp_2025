@@ -131,7 +131,7 @@ defineProps({
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
 }
 
 /* Заголовок и описание */
@@ -147,7 +147,7 @@ defineProps({
   color: var(--color-text);
   margin: 0;
   line-height: 1.2;
-  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text-muted) 100%);
+  background: var(--color-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -321,7 +321,7 @@ defineProps({
 }
 
 .action-btn.primary {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: var(--color-text-inverted);
   box-shadow: var(--shadow-sm);
 }

@@ -50,9 +50,14 @@ const queryClient = new QueryClient({
   },
 })
 app.use(notivue)
-export const apiClient = axios.create({
-  baseURL: 'http://192.168.3.116:8000',
-})
+export const apiLogin = 
+  'http://10.0.219.6:8000/auth/login'
+export const apiRegistr = 
+   'http://10.0.219.6:8000/auth/register'
+
+export const apiUsersMe = 
+  'http://10.0.219.6:8001/profiles/me'
+
 AOS.init({
   duration: 800,
   once: false,

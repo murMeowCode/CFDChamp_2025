@@ -1,3 +1,9 @@
+/* Подключение шрифтов */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@100;200;300;400;500;600;700;800;900&family=Share+Tech+Mono&display=swap');
+
+/* Или альтернативный вариант с более футуристичными шрифтами */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@100;200;300;400;500;600;700;800;900&family=Share+Tech+Mono&family=Major+Mono+Display&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
 body {
   overflow-x: hidden;
   color: var(--color-text);
@@ -7,65 +13,147 @@ body {
   transition:
     background-color var(--transition-normal),
     color var(--transition-normal);
+  /* Добавьте это в начало вашего CSS файла */
+
+  /* КИБЕРПАНК ШРИФТЫ */
+  font-family: 'Exo 2', 'Rajdhani', 'Space Grotesk', 'Orbitron', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+
+  /* Футуристические эффекты */
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+/* Дополнительные классы для разных стилей текста в киберпанк стиле */
+
+/* Техно-моноширинный для цифр и кода */
+.cyber-mono {
+  font-family: 'Share Tech Mono', 'Major Mono Display', monospace;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Футуристичные заголовки */
+.cyber-heading {
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* Элегантный футуризм */
+.futurism-elegant {
+  font-family: 'Exo 2', 'Space Grotesk', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+/* Динамичные тексты */
+.cyber-dynamic {
+  font-family: 'Rajdhani', 'Exo 2', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Стили для разных уровней заголовков */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #a0a8c0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 600;
 }
 
 :root {
   /* ——— СВЕТЛАЯ ТЕМА ——— */
 
-  /* Фоны - на основе #FAF3E1 */
-  --color-bg: #FAF3E1; /* Основной кремовый фон */
-  --color-bg-muted: #F0E9D9; /* Немного темнее */
-  --color-bg-subtle: #FFFFFF; /* Белый для карточек */
-  --color-bg-elevated: #FFFFFF; /* Для поднятых элементов */
+  /* Фоны - на основе VANILLA CREAM #F0E7D5 */
+  --color-bg: #f0e7d5; /* Основной кремовый фон */
+  --color-bg-muted: #e8decd; /* Немного темнее */
+  --color-bg-subtle: #f8f2e8; /* Светлый для карточек */
+  --color-bg-elevated: #ffffff; /* Для поднятых элементов */
 
   /* Текст */
-  --color-text: #000000; /* Черный - основной текст */
-  --color-text-muted: #333333; /* Темно-серый */
-  --color-text-inverted: #FAF3E1; /* Кремовый */
-  --color-text-light: #666666; /* Серый */
+  --color-text: #212842; /* Midnight Indigo - основной текст */
+  --color-text-muted: #2d3a5a; /* Темно-синий */
+  --color-text-inverted: #f0e7d5; /* Vanilla Cream */
+  --color-text-light: #4a5678; /* Светло-синий */
 
   /* Границы */
-  --color-border: #E5DECD; /* Светло-бежевый */
-  --color-border-hover: #FF6D1F; /* Оранжевый при ховере */
-  --color-border-strong: #000000; /* Черный */
+  --color-border: #d8cfc0; /* Светло-кремовый */
+  --color-border-hover: #212842; /* Midnight Indigo при ховере */
+  --color-border-strong: #212842; /* Midnight Indigo */
 
-  /* Основной акцент - Electric Tangerine #FF6D1F */
-  --color-primary: #FF6D1F; /* Яркий оранжевый */
-  --color-primary-hover: #E55C0F; /* Более темный оранжевый */
-  --color-primary-muted: #FFE8D9; /* Светлый оранжевый фон */
-  --color-primary-soft: #FFF4EC; /* Очень светлый оранжевый */
+  /* Основной акцент - MIDNIGHT INDIGO #212842 */
+  --color-primary: #212842; /* Темный сине-фиолетовый */
+  --color-primary-hover: #2d3a5a; /* Более светлый индиго */
+  --color-primary-muted: #d1d8e8; /* Светлый синий фон */
+  --color-primary-soft: #eaedf5; /* Очень светлый синий */
 
-  /* Вторичный акцент - Black #000000 */
-  --color-secondary: #000000; /* Черный */
-  --color-secondary-hover: #1A1A1A;
-  --color-secondary-muted: #F0F0F0;
-  --color-secondary-soft: #F8F8F8;
+  /* Вторичный акцент - VANILLA CREAM #F0E7D5 */
+  --color-secondary: #f0e7d5; /* Кремовый */
+  --color-secondary-hover: #f8f2e8;
+  --color-secondary-muted: #f8f2e8;
+  --color-secondary-soft: #fcf9f4;
 
   /* Дополнительные акценты */
-  --color-accent: #000000; /* Черный акцент */
-  --color-accent-hover: #333333;
+  --color-accent: #3a4a7a; /* Средний индиго */
+  --color-accent-hover: #2d3a5a;
 
-  /* Семантические цвета - гармонирующие с оранжевой палитрой */
-  --color-success: #27AE60; /* Зеленый */
-  --color-success-soft: #F0F9F4;
-  --color-warning: #FF6D1F; /* Оранжевый как предупреждение */
-  --color-warning-soft: #FFF4EC;
-  --color-error: #E74C3C; /* Красный */
-  --color-error-soft: #FDEDEC;
-  --color-info: #3498DB; /* Синий */
-  --color-info-soft: #EBF5FB;
+  /* Семантические цвета - гармонирующие с индиго палитрой */
+  --color-success: #2e7d32; /* Приглушенный зеленый */
+  --color-success-soft: #e8f5e9;
+  --color-warning: #ff8f00; /* Теплый оранжевый */
+  --color-warning-soft: #fff3e0;
+  --color-error: #c62828; /* Приглушенный красный */
+  --color-error-soft: #ffebee;
+  --color-info: #1565c0; /* Синий в той же гамме */
+  --color-info-soft: #e3f2fd;
 
-  /* Тени */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  /* Тени - мягкие синие */
+  --shadow-sm: 0 1px 2px 0 rgba(33, 40, 66, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(33, 40, 66, 0.1), 0 2px 4px -1px rgba(33, 40, 66, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(33, 40, 66, 0.1), 0 4px 6px -2px rgba(33, 40, 66, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(33, 40, 66, 0.1), 0 10px 10px -5px rgba(33, 40, 66, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(33, 40, 66, 0.25);
 
   /* Градиенты */
-  --gradient-primary: linear-gradient(135deg, #FF6D1F 0%, #000000 100%);
+  --gradient-primary: linear-gradient(135deg, #212842 0%, #3a4a7a 100%);
   --gradient-subtle: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-muted) 100%);
-  --gradient-dark: linear-gradient(135deg, #000000 0%, #333333 100%);
-  --gradient-accent: linear-gradient(135deg, #FF6D1F 0%, #000000 50%, #FAF3E1 100%);
+  --gradient-dark: linear-gradient(135deg, #212842 0%, #2d3a5a 100%);
+  --gradient-accent: linear-gradient(135deg, #212842 0%, #f0e7d5 100%);
+  --gradient-vanilla: linear-gradient(135deg, #f0e7d5 0%, #f8f2e8 100%);
+  --gradient-indigo: linear-gradient(135deg, #212842 0%, #4a5678 50%, #6b7ba0 100%);
 
   /* Эффекты */
   --backdrop-blur: blur(8px);
@@ -75,47 +163,47 @@ body {
 /* ——— ТЁМНАЯ ТЕМА ——— */
 [data-theme='dark'] {
   /* Фоны - инвертированная схема */
-  --color-bg: #000000; /* Черный фон */
-  --color-bg-muted: #1A1A1A; /* Темно-серый */
-  --color-bg-subtle: #1A1A1A; /* Для карточек */
-  --color-bg-elevated: #262626; /* Поднятые элементы */
+  --color-bg: #212842; /* Midnight Indigo фон */
+  --color-bg-muted: #2d3a5a; /* Темнее индиго */
+  --color-bg-subtle: #1a2036; /* Для карточек */
+  --color-bg-elevated: #2d3a5a; /* Поднятые элементы */
 
   /* Текст */
-  --color-text: #FAF3E1; /* Кремовый текст */
-  --color-text-muted: #CCCCCC;
-  --color-text-inverted: #000000;
-  --color-text-light: #999999;
+  --color-text: #f0e7d5; /* Vanilla Cream текст */
+  --color-text-muted: #d8cfc0;
+  --color-text-inverted: #212842;
+  --color-text-light: #a0a8c0;
 
   /* Границы */
-  --color-border: #333333;
-  --color-border-hover: #FF6D1F;
-  --color-border-strong: #FAF3E1;
+  --color-border: #2d3a5a;
+  --color-border-hover: #f0e7d5;
+  --color-border-strong: #f0e7d5;
 
-  /* Основной акцент - Electric Tangerine */
-  --color-primary: #FF6D1F;
-  --color-primary-hover: #FF8A4D;
-  --color-primary-muted: #332013;
-  --color-primary-soft: #1A1009;
+  /* Основной акцент - VANILLA CREAM */
+  --color-primary: #f0e7d5;
+  --color-primary-hover: #f8f2e8;
+  --color-primary-muted: #2d3a5a;
+  --color-primary-soft: #1a2036;
 
   /* Вторичный акцент */
-  --color-secondary: #FAF3E1;
-  --color-secondary-hover: #FFFFFF;
-  --color-secondary-muted: #333333;
-  --color-secondary-soft: #1A1A1A;
+  --color-secondary: #212842;
+  --color-secondary-hover: #2d3a5a;
+  --color-secondary-muted: #2d3a5a;
+  --color-secondary-soft: #1a2036;
 
   /* Дополнительные акценты */
-  --color-accent: #FAF3E1;
-  --color-accent-hover: #FFFFFF;
+  --color-accent: #f0e7d5;
+  --color-accent-hover: #f8f2e8;
 
   /* Семантические цвета для темной темы */
-  --color-success: #2ECC71;
-  --color-success-soft: #0A2A15;
-  --color-warning: #FF6D1F;
-  --color-warning-soft: #331908;
-  --color-error: #E74C3C;
-  --color-error-soft: #331210;
-  --color-info: #3498DB;
-  --color-info-soft: #0A1F33;
+  --color-success: #4caf50;
+  --color-success-soft: #1b2e1c;
+  --color-warning: #ffa726;
+  --color-warning-soft: #332900;
+  --color-error: #ef5350;
+  --color-error-soft: #331010;
+  --color-info: #42a5f5;
+  --color-info-soft: #0a1f33;
 
   /* Тени */
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
@@ -124,10 +212,11 @@ body {
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.7);
 
   /* Градиенты */
-  --gradient-primary: linear-gradient(90deg, #FF6D1F 0%, #FAF3E1 100%);
-  --gradient-subtle: linear-gradient(90deg, var(--color-bg) 0%, var(--color-bg-muted) 100%);
-  --gradient-dark: linear-gradient(90deg, #000000 0%, #1A1A1A 100%);
-  --gradient-accent: linear-gradient(90deg, #FF6D1F 0%, #FAF3E1 50%, #000000 100%);
+  --gradient-primary: linear-gradient(135deg, #f0e7d5 0%, #d8cfc0 100%);
+  --gradient-subtle: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-muted) 100%);
+  --gradient-dark: linear-gradient(135deg, #212842 0%, #1a2036 100%);
+  --gradient-accent: linear-gradient(135deg, #f0e7d5 0%, #212842 100%);
+  --gradient-midnight: linear-gradient(135deg, #212842 0%, #2d3a5a 50%, #3a4a7a 100%);
 }
 
 /* Универсальные переменные */
@@ -160,9 +249,12 @@ body {
   --font-weight-bold: 700;
 
   /* Новые переменные для специфичных цветов */
-  --color-cream: #FAF3E1;
-  --color-tangerine: #FF6D1F;
-  --color-black: #000000;
+  --color-midnight: #212842;
+  --color-vanilla: #f0e7d5;
+  --color-midnight-light: #2d3a5a;
+  --color-midnight-medium: #3a4a7a;
+  --color-vanilla-light: #f8f2e8;
+  --color-vanilla-dark: #d8cfc0;
 }
 
 /* Плавные переходы */
@@ -176,14 +268,72 @@ body {
 }
 
 /* Дополнительные утилитарные классы */
-.bg-cream { background-color: var(--color-cream); }
-.bg-tangerine { background-color: var(--color-tangerine); }
-.bg-black { background-color: var(--color-black); }
+.bg-midnight {
+  background-color: var(--color-midnight);
+}
+.bg-vanilla {
+  background-color: var(--color-vanilla);
+}
+.bg-midnight-light {
+  background-color: var(--color-midnight-light);
+}
+.bg-midnight-medium {
+  background-color: var(--color-midnight-medium);
+}
+.bg-vanilla-light {
+  background-color: var(--color-vanilla-light);
+}
 
-.text-cream { color: var(--color-cream); }
-.text-tangerine { color: var(--color-tangerine); }
-.text-black { color: var(--color-black); }
+.text-midnight {
+  color: var(--color-midnight);
+}
+.text-vanilla {
+  color: var(--color-vanilla);
+}
+.text-midnight-light {
+  color: var(--color-midnight-light);
+}
+.text-midnight-medium {
+  color: var(--color-midnight-medium);
+}
+.text-vanilla-light {
+  color: var(--color-vanilla-light);
+}
 
-.border-cream { border-color: var(--color-cream); }
-.border-tangerine { border-color: var(--color-tangerine); }
-.border-black { border-color: var(--color-black); }
+.border-midnight {
+  border-color: var(--color-midnight);
+}
+.border-vanilla {
+  border-color: var(--color-vanilla);
+}
+.border-midnight-light {
+  border-color: var(--color-midnight-light);
+}
+.border-vanilla-dark {
+  border-color: var(--color-vanilla-dark);
+}
+
+/* Специальные классы для сочетаний */
+.bg-indigo-theme {
+  background: linear-gradient(135deg, var(--color-vanilla) 0%, var(--color-bg-subtle) 100%);
+}
+
+.text-indigo-theme {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Элегантные тени для индиго темы */
+.shadow-indigo {
+  box-shadow:
+    0 10px 25px -5px rgba(33, 40, 66, 0.15),
+    0 5px 10px -5px rgba(33, 40, 66, 0.1);
+}
+
+.shadow-vanilla {
+  box-shadow:
+    0 8px 20px -4px rgba(240, 231, 213, 0.2),
+    0 4px 8px -2px rgba(240, 231, 213, 0.1);
+}
