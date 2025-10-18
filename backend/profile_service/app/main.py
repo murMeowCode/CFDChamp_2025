@@ -13,6 +13,7 @@ from profile_service.messaging.consumers import ProfileConsumer
 from profile_service.services.service import ProfileService
 from profile_service.api.endpoints.profiles import router as profile_router
 from profile_service.services.file_service import FileService
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 
 @asynccontextmanager
@@ -64,6 +65,14 @@ app = FastAPI(
     title="Profile Service",
     description="Service for managing user profiles",
     lifespan=lifespan
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Разрешить ВСЕ origins (любой домен)
+    allow_credentials=True,  # Разрешить cookies/токены
+    allow_methods=["*"],  # Разрешить ВСЕ методы (GET, POST, PUT, DELETE, OPTIONS и т.д.)
+    allow_headers=["*"],  # Разрешить ВСЕ заголовки
 )
 
 app.include_router(profile_router, prefix="/profiles")
