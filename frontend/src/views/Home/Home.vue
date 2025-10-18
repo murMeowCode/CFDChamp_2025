@@ -9,15 +9,22 @@ import CardKarusel from '@/components/CardKarusel/CardKarusel.vue'
 import { onMounted } from 'vue'
 import { useApiGet } from '@/utils/api/useApiGet'
 import { apiUsersMe } from '@/main'
-
+import { useAuthStore } from '@/stores/useAuthStore'
+import { storeToRefs } from 'pinia'
+const { getTokenAccsess} = storeToRefs(useAuthStore())
 const {useGet} = useApiGet()
 onMounted(()=>{
 
-  const dat = useGet(apiUsersMe)
+  const dat = useGet(apiUsersMe,{},{
+     headers: {
+    'Authorization': `Bearer ${getTokenAccsess.value}`,
+    'X-Custom-Header': 'value'
+  }
+  })
      console.log(dat,'dataUser')
 })
 </script>
-
+Authentification
 <style scoped>
 .main {
   padding: 2rem;
