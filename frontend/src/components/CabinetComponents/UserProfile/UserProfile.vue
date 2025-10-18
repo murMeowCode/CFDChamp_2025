@@ -259,16 +259,16 @@ const {getUser} = storeToRefs(useUserStore())
 const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`           
 const DateBirthday = getUser.value.birth_Date  
 const NickName = getUser.value.username     
-const Level = ref(user.Level)         
+const Level = ref(1)         
 
 const Profession = getUser.value.role    
-const Quote = ref(user.Quote)         
+const Quote = ref('Мужчина')         
 const Email = getUser.value.email        
 const Phone = getUser.value.phone         
 const BurthDay = getUser.value.birth_Date        
-const selectedOption = ref(user.selectedOption)       
+const selectedOption = ref('Мужчина')       
 const Address = getUser.value.address           
-const AboutMe = ref(user.AboutMe)       
+const AboutMe = ref('user.AboutMe')       
 
 
 const Achives = useAchivesStore()
@@ -277,8 +277,8 @@ const isEditing = ref(false)
 
 // Массив контактов для динамического управления
 const contacts = ref([
-  { type: 'email', value: Email.value },
-  { type: 'tel', value: Phone.value },
+  { type: 'email', value: Email },
+  { type: 'tel', value: Phone},
 ])
 
 const showContactModal = ref(false)
@@ -358,7 +358,7 @@ function closeModal() {
   position: relative;
   text-align: center;
   padding-bottom: var(--spacing-xl);
-  background: linear-gradient(135deg, var(--color-bg-subtle) 0%, var(--color-bg-muted) 100%);
+  background: var(--color-bg-subtle);
   border-right: 1px solid var(--color-border);
 }
 
@@ -380,7 +380,7 @@ function closeModal() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, transparent 0%, var(--color-bg-subtle) 90%);
+  background: var(--color-bg-subtle);
 }
 
 .avatar-container {
@@ -441,7 +441,7 @@ function closeModal() {
   font-size: 1.8rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-text);
-  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text-muted) 100%);
+  background: var(--color-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -468,7 +468,7 @@ function closeModal() {
 }
 
 .level-badge {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: var(--color-text-inverted);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-full);
@@ -610,7 +610,7 @@ function closeModal() {
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   transition: width var(--transition-normal);
 }
 
@@ -737,7 +737,7 @@ function closeModal() {
 .summary-info {
   width: 25%;
   padding: var(--spacing-2xl);
-  background: linear-gradient(135deg, var(--color-bg-subtle) 0%, var(--color-bg-muted) 100%);
+  background: var(--color-bg-subtle) ;
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -929,7 +929,7 @@ function closeModal() {
 }
 
 .btn-primary {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: var(--color-text-inverted);
 }
 

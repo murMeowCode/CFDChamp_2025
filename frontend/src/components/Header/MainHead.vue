@@ -171,7 +171,7 @@ onUnmounted(() => {
 <style scoped>
 /* === Контейнер шапки === */
 .header {
-  background: var(--color-bg-elevated);
+  background: var(--color-bg-subtle);
   border-bottom: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
   position: sticky;
@@ -187,7 +187,7 @@ onUnmounted(() => {
   padding: 0 var(--spacing-lg);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
 
   position: relative;
 }
@@ -201,7 +201,7 @@ onUnmounted(() => {
 .logo-text {
   font-size: 1.875rem;
   font-weight: var(--font-weight-bold);
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

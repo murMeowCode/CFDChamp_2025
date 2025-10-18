@@ -75,6 +75,7 @@
         :prize="currentCard.prize"
         :features="currentCard.features"
       />
+
     </div>
   </div>
 </template>
@@ -125,7 +126,7 @@ const getCardStyle = (index) => {
   const scale = diff === 0 ? 1 : 0.75
   const translateX = diff * translateDistance.value
   const zIndex = diff === 0 ? 3 : 2 - Math.abs(diff)
-  const opacity = Math.max(0.3, 1 - Math.abs(diff) * 0.4) // Уменьшил минимальную opacity
+  const opacity = Math.max(0.3, 1 - Math.abs(diff) * 0.4)
   const blur = diff === 0 ? '0px' : '3px'
 
   // Скрываем карточки, которые слишком далеко
@@ -171,6 +172,7 @@ watch(currentIndex, refreshAOS)
   flex-direction: column;
   padding: 0;
   position: relative;
+  overflow: hidden; /* Добавляем чтобы содержимое не выходило за пределы */
 }
 
 .carousel-section {
@@ -179,10 +181,12 @@ watch(currentIndex, refreshAOS)
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-lg);
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-xl) var(--spacing-md); /* Добавляем боковые паддинги */
   background: var(--color-bg);
   position: relative;
   z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .carousel-frame {
@@ -194,7 +198,8 @@ watch(currentIndex, refreshAOS)
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  padding: 0 80px; /* Уменьшил базовый паддинг */
+  padding: 0 80px;
+  box-sizing: border-box;
 }
 
 .carousel-cards-wrapper {
@@ -274,11 +279,11 @@ watch(currentIndex, refreshAOS)
 }
 
 .carousel-nav-prev {
-  left: 10px; /* Уменьшил базовый отступ */
+  left: 10px;
 }
 
 .carousel-nav-next {
-  right: 10px; /* Уменьшил базовый отступ */
+  right: 10px;
 }
 
 .carousel-indicators {
@@ -335,10 +340,11 @@ watch(currentIndex, refreshAOS)
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-lg);
+  padding: var(--spacing-xl) var(--spacing-md); /* Добавляем боковые паддинги */
   background: var(--color-bg);
   position: relative;
   z-index: 2;
+  box-sizing: border-box;
 }
 
 @keyframes pulse {
@@ -407,7 +413,7 @@ watch(currentIndex, refreshAOS)
 /* Планшеты */
 @media (max-width: 968px) {
   .carousel-section {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-lg) var(--spacing-sm);
     gap: var(--spacing-md);
   }
 
@@ -442,14 +448,14 @@ watch(currentIndex, refreshAOS)
 
   .details-section {
     max-width: 800px;
-    padding: var(--spacing-lg) var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-sm);
   }
 }
 
 /* Большие мобильные */
 @media (max-width: 768px) {
   .carousel-section {
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-md) var(--spacing-sm);
   }
 
   .carousel-frame {
@@ -472,13 +478,21 @@ watch(currentIndex, refreshAOS)
   }
 
   .details-section {
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-sm);
     max-width: 100%;
   }
 }
 
 /* Мобильные устройства */
 @media (max-width: 640px) {
+  .carousel-container {
+    overflow-x: hidden; /* Предотвращаем горизонтальный скролл */
+  }
+
+  .carousel-section {
+    padding: var(--spacing-md) var(--spacing-xs);
+  }
+
   .carousel-frame {
     height: 320px;
     padding: 0 30px;
@@ -490,20 +504,25 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: 0;
+    left: 5px; /* Увеличиваем отступ вместо отрицательного */
   }
 
   .carousel-nav-next {
-    right: 0;
+    right: 5px; /* Увеличиваем отступ вместо отрицательного */
   }
 
   .carousel-indicators {
     padding: 12px 14px;
+    margin-top: 1.5rem;
   }
 
   .indicator {
     width: 8px;
     height: 8px;
+  }
+
+  .details-section {
+    padding: var(--spacing-md) var(--spacing-xs);
   }
 }
 
@@ -511,16 +530,17 @@ watch(currentIndex, refreshAOS)
 @media (max-width: 480px) {
   .carousel-container {
     min-height: auto;
+    overflow-x: hidden;
   }
 
   .carousel-section {
-    padding: var(--spacing-sm) 0;
+    padding: var(--spacing-sm) var(--spacing-xs);
     gap: var(--spacing-sm);
   }
 
   .carousel-frame {
     height: 300px;
-    padding: 0 20px; /* Уменьшил паддинг контейнера */
+    padding: 0 25px; /* Увеличиваем паддинг для кнопок */
   }
 
   .carousel-nav {
@@ -534,16 +554,17 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: -5px; /* Слегка выходим за границы для экономии места */
+    left: 8px; /* Фиксируем внутри контейнера */
   }
 
   .carousel-nav-next {
-    right: -5px; /* Слегка выходим за границы для экономии места */
+    right: 8px; /* Фиксируем внутри контейнера */
   }
 
   .carousel-indicators {
     padding: 10px 12px;
     gap: 10px;
+    margin-top: 1rem;
   }
 
   .indicator {
@@ -553,15 +574,19 @@ watch(currentIndex, refreshAOS)
   }
 
   .details-section {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-xs);
   }
 }
 
 /* Очень маленькие экраны */
 @media (max-width: 360px) {
+  .carousel-section {
+    padding: var(--spacing-sm) var(--spacing-xs);
+  }
+
   .carousel-frame {
     height: 280px;
-    padding: 0 15px; /* Минимальный паддинг */
+    padding: 0 20px;
   }
 
   .carousel-nav {
@@ -575,28 +600,40 @@ watch(currentIndex, refreshAOS)
   }
 
   .carousel-nav-prev {
-    left: -8px; /* Еще больше выходим за границы */
+    left: 5px;
   }
 
   .carousel-nav-next {
-    right: -8px; /* Еще больше выходим за границы */
+    right: 5px;
+  }
+
+  .carousel-indicators {
+    padding: 8px 10px;
   }
 }
 
 /* Экстремально маленькие экраны */
 @media (max-width: 320px) {
   .carousel-frame {
-    padding: 0 10px;
+    padding: 0 15px;
   }
 
   .carousel-nav {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
   }
 
   .carousel-nav svg {
     width: 14px;
     height: 14px;
+  }
+
+  .carousel-nav-prev {
+    left: 3px;
+  }
+
+  .carousel-nav-next {
+    right: 3px;
   }
 }
 </style>

@@ -111,11 +111,7 @@ defineEmits(['card-click'])
   inset: 0;
   border-radius: var(--border-radius-2xl);
   padding: 2px;
-  background: var(--gradient-primary);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask-composite: subtract;
+
   opacity: 0;
   transition: opacity var(--transition-normal);
   z-index: 2;
@@ -145,7 +141,7 @@ defineEmits(['card-click'])
   left: 0;
   right: 0;
   height: 100%;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   opacity: 0;
   transition: opacity var(--transition-normal);
   border-radius: var(--border-radius-2xl);
@@ -166,7 +162,7 @@ defineEmits(['card-click'])
 .card-top {
   width: 100%;
   height: 100%;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   position: relative;
 }
 
@@ -174,9 +170,7 @@ defineEmits(['card-click'])
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-}
+  rgba(255, 255, 255, 0.1) }
 
 .card-image {
   width: 100%;
@@ -195,7 +189,7 @@ defineEmits(['card-click'])
 .image-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+  background:  rgba(0, 0, 0, 0.3) ;
 }
 
 .carousel-card:hover .card-image img {
@@ -270,8 +264,8 @@ defineEmits(['card-click'])
   color: var(--color-text);
   margin: 0;
   line-height: 1.3;
-  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text-muted) 100%);
-  -webkit-background-clip: text;
+  background: var(--color-text);
+    -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   display: -webkit-box;
@@ -348,7 +342,7 @@ defineEmits(['card-click'])
 }
 
 .action-btn.primary {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: var(--color-text-inverted);
   box-shadow: var(--shadow-md);
 }

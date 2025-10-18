@@ -165,16 +165,7 @@
             <span class="social-text">GitHub</span>
           </button>
 
-          <button
-            type="button"
-            class="social-button social-button--twitter beauty-social"
-            @click="handleSocialLogin('twitter')"
-          >
-            <div class="social-icon">
-              <i class="pi pi-twitter"></i>
-            </div>
-            <span class="social-text">Twitter</span>
-          </button>
+          <MyVk/>
         </div>
 
         <!-- Ссылка на регистрацию -->
@@ -196,6 +187,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/useUserStore'
 import { useNotificationsStore } from '@/stores/useToastStore'
 import { useAuthStore } from '@/stores/useAuthStore'
+import MyVk from '@/components/Auth/MyVk.vue'
 const useAuth = useAuthStore()
 // Состояние формы
 const form = reactive({
@@ -312,7 +304,7 @@ const handleSocialLogin = (provider) => {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-primary-soft) 100%);
+  background:var(--color-bg-muted) ;
 }
 
 .login-card {
@@ -336,7 +328,7 @@ const handleSocialLogin = (provider) => {
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
 }
 
 .login-header {
@@ -358,7 +350,7 @@ const handleSocialLogin = (provider) => {
   font-weight: 600;
   color: var(--color-text);
   margin: 0 0 0.5rem;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -446,7 +438,7 @@ const handleSocialLogin = (provider) => {
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   transform: scaleX(0);
   transition: transform 0.2s ease;
 }
@@ -461,7 +453,7 @@ const handleSocialLogin = (provider) => {
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   transform: scaleX(0);
   transition: transform 0.2s ease;
 }
@@ -576,7 +568,7 @@ const handleSocialLogin = (provider) => {
 
 /* Button Styles */
 .beauty-button {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -652,7 +644,7 @@ const handleSocialLogin = (provider) => {
 .divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+  background:  var(--color-border);
 }
 
 .divider-text {
@@ -662,28 +654,31 @@ const handleSocialLogin = (provider) => {
   white-space: nowrap;
 }
 
-/* Social Login Styles */
+/* Social Login Styles - ИСПРАВЛЕННЫЕ СТИЛИ */
 .social-login {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .beauty-social {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.75rem;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
   border: 1.5px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-size: 0.7rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  height: 70px;
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  text-decoration: none;
 }
 
 .beauty-social:hover {
@@ -693,14 +688,15 @@ const handleSocialLogin = (provider) => {
 }
 
 .social-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
   background: var(--color-bg-elevated);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .social-button--google:hover .social-icon {
@@ -713,13 +709,53 @@ const handleSocialLogin = (provider) => {
   color: white;
 }
 
-.social-button--twitter:hover .social-icon {
-  background: #1da1f2;
-  color: white;
-}
-
 .social-text {
   font-weight: 500;
+  flex: 1;
+  text-align: left;
+}
+
+/* Специфичные стили для компонента MyVk */
+.social-login :deep(.beauty-social) {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.social-login :deep(.beauty-social):hover {
+  transform: translateY(-1px);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.social-login :deep(.social-icon) {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: var(--color-bg-elevated);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.social-login :deep(.beauty-social):hover .social-icon {
+  background: #0077FF;
+  color: white;
 }
 
 /* Register Link Styles */
@@ -777,14 +813,11 @@ const handleSocialLogin = (provider) => {
   }
 
   .social-login {
-    grid-template-columns: 1fr;
     gap: 0.5rem;
   }
 
   .beauty-social {
-    flex-direction: row;
-    justify-content: flex-start;
-    height: auto;
+    height: 44px;
     padding: 0.625rem 0.75rem;
   }
 
@@ -821,6 +854,11 @@ const handleSocialLogin = (provider) => {
   .beauty-button {
     height: 42px;
     font-size: 0.85rem;
+  }
+
+  .beauty-social {
+    height: 42px;
+    font-size: 0.8rem;
   }
 }
 </style>

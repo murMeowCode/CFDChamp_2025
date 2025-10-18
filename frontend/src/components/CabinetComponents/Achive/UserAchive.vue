@@ -56,10 +56,8 @@ const props = defineProps({
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    var(--color-primary-soft) 50%, 
-    transparent 100%);
+  background: 
+    var(--color-primary-soft) ;
   opacity: 0;
   transition: opacity var(--transition-normal);
 }

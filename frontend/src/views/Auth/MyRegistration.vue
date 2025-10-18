@@ -457,7 +457,7 @@ const handleSubmit = async () => {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--color-bg-muted) 0%, var(--color-primary-soft) 100%);
+  background:  var(--color-bg-muted) ;
 }
 
 .register-card {
@@ -481,7 +481,7 @@ const handleSubmit = async () => {
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
 }
 
 .register-header {
@@ -503,7 +503,7 @@ const handleSubmit = async () => {
   font-weight: 600;
   color: var(--color-text);
   margin: 0 0 0.5rem;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -613,7 +613,7 @@ const handleSubmit = async () => {
   left: 0;
   right: 0;
   height: 1px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   transform: scaleX(0);
   transition: transform 0.2s ease;
 }
@@ -680,7 +680,7 @@ const handleSubmit = async () => {
 
 .role-checkbox-label--selected {
   border-color: var(--color-primary);
-  background: linear-gradient(135deg, var(--color-bg-elevated) 0%, var(--color-primary-soft) 100%);
+  background: var(--color-bg-elevated) ;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -691,7 +691,7 @@ const handleSubmit = async () => {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
 }
 
 .role-checkbox-decoration {
@@ -848,7 +848,7 @@ const handleSubmit = async () => {
 
 /* Button Styles */
 .beauty-button {
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
