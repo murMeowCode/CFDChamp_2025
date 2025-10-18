@@ -1,8 +1,8 @@
 """Служба OAuth для Яндекса""" #pylint: disable=E0401
 import secrets
-import aiohttp
 from typing import Dict, Optional
 from shared.config.base import settings
+import aiohttp
 
 class YandexOAuthService:
     """Класс для работы с OAuth Яндекса"""
