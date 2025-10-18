@@ -22,7 +22,7 @@ class UserRegister(BaseModel):
 class UserCreatedMessage(UserRegister):
     """схема получения уведомления о созданном пользователе"""
     user_id: UUID
-    avatar_url: str
+    avatar_url: Optional[str] = None
     created_at: datetime
 
 class MessageType(str, Enum):
