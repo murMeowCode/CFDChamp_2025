@@ -2,7 +2,8 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useUserStore } from './useUserStore'
 import { useApiMutations } from '@/utils/api/useApiMutation'
-import { apiLogin, apiRegistr } from '@/main'
+import { apiLogin, apiRefresh, apiRegistr } from '@/utils/apiUrl/urlApi'
+
 
 export const useAuthStore = defineStore('auth', () => {
   const accsesstoken = ref(localStorage.getItem('jwtTokenAccsess'))
@@ -82,11 +83,10 @@ async function refreshTokens() {
   }
 
   try {
-    const response = await fetch('http://10.0.219.6:8000/auth/refresh', {
+    const response = await fetch(apiRefresh, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${refreshtoken.value}`
       },
       body: JSON.stringify({
         refresh_token: refreshtoken.value
