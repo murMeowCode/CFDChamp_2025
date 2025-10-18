@@ -19,6 +19,7 @@ class AuthUser(Base):
 
     vk_id = Column(BigInteger, unique=True, nullable=True, index=True)
     oauth_provider = Column(String(20), nullable=True)
+    yandex_id = Column(BigInteger, unique=True, nullable=True, index=True)
 
     def __repr__(self):
         return f"<AuthUser {self.username}>"
@@ -26,4 +27,5 @@ class AuthUser(Base):
     @property
     def is_oauth_user(self):
         """property checking"""
-        return self.vk_id is not None and self.hashed_password is None
+        return (self.vk_id is not None
+                or self.yandex_id is not None) and self.hashed_password is None
