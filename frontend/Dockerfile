@@ -19,6 +19,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 COPY ssl/ /etc/nginx/ssl/
 
+RUN mkdir -p /var/cache/nginx
+
 EXPOSE 80
 EXPOSE 443
 
