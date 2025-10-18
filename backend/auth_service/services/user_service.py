@@ -127,7 +127,8 @@ class UserService:
             result = await self.db.execute(stmt)
             user = result.scalar_one_or_none()
             if user:
-                return user
+                data = {"user":user,"new": False}
+                return data
             # Создаем нового
             username = f"vk_{vk_id}"
             user = AuthUser(
@@ -139,7 +140,10 @@ class UserService:
             )
             self.db.add(user)
             await self.db.commit()
-            return user
+
+            data = {"user": user, "new": True}
+            return data
+
         if yandex_id:
             stmt = select(AuthUser).where(AuthUser.yandex_id == yandex_id)
             result = await self.db.execute(stmt)
