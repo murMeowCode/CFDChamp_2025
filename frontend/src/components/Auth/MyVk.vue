@@ -17,7 +17,7 @@ const emit = defineEmits(['success', 'error'])
 
 const redirectUrl = computed(() => {
   // Для разработки используем localhost, для продакшена - ваш домен
-  return 'http://codedepartament.ru/api/auth/vk'
+  return 'http://codedepartament.ru/api/auth/auth/vk'
 })
 const openVKAuth =async () => {
   try {
