@@ -116,7 +116,10 @@ class UserService:
 
         return user
 
-    async def find_or_create_oauth_user(self, vk_id=None, yandex_id=None, email=None, first_name="", last_name=""):
+    async def find_or_create_oauth_user(self,
+                                        vk_id=None,
+                                        yandex_id=None,
+                                        email=None):
         """Находим или создаем OAuth пользователя"""
         if vk_id:
             # Существующая логика для VK
