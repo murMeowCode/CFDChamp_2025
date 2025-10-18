@@ -280,7 +280,7 @@ const handleSubmit = async () => {
     router.push({ name: 'home' })
   } catch (error) {
     console.error('Ошибка входа:', error)
-    toast.error('Не вошли')
+    toast.error('Проверьте правильность введённых данных')
     if (error.message?.includes('credentials')) {
       errors.username = 'Неверный логин или пароль'
       errors.password = 'Неверный логин или пароль'
