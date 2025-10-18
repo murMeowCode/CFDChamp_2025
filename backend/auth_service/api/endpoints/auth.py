@@ -200,3 +200,82 @@ async def vk_oauth_callback(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error"
         )
+
+@router.get("/yandex")
+async def yandex_oauth_start(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    producer: UserProducer = Depends(get_producer)
+):
+    """Начало OAuth flow - редирект на Яндекс"""
+    oauth_service = OAuthService(db, producer)
+
+    # Создаем state и получаем URL для Яндекса
+    state = await oauth_service.create_yandex_oauth_state()
+    yandex_auth_url = oauth_service.yandex_oauth.get_auth_url(state)
+
+    # Для фронтенда возвращаем URL
+    if request.headers.get("accept") == "application/json":
+        return JSONResponse({
+            "auth_url": yandex_auth_url,
+            "state": state
+        })
+
+    # Для прямого доступа - редирект
+    return RedirectResponse(yandex_auth_url)
+
+@router.get("/yandex/callback")
+async def yandex_oauth_callback(
+    code: str = None,
+    state: str = None,
+    error: str = None,
+    db: AsyncSession = Depends(get_db),
+    producer: UserProducer = Depends(get_producer)
+):
+    """Callback от Яндекс OAuth"""
+    if error:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Yandex OAuth error: {error}"
+        )
+
+    if not code or not state:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing code or state parameters"
+        )
+
+    oauth_service = OAuthService(db, producer)
+
+    # Валидируем state
+    if not await oauth_service.validate_yandex_oauth_state(state):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired state"
+        )
+
+    try:
+        result = await oauth_service.handle_yandex_oauth_callback(code)
+
+        return {
+            "success": True,
+            "tokens": result["tokens"],
+            "user": {
+                "id": result["user"].id,
+                "username": result["user"].username,
+                "email": result["user"].email,
+                "is_oauth": result["user"].is_oauth_user
+            },
+            "is_new_user": result["is_new_user"]
+        }
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )

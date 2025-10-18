@@ -116,21 +116,42 @@ class UserService:
 
         return user
 
-    async def find_or_create_oauth_user(
-        self,
-        vk_id: int,
-        email: str,
-    ) -> AuthUser:
-        """Поиск или создание пользователя OAuth"""
-        # Ищем существующего пользователя
-        user = await self.get_user_by_vk_id(vk_id)
-        if user:
-            # Обновляем email если нужно
-            if email and email != user.email:
-                user.email = email
-                await self.db.commit()
-                await self.db.refresh(user)
+    async def find_or_create_oauth_user(self, vk_id=None, yandex_id=None, email=None, first_name="", last_name=""):
+        """Находим или создаем OAuth пользователя"""
+        if vk_id:
+            # Существующая логика для VK
+            stmt = select(AuthUser).where(AuthUser.vk_id == vk_id)
+            result = await self.db.execute(stmt)
+            user = result.scalar_one_or_none()
+            if user:
+                return user
+            # Создаем нового
+            username = f"vk_{vk_id}"
+            user = AuthUser(
+                username=username,
+                email=email or f"{username}@vk.com",
+                role=1,  # По умолчанию
+                vk_id=vk_id,
+                oauth_provider="vk"
+            )
+            self.db.add(user)
+            await self.db.commit()
             return user
-
-        # Создаем нового пользователя
-        return await self.create_oauth_user(vk_id, email)
+        elif yandex_id:
+            stmt = select(AuthUser).where(AuthUser.yandex_id == yandex_id)
+            result = await self.db.execute(stmt)
+            user = result.scalar_one_or_none()
+            if user:
+                return user
+            username = f"yandex_{yandex_id}"
+            user = AuthUser(
+                username=username,
+                email=email,
+                role=1,
+                yandex_id=yandex_id,
+                oauth_provider="yandex"
+            )
+            self.db.add(user)
+            await self.db.commit()
+            return user
+        raise ValueError("Either vk_id or yandex_id must be provided")
