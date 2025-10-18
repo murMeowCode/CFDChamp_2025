@@ -153,9 +153,7 @@ async def vk_exchange_code(
                 "id": result["user"].id,
                 "username": result["user"].username,
                 "email": result["user"].email,
-                "is_oauth": result["user"].is_oauth_user
             },
-            "is_new_user": result["is_new_user"]
         }
 
     except ValueError as e:
