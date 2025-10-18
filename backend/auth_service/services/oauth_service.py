@@ -174,21 +174,6 @@ class OAuthService:
             username=user.username
         )
 
-    async def _send_oauth_user_created_event(self, user, first_name: str,
-                                             last_name: str, avatar_url: str):
-        """
-        Отправка события о создании нового OAuth пользователя
-        """
-        # Ваша реализация отправки события через producer
-        event_data = {
-            "user_id": str(user.id),
-            "email": user.email,
-            "username": user.username,
-            "first_name": first_name,
-            "last_name": last_name,
-            "avatar_url": avatar_url,
-        }
-        await self.producer.send_user_created_event(event_data)
 
     async def handle_yandex_oauth_callback(self, code: str) -> Dict[str, Any]:
         """Обработка callback от Яндекс OAuth"""
