@@ -165,16 +165,9 @@
             <span class="social-text">GitHub</span>
           </button>
 
-          <button
-            type="button"
-            class="social-button social-button--twitter beauty-social"
-            @click="handleSocialLogin('twitter')"
-          >
-            <div class="social-icon">
-              <i class="pi pi-twitter"></i>
-            </div>
-            <span class="social-text">Twitter</span>
-          </button>
+        
+           <MyVk/>
+     
         </div>
 
         <!-- Ссылка на регистрацию -->
@@ -196,6 +189,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/useUserStore'
 import { useNotificationsStore } from '@/stores/useToastStore'
 import { useAuthStore } from '@/stores/useAuthStore'
+import MyVk from '@/components/Auth/MyVk.vue'
 const useAuth = useAuthStore()
 // Состояние формы
 const form = reactive({
@@ -664,8 +658,9 @@ const handleSocialLogin = (provider) => {
 
 /* Social Login Styles */
 .social-login {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   gap: 0.5rem;
 }
 

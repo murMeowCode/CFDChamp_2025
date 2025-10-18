@@ -1,6 +1,6 @@
 // composables/useApiGet.js
 import { useQuery } from '@tanstack/vue-query'
-import { apiClient } from '@/api/client'
+import { apiClient } from '@/main'
 
 export function useApiGet() {
   const useGet = (endpoint, params = {}, options = {}) => {
