@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: auth_service/Dockerfile
+    container_name: auth-service
     ports:
       - "8000:8000"
     networks:
@@ -12,6 +13,7 @@ services:
     build:
       context: ./backend
       dockerfile: profile_service/Dockerfile
+    container_name: profile-service
     networks:
       - prod-network
 
@@ -19,6 +21,7 @@ services:
     build:
       context: ./backend
       dockerfile: mailing_service/Dockerfile
+    container_name: mailing-service
     networks:
       - prod-network
 
@@ -26,6 +29,7 @@ services:
     build: 
       context: ./backend
       dockerfile: mailing_service/Dockerfile
+    container_name: celery-mailing-worker
     command: celery -A celery_mail.tasks worker --loglevel=info
     depends_on:
       - mailing-service
@@ -36,6 +40,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: frontend
     ports:
       - "80:80"
       - "443:443"
