@@ -50,14 +50,8 @@ const queryClient = new QueryClient({
   },
 })
 app.use(notivue)
-export const apiLogin = 
-  'http://10.0.219.6:8000/auth/login'
-export const apiRegistr = 
-   'http://10.0.219.6:8000/auth/register'
 
-export const apiUsersMe = 
-  'http://10.0.219.6:8001/profiles/me'
-
+  
 AOS.init({
   duration: 800,
   once: false,
