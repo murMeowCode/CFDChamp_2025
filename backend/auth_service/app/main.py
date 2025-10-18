@@ -14,6 +14,7 @@ from auth_service.services.token_service import TokenService
 from auth_service.services.user_service import UserService
 from auth_service.messaging.producers import UserProducer
 from auth_service.messaging.consumers import AuthConsumer
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 
 logging.basicConfig(level=logging.INFO)
@@ -54,6 +55,14 @@ app = FastAPI(
     description="Microservice for JWT token management",
     version="1.0.0",
     lifespan=lifespan
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Разрешить ВСЕ origins (любой домен)
+    allow_credentials=True,  # Разрешить cookies/токены
+    allow_methods=["*"],  # Разрешить ВСЕ методы (GET, POST, PUT, DELETE, OPTIONS и т.д.)
+    allow_headers=["*"],  # Разрешить ВСЕ заголовки
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
