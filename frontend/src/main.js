@@ -58,6 +58,8 @@ export const apiRegistr =
 export const apiUsersMe = 
   'http://10.0.219.6:8001/profiles/me'
 
+
+  export const apiRefresh = 'http://10.0.219.6:8000/auth/refresh'
 AOS.init({
   duration: 800,
   once: false,

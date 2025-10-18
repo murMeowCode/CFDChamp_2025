@@ -18,13 +18,12 @@ onMounted(()=>{
   const dat = useGet(apiUsersMe,{},{
      headers: {
     'Authorization': `Bearer ${getTokenAccsess.value}`,
-    'X-Custom-Header': 'value'
   }
   })
      console.log(dat,'dataUser')
 })
 </script>
-Authentification
+
 <style scoped>
 .main {
   padding: 2rem;
