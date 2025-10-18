@@ -444,7 +444,16 @@ const handleSubmit = async () => {
     formSubmitted.value = false
   } catch (error) {
     console.error('Ошибка регистрации:', error)
-    toast.error('Ошибка')
+    if(error.Errors === 'User with this username already exists'){
+      toast.error('Пользователь с таким логином уже существует')
+    }
+    if(error.Errors === 'User with this email already exists'){
+      toast.error('Пользователь с такой почтой уже существует')
+    }
+    else{
+      toast.error('Ошибка регистрации, попробуйте позже')
+    }
+    
   } finally {
     isSubmitting.value = false
   }
