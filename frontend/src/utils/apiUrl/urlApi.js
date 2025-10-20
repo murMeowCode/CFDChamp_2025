@@ -1,9 +1,5 @@
-export const apiLogin = 
-  '/api'
-export const apiRegistr = 
-   '/api'
+export const api8000 = 
+  'http://10.0.219.23:8000'
+export const api8001 = 
+  'http://10.0.219.23:8001'
 
-export const apiProfilesMe = 
-  '/api'
-
-export const apiRefresh = '/api'

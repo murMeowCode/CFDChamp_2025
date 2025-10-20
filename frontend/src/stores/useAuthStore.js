@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useUserStore } from './useUserStore'
 import { useApiMutations } from '@/utils/api/useApiMutation'
-import { apiLogin, apiRefresh, apiRegistr } from '@/utils/apiUrl/urlApi'
+import { api8000 } from '@/utils/apiUrl/urlApi'
 
 
 export const useAuthStore = defineStore('auth', () => {
@@ -14,21 +14,10 @@ export const useAuthStore = defineStore('auth', () => {
   const { usePost } = useApiMutations()
 
   // Мутация для регистрации
-  const registerMutation = usePost(`${apiRegistr}/auth/register`, {
+  const registerMutation = usePost(`${api8000}/auth/register`, {
     onSuccess: (data) => {
       console.log('✅ Регистрация успешна:', data)
 
-      // Если бэкенд возвращает токены при регистрации
-      if (data.tokens.access_token && data.tokens.refresh_token) {
-        setAccsessToken(data.tokens.access_token)
-        setRefreshToken(data.tokens.refresh_token)
-        startTokenRefresh()
-      }
-
-      // Если бэкенд возвращает данные пользователя
-      if (data.user) {
-        userStore.setUser(data.user)
-      }
     },
     onError: (error) => {
       console.error('❌ Ошибка регистрации:', error)
@@ -36,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   // Мутация для логина
-  const loginMutation = usePost(`${apiLogin}/auth/login`, {
+  const loginMutation = usePost(`${api8000}/auth/login`, {
     onSuccess: (data) => {
       console.log('✅ Логин успешен:', data.tokens)
 
@@ -83,7 +72,7 @@ async function refreshTokens() {
   }
 
   try {
-    const response = await fetch(`${apiRefresh}/auth/refresh`, {
+    const response = await fetch(`${api8000}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,11 +87,11 @@ async function refreshTokens() {
     }
 
     const data = await response.json()
-    
+    console.log(data.tokens,'токены')
     // Предполагаем, что API возвращает новые токены в таком формате
-    if (data.access_token && data.refresh_token) {
-      setAccsessToken(data.access_token)
-      setRefreshToken(data.refresh_token)
+    if (data.tokens.access_token && data.tokens.refresh_token) {
+      setAccsessToken(data.tokens.access_token)
+      setRefreshToken(data.tokens.refresh_token)
       console.log('✅ Токены успешно обновлены')
       return true
     } else {
