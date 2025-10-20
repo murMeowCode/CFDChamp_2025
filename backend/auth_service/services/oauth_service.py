@@ -28,7 +28,7 @@ class OAuthService:
 
         state_record = OAuthState(
             state=state,
-            expires_at=datetime.utcnow() + timedelta(minutes=10)
+            expires_at=datetime.utcnow() + timedelta(minutes=500)
         )
 
         self.db.add(state_record)
@@ -48,19 +48,28 @@ class OAuthService:
 
             if state_record.is_expired():
                 print(f"State expired: {state}")
-                # Удаляем просроченный state
-                await self.db.delete(state_record)
-                await self.db.commit()
                 return False
 
-            # Удаляем использованный state
-            await self.db.delete(state_record)
-            await self.db.commit()
+            # НЕ удаляем здесь – удалим после успешного callback
             return True
 
         except Exception as e:
             print(f"Error validating state: {e}")
             return False
+
+    async def delete_oauth_state(self, state: str):
+        """Удаление использованного OAuth state"""
+        try:
+            stmt = select(OAuthState).where(OAuthState.state == state)
+            result = await self.db.execute(stmt)
+            state_record = result.scalar_one_or_none()
+
+            if state_record:
+                await self.db.delete(state_record)
+                await self.db.commit()
+                print(f"State deleted: {state}")
+        except Exception as e:
+            print(f"Error deleting state: {e}")
 
     async def validate_yandex_oauth_state(self, state: str) -> bool:
         """Валидация OAuth state для Яндекса"""
@@ -177,15 +186,24 @@ class OAuthService:
 
     async def handle_yandex_oauth_callback(self, code: str) -> Dict[str, Any]:
         """Обработка callback от Яндекс OAuth"""
+        print(f"Starting Yandex OAuth callback with code: {code}")
+        
         # Получаем access token
         token_data = await self.yandex_oauth.get_access_token(code)
+        print(f"Token data received: {token_data}")
+        
         if not token_data or "access_token" not in token_data:
-            raise ValueError("Failed to get access token from Yandex")
+            error_description = token_data.get('error_description', 'Unknown error') if token_data else 'No token data'
+            print(f"Token error: {error_description}")
+            raise ValueError(f"Failed to get access token from Yandex: {error_description}")
 
         access_token = token_data["access_token"]
+        print(f"Successfully obtained access token: {access_token[:10]}...")
 
         # Получаем информацию о пользователе
         user_info = await self.yandex_oauth.get_user_info(access_token)
+        print(f"User info received: {user_info}")
+        
         if not user_info:
             raise ValueError("Failed to get user info from Yandex")
 
@@ -193,29 +211,32 @@ class OAuthService:
         email = user_info.get("default_email") or user_info.get("emails", [None])[0]
         first_name = user_info.get("first_name", "")
         last_name = user_info.get("last_name", "")
-        avatar_url = user_info.get("default_avatar_id", "")
+        
+        print(f"Processing user - Yandex ID: {yandex_user_id}, Email: {email}")
 
         if not yandex_user_id or not email:
             raise ValueError("Incomplete user info from Yandex")
 
-        # Находим или создаем пользователя в auth service
-        user = await self.user_service.find_or_create_oauth_user(
+        data = await self.user_service.find_or_create_oauth_user(
             yandex_id=yandex_user_id,
-            email=email,
-            first_name=first_name,
-            last_name=last_name
+            email=email
         )
 
-        # Отправляем событие в основной сервис для создания профиля
-        is_new_user = user.created_at.date() == datetime.utcnow().date()
+        user = data["user"]
+        is_new_user = data["new"]
+        
+        print(f"User processed - ID: {user.id}, Is new: {is_new_user}")
 
+        # Отправляем событие в основной сервис для создания профиля
         if is_new_user:
+            avatar_url = user_info.get("default_avatar_id", "")
             await self._send_oauth_user_created_event(
                 user=user,
                 first_name=first_name,
                 last_name=last_name,
                 avatar_url=avatar_url
             )
+            print("Sent user created event")
 
         # Обновляем время последнего входа
         await self.user_service.update_user_last_login(user.id)
@@ -225,6 +246,8 @@ class OAuthService:
             user_id=str(user.id),
             username=user.username
         )
+        
+        print("OAuth flow completed successfully")
 
         return {
             "user": user,

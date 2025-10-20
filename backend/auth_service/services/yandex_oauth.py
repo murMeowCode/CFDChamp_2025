@@ -34,11 +34,20 @@ class YandexOAuthService:
             "client_secret": self.client_secret,
             "redirect_uri": self.redirect_uri,
         }
+        
+        print(f"Requesting token with data: { {k: v for k, v in data.items() if k != 'client_secret'} }")
+        
         async with aiohttp.ClientSession() as session:
             async with session.post(self.token_url, data=data) as response:
+                response_text = await response.text()
+                print(f"Token response status: {response.status}")
+                print(f"Token response text: {response_text}")
+                
                 if response.status == 200:
                     return await response.json()
-                return None
+                else:
+                    print(f"Failed to get token. Status: {response.status}, Response: {response_text}")
+                    return None
 
     async def get_user_info(self, access_token: str) -> Optional[Dict]:
         """Получение информации о пользователе"""

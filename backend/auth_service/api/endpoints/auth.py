@@ -192,7 +192,7 @@ async def yandex_oauth_start(
     # Для прямого доступа - редирект
     return RedirectResponse(yandex_auth_url)
 
-@router.get("/yandex/callback")
+@router.get("/callback")
 async def yandex_oauth_callback(
     code: str = None,
     state: str = None,
@@ -201,7 +201,10 @@ async def yandex_oauth_callback(
     producer: UserProducer = Depends(get_producer)
 ):
     """Callback от Яндекс OAuth"""
+    print(f"Callback received - code: {code}, state: {state}, error: {error}")
+    
     if error:
+        print(f"OAuth error: {error}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Yandex OAuth error: {error}"
@@ -215,7 +218,7 @@ async def yandex_oauth_callback(
 
     oauth_service = OAuthService(db, producer)
 
-    # Валидируем state
+    # Валидируем state (без удаления)
     if not await oauth_service.validate_yandex_oauth_state(state):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -223,6 +226,9 @@ async def yandex_oauth_callback(
         )
 
     try:
+        # Удаляем state сразу после валидации, чтобы предотвратить повторные вызовы
+        await oauth_service.delete_oauth_state(state)
+        
         result = await oauth_service.handle_yandex_oauth_callback(code)
 
         return {
@@ -242,7 +248,8 @@ async def yandex_oauth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
-    except Exception:
+    except Exception as e:
+        print(f"Unexpected error in callback: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error"

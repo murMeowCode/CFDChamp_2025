@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     MAILRU_PASSWORD: str = "dtmi vwoi gdpa vsoe"
     SMTP_SERVER: str = "smtp.gmail.com"
     SMTP_PORT: int =587
+
+    # yandex
+    YANDEX_CLIENT_ID: str="a211283f19204169b13f733aeb4473db"
+    YANDEX_CLIENT_SECRET: str="fb05db122cf24a4490cb029e80edd883"
+    YANDEX_REDIRECT_URI: str="http://127.0.0.1:8000/auth/callback"
     class Config:
         """импорт из файла среды"""
         env_file = ".env"

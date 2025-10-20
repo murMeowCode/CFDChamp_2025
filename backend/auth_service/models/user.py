@@ -19,7 +19,7 @@ class AuthUser(Base):
 
     vk_id = Column(BigInteger, unique=True, nullable=True, index=True)
     oauth_provider = Column(String(20), nullable=True)
-    yandex_id = Column(BigInteger, unique=True, nullable=True, index=True)
+    yandex_id = Column(String, unique=True, nullable=True, index=True)
 
     def __repr__(self):
         return f"<AuthUser {self.username}>"

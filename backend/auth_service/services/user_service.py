@@ -149,7 +149,9 @@ class UserService:
             result = await self.db.execute(stmt)
             user = result.scalar_one_or_none()
             if user:
-                return user
+                data = {"user": user, "new": False}  # Исправлено: возвращаем словарь
+                return data
+            
             username = f"yandex_{yandex_id}"
             user = AuthUser(
                 username=username,
@@ -160,5 +162,8 @@ class UserService:
             )
             self.db.add(user)
             await self.db.commit()
-            return user
+            await self.db.refresh(user)  # Добавьте это
+            
+            data = {"user": user, "new": True}  # Исправлено: возвращаем словарь
+            return data
         raise ValueError("Either vk_id or yandex_id must be provided")
