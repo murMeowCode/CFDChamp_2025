@@ -129,18 +129,7 @@
             <div class="input-decoration"></div>
           </div>
 
-          <div class="form-group floating-label half-width">
-            <select
-              :disabled="!isEditing"
-              v-model="selectedOption"
-              class="floating-input futurism-elegant"
-            >
-              <option value="option1">Мужской</option>
-              <option value="option2">Женский</option>
-            </select>
-            <label class="cyber-dynamic">Пол</label>
-            <div class="input-decoration"></div>
-          </div>
+         
         </div>
 
         <!-- Адрес -->
