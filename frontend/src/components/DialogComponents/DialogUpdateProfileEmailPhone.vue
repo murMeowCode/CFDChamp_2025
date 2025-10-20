@@ -273,15 +273,6 @@ const resetForm = () => {
   selectedTypes.email = false
 }
 
-const showMessage = (text, type) => {
-  message.value = text
-  messageType.value = type
-
-  setTimeout(() => {
-    message.value = ''
-    messageType.value = ''
-  }, 5000)
-}
 
 // Watchers
 watch(

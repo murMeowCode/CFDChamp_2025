@@ -20,6 +20,7 @@ export const useDialogServices = () => {
         },
         modal: true,
         draggable: false,
+        closable: true,
       },
     })
   }
