@@ -29,7 +29,7 @@ class PasswordResetService:
 
         # Генерация уникального токена сброса
         token = secrets.token_urlsafe(32)
-        expires_at = datetime.utcnow() + timedelta(hours=1)  # Токен действителен 1 час
+        expires_at = datetime.utcnow() + timedelta(hours=5)  # Токен действителен 1 час
 
         # Сохранение токена в БД
         reset_token = PasswordResetToken(
@@ -62,13 +62,13 @@ class PasswordResetService:
         )
         reset_token = result.scalar_one_or_none()
         if not reset_token:
-            return {"success": "False", "error": "Неверный или истекший токен"}
+            return {"success": "False", "message": "Неверный или истекший токен"}
 
         # Проверка срока действия
         if datetime.utcnow() > reset_token.expires_at:
             await self.db.delete(reset_token)
             await self.db.commit()
-            return {"success": "False", "error": "Токен истек"}
+            return {"success": "False", "message": "Токен истек"}
 
         # Обновление пароля пользователя
         result = await self.db.execute(
@@ -76,7 +76,7 @@ class PasswordResetService:
         )
         user = result.scalars().first()
         if not user:
-            return {"success": "False", "error": "Пользователь не найден"}
+            return {"success": "False", "message": "Пользователь не найден"}
 
         user.hashed_password = get_password_hash(new_password)
         await self.db.commit()
