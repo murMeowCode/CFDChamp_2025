@@ -9,9 +9,7 @@
       <form @submit.prevent="handleSubmit" class="edit-form">
         <div class="form-grid">
           <div class="input-group">
-            <label for="first_name" class="form-label cyber-dynamic">
-              Имя
-            </label>
+            <label for="first_name" class="form-label cyber-dynamic"> Имя </label>
             <div class="input-container">
               <input
                 v-model="form.first_name"
@@ -53,9 +51,7 @@
           </div>
 
           <div class="input-group">
-            <label for="last_name" class="form-label cyber-dynamic">
-              Фамилия
-            </label>
+            <label for="last_name" class="form-label cyber-dynamic"> Фамилия </label>
             <div class="input-container">
               <input
                 v-model="form.last_name"
@@ -97,9 +93,7 @@
           </div>
 
           <div class="input-group">
-            <label for="middle_name" class="form-label cyber-dynamic">
-              Отчество
-            </label>
+            <label for="middle_name" class="form-label cyber-dynamic"> Отчество </label>
             <div class="input-container">
               <input
                 v-model="form.middle_name"
@@ -141,9 +135,7 @@
           </div>
 
           <div class="input-group">
-            <label for="birth_date" class="form-label cyber-dynamic">
-              Дата рождения
-            </label>
+            <label for="birth_date" class="form-label cyber-dynamic"> Дата рождения </label>
             <div class="input-container">
               <input
                 v-model="form.birth_date"
@@ -177,9 +169,7 @@
           </div>
 
           <div class="input-group full-width">
-            <label for="phone" class="form-label cyber-dynamic">
-              Номер телефона
-            </label>
+            <label for="phone" class="form-label cyber-dynamic"> Номер телефона </label>
             <div class="input-container">
               <input
                 v-model="form.phone"
@@ -214,9 +204,7 @@
           </div>
 
           <div class="input-group full-width">
-            <label for="address" class="form-label cyber-dynamic">
-              Адрес
-            </label>
+            <label for="address" class="form-label cyber-dynamic"> Адрес </label>
             <div class="input-container">
               <input
                 v-model="form.address"
@@ -283,10 +271,10 @@
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/useUserStore'
 import { storeToRefs } from 'pinia'
-
+import { useNotificationsStore } from '@/stores/useToastStore'
 const useUser = useUserStore()
 const { getUser } = storeToRefs(useUserStore())
-
+const notific = useNotificationsStore()
 // Reactive state
 const form = reactive({
   first_name: '',
@@ -294,18 +282,18 @@ const form = reactive({
   middle_name: '',
   birth_date: '',
   phone: '',
-  address: ''
+  address: '',
 })
 
 const initialForm = reactive({ ...form })
-
+const emits = defineEmits(['onClose'])
 const errors = reactive({
   first_name: '',
   last_name: '',
   middle_name: '',
   birth_date: '',
   phone: '',
-  address: ''
+  address: '',
 })
 
 const loading = ref(false)
@@ -314,21 +302,23 @@ const messageType = ref('')
 
 // Computed properties
 const isFormValid = computed(() => {
-  return Object.values(errors).every(error => !error) &&
-         form.first_name?.trim() &&
-         form.last_name?.trim() &&
-         form.phone?.trim()
+  return (
+    Object.values(errors).every((error) => !error) &&
+    form.first_name?.trim() &&
+    form.last_name?.trim() &&
+    form.phone?.trim()
+  )
 })
 
 const hasChanges = computed(() => {
-  return Object.keys(form).some(key => form[key] !== initialForm[key])
+  return Object.keys(form).some((key) => form[key] !== initialForm[key])
 })
 
 // Methods
 const validateField = (fieldName) => {
   // Безопасное получение значения с проверкой на undefined
   const value = form[fieldName]?.trim() || ''
-  
+
   if (!value && fieldName !== 'middle_name' && fieldName !== 'address') {
     errors[fieldName] = 'Это поле обязательно для заполнения'
     return
@@ -389,7 +379,7 @@ const validatePhone = () => {
 
 const validateBirthDate = () => {
   const birthDate = form.birth_date
-  
+
   if (!birthDate) {
     errors.birth_date = 'Выберите дату рождения'
     return
@@ -413,7 +403,7 @@ const loadUserData = () => {
   // Загружаем данные из store
   if (getUser.value) {
     const userData = getUser.value
-    Object.keys(form).forEach(key => {
+    Object.keys(form).forEach((key) => {
       if (userData[key] !== undefined) {
         form[key] = userData[key] || ''
         initialForm[key] = userData[key] || ''
@@ -442,27 +432,23 @@ const handleSubmit = async () => {
     }
 
     // Обновляем данные пользователя
-    await useUser.updateUser({
+    useUser.updateUser({
       first_name: form.first_name.trim(),
       last_name: form.last_name.trim(),
       middle_name: form.middle_name.trim(),
       birth_date: form.birth_date,
       phone: form.phone.trim(),
-      address: form.address.trim()
+      address: form.address.trim(),
     })
-
+    emits('onClose')
+    notific.success('Вы успешно изменили данные')
     // Обновляем initialForm для отслеживания следующих изменений
-    Object.keys(form).forEach(key => {
+    Object.keys(form).forEach((key) => {
       initialForm[key] = form[key]
     })
-
-    message.value = 'Данные успешно обновлены!'
-    messageType.value = 'success'
-
   } catch (error) {
     console.error('Ошибка при обновлении данных:', error)
-    message.value = error.message || 'Произошла ошибка при обновлении данных'
-    messageType.value = 'error'
+    notific.error('Произошла ошибка при обновлении данных, попробуйте позже')
   } finally {
     loading.value = false
   }
@@ -476,7 +462,7 @@ watch(
       loadUserData()
     }
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: true },
 )
 
 watch(
@@ -485,7 +471,7 @@ watch(
     if (form.birth_date) {
       validateBirthDate()
     }
-  }
+  },
 )
 
 // Lifecycle
@@ -716,7 +702,7 @@ onMounted(() => {
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
   }
-  
+
   .input-group.full-width {
     grid-column: 1;
   }

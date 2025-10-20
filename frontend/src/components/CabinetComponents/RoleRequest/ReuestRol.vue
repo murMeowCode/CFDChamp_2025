@@ -1,5 +1,9 @@
 <template>
-  <section v-if="requests && requests.requests && requests.requests.length !== 0" class="role-requests-section" data-aos="fade-down">
+  <section
+    v-if="requests && requests.requests && requests.requests.length !== 0"
+    class="role-requests-section"
+    data-aos="fade-down"
+  >
     <div class="section-header">
       <h2 class="cyber-heading">Запросы на повышение роли</h2>
       <div class="requests-stats cyber-dynamic">
@@ -53,8 +57,8 @@
 
         <div class="request-actions" v-if="request.status === 'pending'">
           <!-- Кнопка принятия с лоадером -->
-          <button 
-            class="action-btn success-btn cyber-dynamic" 
+          <button
+            class="action-btn success-btn cyber-dynamic"
             @click="approveRequest(request.id)"
             :disabled="loadingStates[request.id]?.approving"
           >
@@ -71,8 +75,8 @@
           </button>
 
           <!-- Кнопка отклонения с лоадером -->
-          <button 
-            class="action-btn cancel-btn cyber-dynamic" 
+          <button
+            class="action-btn cancel-btn cyber-dynamic"
             @click="rejectRequest(request.id)"
             :disabled="loadingStates[request.id]?.rejecting"
           >
@@ -125,7 +129,11 @@
   </section>
 
   <!-- Состояние когда нет запросов -->
-  <section v-else-if="requests && (!requests.requests || requests.requests.length === 0)" class="role-requests-section empty-state" data-aos="fade-down">
+  <section
+    v-else-if="requests && (!requests.requests || requests.requests.length === 0)"
+    class="role-requests-section empty-state"
+    data-aos="fade-down"
+  >
     <div class="empty-state-content">
       <div class="empty-icon">📭</div>
       <h3 class="cyber-heading">Нет активных запросов</h3>
@@ -174,7 +182,7 @@ const isLoadingRequests = ref(true)
 
 // Computed properties
 const activeRequestsCount = computed(() => {
-  return requests.value?.requests?.filter(req => req.status === 'pending').length || 0
+  return requests.value?.requests?.filter((req) => req.status === 'pending').length || 0
 })
 
 // Безопасный computed для requests
@@ -201,7 +209,7 @@ const getUserStatus = (status) => {
   const statusMap = {
     pending: 'active',
     approved: 'online',
-    rejected: 'offline'
+    rejected: 'offline',
   }
   return statusMap[status] || 'offline'
 }
@@ -218,27 +226,26 @@ const approveRequest = async (requestId) => {
   try {
     setLoadingState(requestId, 'approving', true)
     setLoadingState(requestId, 'global', true)
-    
+
     const response = await axios.post(
       `${api8000}/role-change/${requestId}/approve`,
       {},
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getTokenAccsess.value}`
-        }
-      }
+          Authorization: `Bearer ${getTokenAccsess.value}`,
+        },
+      },
     )
-    
+
     console.log('✅ Запрос принят:', response.data)
     notifications.success('Вы успешно приняли заявку на повышение роли')
     reques.removeRequests()
     // Обновляем данные после успешного действия
     await updateRequestsData()
-    
   } catch (error) {
     console.error('❌ Ошибка принятия запроса:', error)
-    
+
     if (error.response?.status === 404) {
       notifications.error('Запрос не найден или уже обработан')
     } else {
@@ -254,28 +261,27 @@ const rejectRequest = async (requestId) => {
   try {
     setLoadingState(requestId, 'rejecting', true)
     setLoadingState(requestId, 'global', true)
-    
+
     const response = await axios.post(
       `${api8000}/role-change/${requestId}/reject`,
       {},
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getTokenAccsess.value}`
-        }
-      }
+          Authorization: `Bearer ${getTokenAccsess.value}`,
+        },
+      },
     )
 
     console.log('✅ Запрос отклонен:', response.data)
     reques.removeRequests()
     notifications.success('Заявка на повышение роли отклонена')
-    
+
     // Обновляем данные после успешного действия
     await updateRequestsData()
-    
   } catch (error) {
     console.error('❌ Ошибка отклонения запроса:', error)
-    
+
     if (error.response?.status === 404) {
       notifications.error('Запрос не найден или уже обработан')
     } else {
@@ -383,10 +389,30 @@ onMounted(async () => {
   animation: particle-rotate 2s linear infinite;
 }
 
-.particle:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
-.particle:nth-child(2) { top: 50%; right: 0; transform: translateY(-50%); animation-delay: 0.5s; }
-.particle:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); animation-delay: 1s; }
-.particle:nth-child(4) { top: 50%; left: 0; transform: translateY(-50%); animation-delay: 1.5s; }
+.particle:nth-child(1) {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 0s;
+}
+.particle:nth-child(2) {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  animation-delay: 0.5s;
+}
+.particle:nth-child(3) {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 1s;
+}
+.particle:nth-child(4) {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  animation-delay: 1.5s;
+}
 
 /* Лоадер поверх карточки */
 .card-loader-overlay {
@@ -430,32 +456,43 @@ onMounted(async () => {
 
 /* Анимации */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes spin-orbit {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 @keyframes pulse-core {
-  0%, 100% { 
+  0%,
+  100% {
     transform: translate(-50%, -50%) scale(1);
     box-shadow: 0 0 10px var(--color-primary);
   }
-  50% { 
+  50% {
     transform: translate(-50%, -50%) scale(1.2);
-    box-shadow: 0 0 20px var(--color-primary), 0 0 30px var(--color-primary);
+    box-shadow:
+      0 0 20px var(--color-primary),
+      0 0 30px var(--color-primary);
   }
 }
 
 @keyframes particle-rotate {
-  0% { 
+  0% {
     opacity: 1;
     transform: rotate(0deg) translateX(20px) rotate(0deg);
   }
-  100% { 
+  100% {
     opacity: 0.5;
     transform: rotate(360deg) translateX(20px) rotate(-360deg);
   }
@@ -496,9 +533,6 @@ onMounted(async () => {
   transition: all var(--transition-normal);
   overflow: hidden;
 }
-
-
-
 
 .role-requests-section {
   background: var(--color-bg);
@@ -632,8 +666,13 @@ onMounted(async () => {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .user-info {
@@ -879,7 +918,7 @@ onMounted(async () => {
   .user-badges {
     justify-content: center;
   }
-  
+
   .request-meta {
     flex-direction: column;
     gap: var(--spacing-xs);

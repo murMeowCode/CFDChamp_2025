@@ -19,21 +19,21 @@ const props = defineProps({
   size: {
     type: String,
     default: 'medium',
-    validator: (value) => ['small', 'medium', 'large', 'xlarge'].includes(value)
+    validator: (value) => ['small', 'medium', 'large', 'xlarge'].includes(value),
   },
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'success', 'warning', 'error'].includes(value)
+    validator: (value) => ['primary', 'success', 'warning', 'error'].includes(value),
   },
   showText: {
     type: Boolean,
-    default: false
+    default: false,
   },
   text: {
     type: String,
-    default: 'Загрузка...'
-  }
+    default: 'Загрузка...',
+  },
 })
 
 const particleCount = 8
@@ -43,7 +43,7 @@ const getParticleStyle = (index) => {
   const delay = (index / particleCount) * 1.5
   return {
     '--particle-angle': `${angle}deg`,
-    '--particle-delay': `${delay}s`
+    '--particle-delay': `${delay}s`,
   }
 }
 </script>
@@ -106,7 +106,7 @@ const getParticleStyle = (index) => {
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: pulse-core 2s ease-in-out infinite;
-  box-shadow: 
+  box-shadow:
     0 0 10px var(--loader-color),
     0 0 20px var(--loader-color);
   z-index: 3;
@@ -142,12 +142,9 @@ const getParticleStyle = (index) => {
   border-radius: 50%;
   top: 50%;
   left: 50%;
-  transform: 
-    translate(-50%, -50%) 
-    rotate(var(--particle-angle)) 
-    translateX(40px) 
+  transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(40px)
     rotate(calc(-1 * var(--particle-angle)));
-  animation: 
+  animation:
     particle-rotate 3s linear infinite var(--particle-delay),
     particle-pulse 1.5s ease-in-out infinite var(--particle-delay);
   box-shadow: 0 0 8px var(--loader-color);
@@ -159,11 +156,7 @@ const getParticleStyle = (index) => {
   left: 50%;
   width: 120%;
   height: 120%;
-  background: radial-gradient(
-    circle,
-    var(--loader-color) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle, var(--loader-color) 0%, transparent 70%);
   opacity: 0.1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
@@ -237,15 +230,16 @@ const getParticleStyle = (index) => {
 }
 
 @keyframes pulse-core {
-  0%, 100% { 
+  0%,
+  100% {
     transform: translate(-50%, -50%) scale(1);
-    box-shadow: 
+    box-shadow:
       0 0 10px var(--loader-color),
       0 0 20px var(--loader-color);
   }
-  50% { 
+  50% {
     transform: translate(-50%, -50%) scale(1.3);
-    box-shadow: 
+    box-shadow:
       0 0 20px var(--loader-color),
       0 0 40px var(--loader-color),
       0 0 60px var(--loader-color);
@@ -254,44 +248,32 @@ const getParticleStyle = (index) => {
 
 @keyframes particle-rotate {
   0% {
-    transform: 
-      translate(-50%, -50%) 
-      rotate(var(--particle-angle)) 
-      translateX(40px) 
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(40px)
       rotate(calc(-1 * var(--particle-angle)));
   }
   100% {
-    transform: 
-      translate(-50%, -50%) 
-      rotate(calc(var(--particle-angle) + 360deg)) 
-      translateX(40px) 
+    transform: translate(-50%, -50%) rotate(calc(var(--particle-angle) + 360deg)) translateX(40px)
       rotate(calc(-1 * var(--particle-angle) - 360deg));
   }
 }
 
 @keyframes particle-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.7;
-    transform: 
-      translate(-50%, -50%) 
-      rotate(var(--particle-angle)) 
-      translateX(40px) 
-      rotate(calc(-1 * var(--particle-angle))) 
-      scale(1);
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(40px)
+      rotate(calc(-1 * var(--particle-angle))) scale(1);
   }
   50% {
     opacity: 1;
-    transform: 
-      translate(-50%, -50%) 
-      rotate(var(--particle-angle)) 
-      translateX(40px) 
-      rotate(calc(-1 * var(--particle-angle))) 
-      scale(1.2);
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(40px)
+      rotate(calc(-1 * var(--particle-angle))) scale(1.2);
   }
 }
 
 @keyframes glow-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.1;
     transform: translate(-50%, -50%) scale(1);
   }
@@ -302,7 +284,8 @@ const getParticleStyle = (index) => {
 }
 
 @keyframes text-flicker {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     text-shadow: 0 0 10px var(--loader-color);
   }
@@ -314,34 +297,22 @@ const getParticleStyle = (index) => {
 
 /* Адаптивность для разных размеров */
 .cyber-loader.small .particle {
-  transform: 
-    translate(-50%, -50%) 
-    rotate(var(--particle-angle)) 
-    translateX(12px) 
+  transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(12px)
     rotate(calc(-1 * var(--particle-angle)));
 }
 
 .cyber-loader.medium .particle {
-  transform: 
-    translate(-50%, -50%) 
-    rotate(var(--particle-angle)) 
-    translateX(20px) 
+  transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(20px)
     rotate(calc(-1 * var(--particle-angle)));
 }
 
 .cyber-loader.large .particle {
-  transform: 
-    translate(-50%, -50%) 
-    rotate(var(--particle-angle)) 
-    translateX(32px) 
+  transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(32px)
     rotate(calc(-1 * var(--particle-angle)));
 }
 
 .cyber-loader.xlarge .particle {
-  transform: 
-    translate(-50%, -50%) 
-    rotate(var(--particle-angle)) 
-    translateX(48px) 
+  transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(48px)
     rotate(calc(-1 * var(--particle-angle)));
 }
 </style>

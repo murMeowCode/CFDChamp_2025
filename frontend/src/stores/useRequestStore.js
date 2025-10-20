@@ -7,7 +7,7 @@ export const useRequestsStore = defineStore('requests', () => {
     requests.value = newR
     console.log(requests.value, 'USERVALUE')
   }
-   function removeRequests(newR) {
+  function removeRequests(newR) {
     requests.value = null
     console.log(requests.value, 'NULLLLLLLLLLLLLLLL')
   }

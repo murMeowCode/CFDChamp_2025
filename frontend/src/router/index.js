@@ -48,15 +48,15 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: Mycabinet,
-      beforeEnter: (to, from, next) => {
-        const { getAuth } = storeToRefs(useUserStore())
+      // beforeEnter: (to, from, next) => {
+      //   const { getAuth } = storeToRefs(useUserStore())
 
-        if (!getAuth.value) {
-          next('/login')
-        } else {
-          next()
-        }
-      },
+      //   if (!getAuth.value) {
+      //     next('/login')
+      //   } else {
+      //     next()
+      //   }
+      // },
     },
     {
       path: '/forgot-password',

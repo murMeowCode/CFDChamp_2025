@@ -44,11 +44,24 @@
             <input
               :disabled="!isEditing"
               type="text"
-              v-model="Name"
+              v-model="formData.first_name"
               placeholder=" "
               class="floating-input futurism-elegant"
             />
             <label class="cyber-dynamic">Имя</label>
+            <div class="input-decoration"></div>
+          </div>
+
+          <!-- Фамилия -->
+          <div class="form-group floating-label">
+            <input
+              :disabled="!isEditing"
+              type="text"
+              v-model="formData.last_name"
+              placeholder=" "
+              class="floating-input futurism-elegant"
+            />
+            <label class="cyber-dynamic">Фамилия</label>
             <div class="input-decoration"></div>
           </div>
 
@@ -58,16 +71,17 @@
               <input
                 :disabled="!isEditing"
                 type="text"
-                v-model="Profession"
+                :value="roleName"
                 placeholder=" "
                 class="floating-input futurism-elegant"
+                readonly
               />
-              <label class="cyber-dynamic">Профессия</label>
+              <label class="cyber-dynamic">Роль</label>
               <div class="input-decoration"></div>
             </div>
 
             <button
-              v-if="getUser.role === 2"
+              v-if="dataUser.role === 2"
               class="promote-btn cyber-dynamic"
               @click="showPromotionModal"
               :disabled="isPromoteLoading"
@@ -88,7 +102,7 @@
             <input
               :disabled="!isEditing"
               type="text"
-              v-model="Quote"
+              v-model="formData.quote"
               placeholder=" "
               class="floating-input futurism-elegant"
             />
@@ -100,48 +114,46 @@
           <div class="form-group communication">
             <label class="section-label cyber-dynamic">Контакты</label>
             <div class="contacts-grid">
-              <div v-for="(contact, index) in contacts" :key="index" class="contact-item">
+              <div class="contact-item">
                 <div class="contact-item-content" v-if="isEditing">
-                  <div class="contact-type-badge cyber-mono">{{ contact.type }}</div>
+                  <div class="contact-type-badge cyber-mono">Почта</div>
                   <input
-                    v-model="contact.value"
-                    :type="contact.type === 'email' ? 'email' : 'text'"
-                    :placeholder="`Введите ${contact.type}`"
+                    v-model="formData.email"
+                    type="email"
+                    placeholder="Введите email"
                     class="contact-input futurism-elegant"
                   />
-                  <button
-                    type="button"
-                    class="remove-contact-btn cyber-dynamic"
-                    @click="removeContact(index)"
-                  >
-                    🗑️
-                  </button>
                 </div>
                 <div v-else class="contact-display">
-                  <span class="contact-type cyber-dynamic">{{ contact.type }}:</span>
-                  <span class="contact-value futurism-elegant">{{ contact.value }}</span>
+                  <span class="contact-type cyber-dynamic">Почта:</span>
+                  <span class="contact-value futurism-elegant">{{ formData.email }}</span>
+                </div>
+              </div>
+              <div class="contact-item">
+                <div class="contact-item-content" v-if="isEditing">
+                  <div class="contact-type-badge cyber-mono">Телефон</div>
+                  <input
+                    v-model="formData.phone"
+                    type="tel"
+                    placeholder="Введите телефон"
+                    class="contact-input futurism-elegant"
+                  />
+                </div>
+                <div v-else class="contact-display">
+                  <span class="contact-type cyber-dynamic">Телефон:</span>
+                  <span class="contact-value futurism-elegant">{{ formData.phone }}</span>
                 </div>
               </div>
             </div>
-
-            <button
-              v-if="isEditing"
-              type="button"
-              class="add-contact-btn cyber-dynamic"
-              @click="showContactModal = true"
-            >
-              <span class="btn-icon">+</span>
-              Добавить контакт
-            </button>
           </div>
 
-          <!-- Дата и пол -->
+          <!-- Дата рождения -->
           <div class="form-row">
             <div class="form-group floating-label half-width">
               <input
                 :disabled="!isEditing"
                 type="date"
-                v-model="BurthDay"
+                v-model="formData.birth_date"
                 class="floating-input futurism-elegant"
               />
               <label class="cyber-dynamic">Дата рождения</label>
@@ -154,7 +166,7 @@
             <input
               :disabled="!isEditing"
               type="text"
-              v-model="Address"
+              v-model="formData.address"
               placeholder=" "
               class="floating-input futurism-elegant"
             />
@@ -166,7 +178,7 @@
           <div class="form-group floating-label">
             <textarea
               :disabled="!isEditing"
-              v-model="AboutMe"
+              v-model="formData.about_me"
               placeholder=" "
               class="floating-input textarea futurism-elegant"
             ></textarea>
@@ -174,8 +186,6 @@
             <div class="input-decoration"></div>
           </div>
         </form>
-
-        <!-- Компонент запросов на повышение роли -->
       </section>
 
       <!-- Краткие данные -->
@@ -190,15 +200,15 @@
 
         <div class="profile-stats">
           <div class="stat-item">
-            <div class="stat-value cyber-mono">{{ FIO.split(' ')[0] }}</div>
+            <div class="stat-value cyber-mono">{{ formData.first_name }}</div>
             <div class="stat-label cyber-dynamic">Имя</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value cyber-mono">{{ DateBirthday }}</div>
+            <div class="stat-value cyber-mono">{{ formattedBirthDate }}</div>
             <div class="stat-label cyber-dynamic">Дата рождения</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value cyber-mono">@{{ NickName }}</div>
+            <div class="stat-value cyber-mono">@{{ dataUser.username }}</div>
             <div class="stat-label cyber-dynamic">Логин</div>
           </div>
           <div class="stat-item">
@@ -233,14 +243,14 @@
       </div>
     </div>
 
-    <ReuestRol v-if="getUser.role === 2 && !isPending" />
+    <ReuestRol v-if="dataUser.role === 2 && !isPending" />
   </div>
 </template>
 
 <script setup>
 import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, reactive } from 'vue'
 import UserAchive from '../Achive/UserAchive.vue'
 import ReuestRol from '../RoleRequest/ReuestRol.vue'
 import CyberLoader from '@/utils/Loader/CyberLoader.vue'
@@ -263,34 +273,51 @@ import { useApiGet } from '@/utils/api/useApiGet'
 const { getTokenAccsess } = storeToRefs(useAuthStore())
 const requestsStore = useRequestsStore()
 const { getUser } = storeToRefs(useUserStore())
+
+// Реактивные computed свойства
+const dataUser = computed(() => getUser.value || {})
+const Level = ref(1)
+
+// Реактивная форма, которая автоматически обновляется при изменении данных в хранилище
+const formData = reactive({
+  first_name: computed(() => dataUser.value.first_name || ''),
+  last_name: computed(() => dataUser.value.last_name || ''),
+  email: computed(() => dataUser.value.email || ''),
+  phone: computed(() => dataUser.value.phone || ''),
+  birth_date: computed(() => dataUser.value.birth_date || ''),
+  address: computed(() => dataUser.value.address || ''),
+  quote: computed(() => dataUser.value.quote || ''),
+  about_me: computed(() => dataUser.value.about_me || '')
+})
+
+// Computed свойства для отображения
+const FIO = computed(() => {
+  const parts = [formData.first_name, formData.last_name, dataUser.value.middle_name].filter(Boolean)
+  return parts.join(' ') || 'Не указано'
+})
+
+const formattedBirthDate = computed(() => {
+  if (!formData.birth_date) return 'Не указана'
+  return new Date(formData.birth_date).toLocaleDateString('ru-RU')
+})
+
+const roleName = computed(() => {
+  const roles = {
+    1: 'Пользователь',
+    2: 'Модератор', 
+    3: 'Администратор',
+    4: 'Супер администратор'
+  }
+  return roles[dataUser.value.role] || 'Неизвестно'
+})
+
 const { showUpdateEmailPhone, showRoleRequestDialog } = useDialogServices()
 const { usePost } = useApiMutations()
-const FIO = `${getUser.value.first_name} ${getUser.value.last_name} ${getUser.value.middle_name}`
-const DateBirthday = getUser.value.birth_date
-const NickName = getUser.value.username
-const Level = ref(1)
-const Name = getUser.value.last_name
-const Profession = getUser.value.role
-const Quote = ref('Мужчина')
-const Email = getUser.value.email
-const Phone = getUser.value.phone
-const BurthDay = getUser.value.birth_date
-const selectedOption = ref('Мужчина')
-const Address = getUser.value.address
-const AboutMe = ref('user.AboutMe')
 const useToas = useNotificationsStore()
 const Achives = useAchivesStore()
 const isEditing = ref(false)
-const isPromoteLoading = ref(false) // Новое состояние для лоадера
+const isPromoteLoading = ref(false)
 const { useGet } = useApiGet()
-
-// Массив контактов для динамического управления
-const contacts = ref([
-  { type: 'Почта', value: Email },
-  { type: 'Телефон', value: Phone },
-])
-
-const showContactModal = ref(false)
 
 async function showModal() {
   const result = showUpdateEmailPhone()
@@ -328,7 +355,7 @@ async function showPromotionModal() {
     await new Promise(resolve => setTimeout(resolve, 2000))
     
     await roleMutation.mutateAsync({
-      requested_role: getUser.value.role + 1,
+      requested_role: dataUser.value.role + 1,
       reason: 'Повышение полномочий',
     })
   } catch (error) {
@@ -374,8 +401,19 @@ watch(isSuccess, (success) => {
     console.log('Данные запросов сохранены в store:', userDataRaw.value)
   }
 })
-</script>
 
+// Отслеживаем изменения в хранилище и обновляем локальное состояние
+watch(
+  dataUser,
+  (newUserData) => {
+    if (newUserData) {
+      console.log('Данные пользователя обновлены:', newUserData)
+      // formData автоматически обновится через computed свойства
+    }
+  },
+  { deep: true, immediate: true }
+)
+</script>
 <style scoped>
 /* Добавляем стили для глобального лоадера */
 .global-promotion-loader {
@@ -401,7 +439,7 @@ watch(isSuccess, (success) => {
   background: var(--color-bg-elevated);
   border-radius: var(--border-radius-2xl);
   border: 1px solid var(--color-primary);
-  box-shadow: 
+  box-shadow:
     0 0 50px rgba(var(--color-primary-rgb), 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
@@ -452,12 +490,7 @@ watch(isSuccess, (success) => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   animation: shimmer 1.5s infinite;
 }
 

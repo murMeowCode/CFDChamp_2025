@@ -39,7 +39,9 @@ export const useUserStore = defineStore('user', () => {
     console.log('Пользователь удален, хранилище очищено')
   }
   function updateUser(updatedFields) {
+    console.log('update')
     if (user.value && typeof updatedFields === 'object') {
+      console.log('update1')
       user.value = { ...user.value, ...updatedFields }
       localStorage.setItem('user', JSON.stringify(user.value))
     }
