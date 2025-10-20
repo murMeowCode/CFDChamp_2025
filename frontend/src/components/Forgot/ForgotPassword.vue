@@ -205,7 +205,7 @@ const handleSubmit = async () => {
 
   try {
     // Вызываем мутацию с данными формы
-    await forgotMutation.mutateAsync({email: form.email})
+    await forgotMutation.mutateAsync({ email: form.email })
 
     // onSuccess автоматически вызовется, так что тут ничего не нужно
   } catch (error) {

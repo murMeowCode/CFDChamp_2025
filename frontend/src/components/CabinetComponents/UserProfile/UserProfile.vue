@@ -31,7 +31,7 @@
     <section class="personal-info">
       <div class="section-header">
         <h2 class="cyber-heading">Персональная информация</h2>
-        <div class="edit-toggle cyber-dynamic" @click="toggleEdit">
+        <div class="edit-toggle cyber-dynamic" @click="showModal">
           <span class="edit-icon">{{ isEditing ? '💾' : '✏️' }}</span>
           <span>{{ isEditing ? 'Сохранить' : 'Изменить' }}</span>
         </div>
@@ -128,8 +128,6 @@
             <label class="cyber-dynamic">Дата рождения</label>
             <div class="input-decoration"></div>
           </div>
-
-         
         </div>
 
         <!-- Адрес -->
@@ -200,61 +198,8 @@
         </div>
       </div>
     </section>
-
-    <!-- Модальное окно для добавления контакта -->
-    <div v-if="showContactModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <h3 class="cyber-heading">Добавить контакт</h3>
-        <div class="modal-form">
-          <div class="form-group floating-label">
-            <select v-model="newContactType" class="floating-input futurism-elegant">
-              <option value="email">Email</option>
-              <option value="tel">Телефон</option>
-              <option value="website">Сайт</option>
-            </select>
-            <label class="cyber-dynamic">Тип контакта</label>
-            <div class="input-decoration"></div>
-          </div>
-
-          <div class="form-group floating-label">
-            <input
-              v-if="newContactType === 'Почта'"
-              type="email"
-              v-model="newContactValue"
-              placeholder=" "
-              class="floating-input futurism-elegant"
-            />
-            <input
-              v-else-if="newContactType === 'Телефон'"
-              type="tel"
-              v-model="newContactValue"
-              placeholder=" "
-              class="floating-input futurism-elegant"
-            />
-            <input
-              v-else-if="newContactType === 'website'"
-              type="url"
-              v-model="newContactValue"
-              placeholder=" "
-              class="floating-input futurism-elegant"
-            />
-            <label class="cyber-dynamic">Значение</label>
-            <div class="input-decoration"></div>
-          </div>
-        </div>
-
-        <div class="modal-buttons">
-          <button
-            @click="addContact"
-            :disabled="!newContactValue.trim()"
-            class="btn-primary cyber-dynamic"
-          >
-            Добавить
-          </button>
-          <button @click="closeModal" class="btn-secondary cyber-dynamic">Отмена</button>
-        </div>
-      </div>
-    </div>
+    
+    <DynamicDialog />
   </div>
 </template>
 
@@ -265,15 +210,19 @@ import { useUserStore } from '@/stores/useUserStore'
 import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
 import { useAchivesStore } from '@/stores/useAchivesStore'
+import { useDialogServices } from '@/utils/Dialog/useDialogServices'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import DynamicDialog from 'primevue/dynamicdialog'
 import { useAuthStore } from '@/stores/useAuthStore'
+
 const useAuStore = useAuthStore()
 const useUsStore = useUserStore()
 const router = useRouter()
 const { getUser } = storeToRefs(useUserStore())
+const { showUpdateEmailPhone } = useDialogServices()
 
-const FIO = `${getUser.value.first_name } ${getUser.value.last_name} ${getUser.value.middle_name}`
+const FIO = `${getUser.value.first_name} ${getUser.value.last_name} ${getUser.value.middle_name}`
 const DateBirthday = getUser.value.birth_date
 const NickName = getUser.value.username
 const Level = ref(1)
@@ -288,7 +237,6 @@ const Address = getUser.value.address
 const AboutMe = ref('user.AboutMe')
 
 const Achives = useAchivesStore()
-
 const isEditing = ref(false)
 
 // Массив контактов для динамического управления
@@ -300,6 +248,24 @@ const contacts = ref([
 const showContactModal = ref(false)
 const newContactType = ref('email')
 const newContactValue = ref('')
+
+async function showModal() {
+  const result = showUpdateEmailPhone()
+
+  if (result) {
+    // Обрабатываем данные из диалога
+    console.log('Полученные данные:', result)
+    // { phone: '+79999999999', email: 'example@mail.com' }
+
+    // Здесь можно отправить данные на сервер
+    await submitContacts(result)
+  }
+}
+
+const submitContacts = async (data) => {
+  // Ваша логика отправки данных
+  console.log('Отправка данных на сервер:', data)
+}
 
 function toggleEdit() {
   if (isEditing.value) {
@@ -313,25 +279,8 @@ function toggleEdit() {
   isEditing.value = !isEditing.value
 }
 
-function addContact() {
-  if (newContactValue.value.trim()) {
-    contacts.value.push({
-      type: newContactType.value,
-      value: newContactValue.value.trim(),
-    })
-    closeModal()
-  }
-}
 
-function removeContact(index) {
-  contacts.value.splice(index, 1)
-}
 
-function closeModal() {
-  showContactModal.value = false
-  newContactType.value = 'email'
-  newContactValue.value = ''
-}
 
 function handleLogout() {
   // Здесь можно добавить логику выхода (очистка стора, токенов и т.д.)
@@ -971,88 +920,6 @@ function handleLogout() {
   border-color: var(--color-primary-muted);
 }
 
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: var(--color-bg);
-  border-radius: var(--border-radius-2xl);
-  padding: var(--spacing-2xl);
-  width: 400px;
-  max-width: 90vw;
-  box-shadow: var(--shadow-2xl);
-  border: 1px solid var(--color-border);
-}
-
-.modal-content h3 {
-  margin: 0 0 var(--spacing-lg) 0;
-  color: var(--color-text);
-  font-weight: var(--font-weight-bold);
-  text-align: center;
-}
-
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-}
-
-.modal-buttons {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: flex-end;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--border-radius-lg);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  border: none;
-  transition: all var(--transition-normal);
-  width: auto;
-  margin: 0;
-}
-
-.btn-primary {
-  background: var(--color-primary);
-  color: var(--color-text-inverted);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-  background: var(--color-bg-muted);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-}
-
-.btn-secondary:hover {
-  background: var(--color-bg-subtle);
-}
-
 /* Responsive */
 
 @media (max-width: 1080px) {
@@ -1222,5 +1089,92 @@ function handleLogout() {
     padding: var(--spacing-xs) var(--spacing-md);
     font-size: 0.9rem;
   }
+}
+
+/* КАСТОМНЫЕ СТИЛИ ДЛЯ DYNAMIC DIALOG ЗАТЕМНЕНИЯ */
+:global(.p-dialog-mask) {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+:global(.p-dialog) {
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  border-radius: var(--border-radius-2xl) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+:global(.p-dialog .p-dialog-header) {
+  background: var(--color-bg-elevated) !important;
+  border-top-left-radius: var(--border-radius-2xl) !important;
+  border-top-right-radius: var(--border-radius-2xl) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: var(--spacing-xl) !important;
+}
+
+:global(.p-dialog .p-dialog-content) {
+  background: var(--color-bg) !important;
+  border-bottom-left-radius: var(--border-radius-2xl) !important;
+  border-bottom-right-radius: var(--border-radius-2xl) !important;
+  padding: var(--spacing-xl) !important;
+}
+
+:global(.p-dialog .p-dialog-footer) {
+  background: var(--color-bg-elevated) !important;
+  border-bottom-left-radius: var(--border-radius-2xl) !important;
+  border-bottom-right-radius: var(--border-radius-2xl) !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding: var(--spacing-xl) !important;
+}
+
+:global(.p-dialog .p-dialog-header-icons) {
+  display: flex !important;
+  gap: var(--spacing-xs) !important;
+}
+
+:global(.p-dialog .p-dialog-header-icon) {
+  width: 2rem !important;
+  height: 2rem !important;
+  border-radius: var(--border-radius-full) !important;
+  border: none !important;
+  background: var(--color-bg-muted) !important;
+  color: var(--color-text) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+:global(.p-dialog .p-dialog-header-icon:hover) {
+  background: var(--color-primary) !important;
+  color: var(--color-text-inverted) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Анимация появления */
+:global(.p-dialog-enter-active) {
+  transition: all 0.3s ease-out !important;
+}
+
+:global(.p-dialog-enter-from) {
+  opacity: 0 !important;
+  transform: scale(0.9) translateY(-20px) !important;
+}
+
+:global(.p-dialog-enter-to) {
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+}
+
+:global(.p-dialog-leave-active) {
+  transition: all 0.2s ease-in !important;
+}
+
+:global(.p-dialog-leave-from) {
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+}
+
+:global(.p-dialog-leave-to) {
+  opacity: 0 !important;
+  transform: scale(0.9) translateY(-20px) !important;
 }
 </style>

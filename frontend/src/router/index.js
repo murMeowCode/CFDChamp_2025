@@ -12,7 +12,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/useUserStore'
 import { storeToRefs } from 'pinia'
 const router = createRouter({
-
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -49,15 +48,15 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: Mycabinet,
-       beforeEnter: (to, from, next) => {
-        const {getAuth} = storeToRefs(useUserStore());
-        
+      beforeEnter: (to, from, next) => {
+        const { getAuth } = storeToRefs(useUserStore())
+
         if (!getAuth.value) {
-          next('/login'); 
+          next('/login')
         } else {
-          next();
+          next()
         }
-      }
+      },
     },
     {
       path: '/forgot-password',

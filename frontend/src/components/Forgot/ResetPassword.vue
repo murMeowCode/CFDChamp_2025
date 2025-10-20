@@ -4,14 +4,11 @@
       <div class="card-header">
         <h1 class="cyber-heading">Обновление пароля</h1>
         <p class="futurism-elegant">Создайте новый надежный пароль</p>
-        
       </div>
 
       <form @submit.prevent="handleSubmit" class="password-form">
         <div class="form-group">
-          <label for="newPassword" class="form-label cyber-dynamic">
-            Новый пароль
-          </label>
+          <label for="newPassword" class="form-label cyber-dynamic"> Новый пароль </label>
           <div class="input-container">
             <input
               v-model="form.newPassword"
@@ -79,11 +76,11 @@
               </svg>
             </button>
           </div>
-          
+
           <div class="password-strength">
             <div class="strength-bar" :style="strengthBarStyle"></div>
           </div>
-          
+
           <div class="password-requirements">
             <div
               v-for="requirement in passwordRequirements"
@@ -170,7 +167,11 @@
               </svg>
             </button>
           </div>
-          <div v-if="form.confirmPassword" class="match-message" :class="passwordsMatch ? 'valid' : 'error'">
+          <div
+            v-if="form.confirmPassword"
+            class="match-message"
+            :class="passwordsMatch ? 'valid' : 'error'"
+          >
             {{ passwordsMatch ? '✓ Пароли совпадают' : '✗ Пароли не совпадают' }}
           </div>
         </div>
@@ -203,13 +204,13 @@ import { useNotificationsStore } from '@/stores/useToastStore'
 import { api8000 } from '@/utils/apiUrl/urlApi'
 // Emits
 const emit = defineEmits(['passwordUpdated'])
-const {usePost} = useApiMutations()
+const { usePost } = useApiMutations()
 const notifications = useNotificationsStore()
 // Reactive state
 const token = ref(null)
 const form = reactive({
   newPassword: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
@@ -223,13 +224,12 @@ const passwordRequirements = ref([
   { id: 'uppercase', text: 'Заглавная буква', valid: false },
   { id: 'lowercase', text: 'Строчная буква', valid: false },
   { id: 'number', text: 'Цифра', valid: false },
-  { id: 'special', text: 'Специальный символ', valid: false }
+  { id: 'special', text: 'Специальный символ', valid: false },
 ])
 
 // Computed properties
 const passwordsMatch = computed(() => {
-  return form.newPassword && form.confirmPassword && 
-         form.newPassword === form.confirmPassword
+  return form.newPassword && form.confirmPassword && form.newPassword === form.confirmPassword
 })
 
 const isFormValid = computed(() => {
@@ -239,7 +239,7 @@ const isFormValid = computed(() => {
 const strengthBarStyle = computed(() => {
   const width = (passwordStrength.value / 5) * 100
   let background
-  
+
   if (passwordStrength.value <= 2) {
     background = 'var(--color-error)'
   } else if (passwordStrength.value <= 3) {
@@ -247,10 +247,10 @@ const strengthBarStyle = computed(() => {
   } else {
     background = 'var(--color-success)'
   }
-  
+
   return {
     width: `${width}%`,
-    background: background
+    background: background,
   }
 })
 const resetMutation = usePost(`${api8000}/auth/reset-password`, {
@@ -276,7 +276,7 @@ const maskedToken = computed(() => {
 const extractTokenFromQuery = () => {
   const urlParams = new URLSearchParams(window.location.search)
   token.value = urlParams.get('token')
-  
+
   if (!token.value) {
     showMessage('Токен не найден в URL', 'error')
   }
@@ -284,14 +284,13 @@ const extractTokenFromQuery = () => {
 
 const validateToken = async () => {
   if (!token.value) return
-  
+
   loading.value = true
   try {
     // Здесь должна быть проверка валидности токена на сервере
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
     console.log('Токен валиден:', token.value)
-    
   } catch (error) {
     console.error('Ошибка проверки токена:', error)
     showMessage('Токен недействителен или устарел', 'error')
@@ -303,16 +302,16 @@ const validateToken = async () => {
 
 const validatePassword = () => {
   const password = form.newPassword
-  
+
   // Проверка требований к паролю
   passwordRequirements.value[0].valid = password.length >= 8
   passwordRequirements.value[1].valid = /[A-Z]/.test(password)
   passwordRequirements.value[2].valid = /[a-z]/.test(password)
   passwordRequirements.value[3].valid = /\d/.test(password)
   passwordRequirements.value[4].valid = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
-  
+
   // Расчет силы пароля
-  passwordStrength.value = passwordRequirements.value.filter(req => req.valid).length
+  passwordStrength.value = passwordRequirements.value.filter((req) => req.valid).length
 }
 
 const validatePasswordMatch = () => {
@@ -329,21 +328,18 @@ const togglePasswordVisibility = (type) => {
 
 const handleSubmit = async () => {
   if (!isFormValid.value) return
-  
+
   loading.value = true
   message.value = ''
-  
+
   try {
-     await resetMutation.mutateAsync({token:token.value,password:form.newPassword})
-    
+    await resetMutation.mutateAsync({ token: token.value, new_password: form.newPassword })
+
     // Сброс формы
     form.newPassword = ''
     form.confirmPassword = ''
     passwordStrength.value = 0
-    passwordRequirements.value.forEach(req => req.valid = false)
-    
-    
-    
+    passwordRequirements.value.forEach((req) => (req.valid = false))
   } catch (error) {
     console.error('Ошибка при обновлении пароля:', error)
   } finally {
@@ -351,11 +347,10 @@ const handleSubmit = async () => {
   }
 }
 
-
 const showMessage = (text, type) => {
   message.value = text
   messageType.value = type
-  
+
   setTimeout(() => {
     message.value = ''
     messageType.value = ''
@@ -628,8 +623,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .message {
@@ -657,11 +656,11 @@ onMounted(() => {
   .password-reset-container {
     padding: var(--spacing-md);
   }
-  
+
   .password-reset-card {
     padding: var(--spacing-xl);
   }
-  
+
   .password-requirements {
     font-size: 0.8rem;
   }

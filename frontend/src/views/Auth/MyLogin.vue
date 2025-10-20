@@ -37,7 +37,7 @@
               }"
             >
               <i class="pi pi-user"></i>
-              Логин 
+              Логин
             </label>
             <div class="input-decoration"></div>
           </div>
