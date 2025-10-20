@@ -9,7 +9,7 @@ export const useDialogServices = () => {
     // Открываем диалог и получаем его экземпляр
     const dialogInstance = dialog.open(DialogUpdateProfileEmailPhone, {
       props: {
-        header: 'Добавление данных',
+        header: 'Изменение данных',
         style: {
           width: '40vw',
           backgroundColor: 'var(--color-bg)',

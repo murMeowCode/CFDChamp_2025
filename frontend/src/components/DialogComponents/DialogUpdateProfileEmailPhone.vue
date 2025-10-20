@@ -1,42 +1,185 @@
 <template>
-  <div class="data-add-container">
-    <div class="data-add-card">
+  <div class="data-edit-container">
+    <div class="data-edit-card">
       <div class="card-header">
-        <h1 class="cyber-heading">Добавление данных</h1>
-        <p class="futurism-elegant">Выберите тип данных для добавления</p>
+        <h1 class="cyber-heading">Редактирование данных</h1>
+        <p class="futurism-elegant">Измените ваши персональные данные</p>
       </div>
 
-      <div class="selection-section">
-        <h3 class="section-title cyber-dynamic">Выберите тип данных:</h3>
-        <div class="checkbox-group">
-          <label class="checkbox-label" :class="{ active: selectedTypes.phone }">
-            <input
-              type="checkbox"
-              v-model="selectedTypes.phone"
-              @change="handleTypeChange"
-              class="checkbox-input"
-            />
-            <span class="custom-checkbox"></span>
-            <span class="checkbox-text">Телефон</span>
-          </label>
+      <form @submit.prevent="handleSubmit" class="edit-form">
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="first_name" class="form-label cyber-dynamic">
+              Имя
+            </label>
+            <div class="input-container">
+              <input
+                v-model="form.first_name"
+                type="text"
+                id="first_name"
+                class="data-input"
+                placeholder="Введите имя"
+                :class="{ error: errors.first_name }"
+                @input="validateField('first_name')"
+              />
+              <div class="input-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div v-if="errors.first_name" class="error-message">
+              {{ errors.first_name }}
+            </div>
+          </div>
 
-          <label class="checkbox-label" :class="{ active: selectedTypes.email }">
-            <input
-              type="checkbox"
-              v-model="selectedTypes.email"
-              @change="handleTypeChange"
-              class="checkbox-input"
-            />
-            <span class="custom-checkbox"></span>
-            <span class="checkbox-text">Email</span>
-          </label>
-        </div>
-      </div>
+          <div class="input-group">
+            <label for="last_name" class="form-label cyber-dynamic">
+              Фамилия
+            </label>
+            <div class="input-container">
+              <input
+                v-model="form.last_name"
+                type="text"
+                id="last_name"
+                class="data-input"
+                placeholder="Введите фамилию"
+                :class="{ error: errors.last_name }"
+                @input="validateField('last_name')"
+              />
+              <div class="input-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div v-if="errors.last_name" class="error-message">
+              {{ errors.last_name }}
+            </div>
+          </div>
 
-      <div class="inputs-section">
-        <transition-group name="slide-fade">
-          <div v-if="selectedTypes.phone" key="phone" class="input-group">
-            <label for="phone" class="form-label cyber-dynamic"> Номер телефона </label>
+          <div class="input-group">
+            <label for="middle_name" class="form-label cyber-dynamic">
+              Отчество
+            </label>
+            <div class="input-container">
+              <input
+                v-model="form.middle_name"
+                type="text"
+                id="middle_name"
+                class="data-input"
+                placeholder="Введите отчество"
+                :class="{ error: errors.middle_name }"
+                @input="validateField('middle_name')"
+              />
+              <div class="input-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div v-if="errors.middle_name" class="error-message">
+              {{ errors.middle_name }}
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="birth_date" class="form-label cyber-dynamic">
+              Дата рождения
+            </label>
+            <div class="input-container">
+              <input
+                v-model="form.birth_date"
+                type="date"
+                id="birth_date"
+                class="data-input"
+                :class="{ error: errors.birth_date }"
+                @change="validateField('birth_date')"
+              />
+              <div class="input-icon">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 7V3M16 7V3M7 11H17M5 21H19C20.1046 21 21 20.1046 21 19V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V19C3 20.1046 3.89543 21 5 21Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div v-if="errors.birth_date" class="error-message">
+              {{ errors.birth_date }}
+            </div>
+          </div>
+
+          <div class="input-group full-width">
+            <label for="phone" class="form-label cyber-dynamic">
+              Номер телефона
+            </label>
             <div class="input-container">
               <input
                 v-model="form.phone"
@@ -70,17 +213,19 @@
             </div>
           </div>
 
-          <div v-if="selectedTypes.email" key="email" class="input-group">
-            <label for="email" class="form-label cyber-dynamic"> Email адрес </label>
+          <div class="input-group full-width">
+            <label for="address" class="form-label cyber-dynamic">
+              Адрес
+            </label>
             <div class="input-container">
               <input
-                v-model="form.email"
-                type="email"
-                id="email"
+                v-model="form.address"
+                type="text"
+                id="address"
                 class="data-input"
-                placeholder="example@domain.com"
-                :class="{ error: errors.email }"
-                @input="validateEmail"
+                placeholder="Введите ваш адрес"
+                :class="{ error: errors.address }"
+                @input="validateField('address')"
               />
               <div class="input-icon">
                 <svg
@@ -91,14 +236,14 @@
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z"
+                    d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z"
                     stroke="currentColor"
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
                   />
                   <path
-                    d="M22 6L12 13L2 6"
+                    d="M12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13Z"
                     stroke="currentColor"
                     stroke-width="2"
                     stroke-linecap="round"
@@ -107,54 +252,60 @@
                 </svg>
               </div>
             </div>
-            <div v-if="errors.email" class="error-message">
-              {{ errors.email }}
+            <div v-if="errors.address" class="error-message">
+              {{ errors.address }}
             </div>
           </div>
-        </transition-group>
-      </div>
+        </div>
 
-      <button
-        type="button"
-        class="submit-button cyber-heading"
-        :disabled="!isFormValid"
-        :class="{ disabled: !isFormValid }"
-        @click="handleSubmit"
-      >
-        <span v-if="loading" class="button-loading">
-          <div class="spinner"></div>
-          Добавление...
-        </span>
-        <span v-else>Добавить данные</span>
-      </button>
+        <button
+          type="submit"
+          class="submit-button cyber-heading"
+          :disabled="!isFormValid || !hasChanges"
+          :class="{ disabled: !isFormValid || !hasChanges }"
+        >
+          <span v-if="loading" class="button-loading">
+            <div class="spinner"></div>
+            Сохранение...
+          </span>
+          <span v-else>Изменить данные</span>
+        </button>
 
-      <div v-if="message" class="message" :class="messageType">
-        {{ message }}
-      </div>
+        <div v-if="message" class="message" :class="messageType">
+          {{ message }}
+        </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { useUserStore } from '@/stores/useUserStore'
+import { storeToRefs } from 'pinia'
 
-// Emits
-const emit = defineEmits(['dataAdded'])
+const useUser = useUserStore()
+const { getUser } = storeToRefs(useUserStore())
 
 // Reactive state
-const selectedTypes = reactive({
-  phone: false,
-  email: false,
+const form = reactive({
+  first_name: '',
+  last_name: '',
+  middle_name: '',
+  birth_date: '',
+  phone: '',
+  address: ''
 })
 
-const form = reactive({
-  phone: '',
-  email: '',
-})
+const initialForm = reactive({ ...form })
 
 const errors = reactive({
+  first_name: '',
+  last_name: '',
+  middle_name: '',
+  birth_date: '',
   phone: '',
-  email: '',
+  address: ''
 })
 
 const loading = ref(false)
@@ -163,32 +314,62 @@ const messageType = ref('')
 
 // Computed properties
 const isFormValid = computed(() => {
-  const hasSelectedType = selectedTypes.phone || selectedTypes.email
-  const phoneValid = !selectedTypes.phone || (form.phone && !errors.phone)
-  const emailValid = !selectedTypes.email || (form.email && !errors.email)
-
-  return hasSelectedType && phoneValid && emailValid && !loading.value
+  return Object.values(errors).every(error => !error) &&
+         form.first_name?.trim() &&
+         form.last_name?.trim() &&
+         form.phone?.trim()
 })
 
-const hasActiveInputs = computed(() => {
-  return selectedTypes.phone || selectedTypes.email
+const hasChanges = computed(() => {
+  return Object.keys(form).some(key => form[key] !== initialForm[key])
 })
 
 // Methods
-const handleTypeChange = () => {
-  // Сбрасываем ошибки при изменении выбора
-  if (!selectedTypes.phone) {
-    form.phone = ''
-    errors.phone = ''
+const validateField = (fieldName) => {
+  // Безопасное получение значения с проверкой на undefined
+  const value = form[fieldName]?.trim() || ''
+  
+  if (!value && fieldName !== 'middle_name' && fieldName !== 'address') {
+    errors[fieldName] = 'Это поле обязательно для заполнения'
+    return
   }
-  if (!selectedTypes.email) {
-    form.email = ''
-    errors.email = ''
+
+  // Дополнительные проверки для конкретных полей
+  switch (fieldName) {
+    case 'first_name':
+    case 'last_name':
+    case 'middle_name':
+      if (value && value.length < 2) {
+        errors[fieldName] = 'Минимальная длина - 2 символа'
+      } else if (value && !/^[а-яА-ЯёЁa-zA-Z\- ]+$/.test(value)) {
+        errors[fieldName] = 'Допустимы только буквы, дефисы и пробелы'
+      } else {
+        errors[fieldName] = ''
+      }
+      break
+    case 'address':
+      if (value && value.length < 5) {
+        errors.address = 'Адрес должен содержать не менее 5 символов'
+      } else if (value && !/^[а-яА-ЯёЁa-zA-Z0-9\-\s.,/]+$/.test(value)) {
+        errors.address = 'Недопустимые символы в адресе'
+      } else {
+        errors.address = ''
+      }
+      break
+    case 'birth_date':
+      if (!value) {
+        errors.birth_date = 'Выберите дату рождения'
+      } else {
+        validateBirthDate()
+      }
+      break
+    default:
+      errors[fieldName] = ''
   }
 }
 
 const validatePhone = () => {
-  const phone = form.phone.trim()
+  const phone = form.phone?.trim() || ''
 
   if (!phone) {
     errors.phone = 'Введите номер телефона'
@@ -206,91 +387,115 @@ const validatePhone = () => {
   }
 }
 
-const validateEmail = () => {
-  const email = form.email.trim()
-
-  if (!email) {
-    errors.email = 'Введите email адрес'
+const validateBirthDate = () => {
+  const birthDate = form.birth_date
+  
+  if (!birthDate) {
+    errors.birth_date = 'Выберите дату рождения'
     return
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const selectedDate = new Date(birthDate)
+  const today = new Date()
+  const minDate = new Date()
+  minDate.setFullYear(today.getFullYear() - 120) // Максимальный возраст 120 лет
+  const maxDate = new Date()
+  maxDate.setFullYear(today.getFullYear() - 14) // Минимальный возраст 14 лет
 
-  if (!emailRegex.test(email)) {
-    errors.email = 'Введите корректный email адрес'
+  if (selectedDate < minDate || selectedDate > maxDate) {
+    errors.birth_date = 'Дата рождения должна быть в разумных пределах'
   } else {
-    errors.email = ''
+    errors.birth_date = ''
   }
 }
 
-const formatFormData = () => {
-  const data = {}
-
-  if (selectedTypes.phone && form.phone) {
-    data.phone = form.phone
+const loadUserData = () => {
+  // Загружаем данные из store
+  if (getUser.value) {
+    const userData = getUser.value
+    Object.keys(form).forEach(key => {
+      if (userData[key] !== undefined) {
+        form[key] = userData[key] || ''
+        initialForm[key] = userData[key] || ''
+      }
+    })
   }
-
-  if (selectedTypes.email && form.email) {
-    data.email = form.email
-  }
-
-  return data
 }
 
 const handleSubmit = async () => {
-  if (!isFormValid.value) return
+  if (!isFormValid || !hasChanges.value) return
 
   loading.value = true
   message.value = ''
 
   try {
-    // Имитация API запроса
+    // Валидация всех полей перед отправкой
+    validateField('first_name')
+    validateField('last_name')
+    validateField('middle_name')
+    validateField('address')
+    validateField('birth_date')
+    validatePhone()
 
-    const formData = formatFormData()
-    console.log(formData, 'FormDATA')
-    // Эмитим событие с данными
-    emit('dataAdded', formData)
+    if (!isFormValid) {
+      throw new Error('Пожалуйста, исправьте ошибки в форме')
+    }
 
-    // Сброс формы
-    resetForm()
+    // Обновляем данные пользователя
+    await useUser.updateUser({
+      first_name: form.first_name.trim(),
+      last_name: form.last_name.trim(),
+      middle_name: form.middle_name.trim(),
+      birth_date: form.birth_date,
+      phone: form.phone.trim(),
+      address: form.address.trim()
+    })
+
+    // Обновляем initialForm для отслеживания следующих изменений
+    Object.keys(form).forEach(key => {
+      initialForm[key] = form[key]
+    })
+
+    message.value = 'Данные успешно обновлены!'
+    messageType.value = 'success'
+
   } catch (error) {
-    console.error('Ошибка при добавлении данных:', error)
+    console.error('Ошибка при обновлении данных:', error)
+    message.value = error.message || 'Произошла ошибка при обновлении данных'
+    messageType.value = 'error'
   } finally {
     loading.value = false
   }
 }
 
-const resetForm = () => {
-  form.phone = ''
-  form.email = ''
-  errors.phone = ''
-  errors.email = ''
-  selectedTypes.phone = false
-  selectedTypes.email = false
-}
-
 // Watchers
 watch(
-  () => form.phone,
-  () => {
-    if (selectedTypes.phone) {
-      validatePhone()
+  () => getUser.value,
+  (newData) => {
+    if (newData) {
+      loadUserData()
     }
   },
+  { deep: true, immediate: true }
 )
 
 watch(
-  () => form.email,
+  () => form.birth_date,
   () => {
-    if (selectedTypes.email) {
-      validateEmail()
+    if (form.birth_date) {
+      validateBirthDate()
     }
-  },
+  }
 )
+
+// Lifecycle
+onMounted(() => {
+  loadUserData()
+})
 </script>
 
 <style scoped>
-.data-add-container {
+.data-edit-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -299,19 +504,19 @@ watch(
   background: var(--gradient-subtle);
 }
 
-.data-add-card {
+.data-edit-card {
   background: var(--color-bg-elevated);
   border-radius: var(--border-radius-xl);
   padding: var(--spacing-2xl);
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--color-border);
   position: relative;
   overflow: hidden;
 }
 
-.data-add-card::before {
+.data-edit-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -340,99 +545,24 @@ watch(
   font-size: 1.1rem;
 }
 
-.selection-section {
-  margin-bottom: var(--spacing-2xl);
+.edit-form {
+  width: 100%;
 }
 
-.section-title {
-  font-size: 1.1rem;
-  margin-bottom: var(--spacing-lg);
-  color: var(--color-text);
-}
-
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background: var(--color-bg-subtle);
-  border: 2px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  cursor: pointer;
-  transition: all var(--transition-normal);
-  position: relative;
-}
-
-.checkbox-label:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
-}
-
-.checkbox-label.active {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
-}
-
-.checkbox-input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.custom-checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  background: var(--color-bg-elevated);
-  transition: all var(--transition-normal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.checkbox-label.active .custom-checkbox {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.custom-checkbox::after {
-  content: '✓';
-  color: var(--color-text-inverted);
-  font-size: 12px;
-  font-weight: bold;
-  opacity: 0;
-  transition: opacity var(--transition-normal);
-}
-
-.checkbox-label.active .custom-checkbox::after {
-  opacity: 1;
-}
-
-.checkbox-text {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 500;
-  color: var(--color-text);
-  font-size: 1rem;
-}
-
-.inputs-section {
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
   margin-bottom: var(--spacing-2xl);
 }
 
 .input-group {
-  margin-bottom: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
 }
 
-.input-group:last-child {
-  margin-bottom: 0;
+.input-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-label {
@@ -580,41 +710,25 @@ watch(
   border: 1px solid var(--color-error);
 }
 
-/* Анимации */
-.slide-fade-enter-active {
-  transition: all var(--transition-slow) ease-out;
-}
-
-.slide-fade-leave-active {
-  transition: all var(--transition-normal) ease-in;
-}
-
-.slide-fade-enter-from {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
 /* Адаптивность */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .input-group.full-width {
+    grid-column: 1;
+  }
+}
+
 @media (max-width: 480px) {
-  .data-add-container {
+  .data-edit-container {
     padding: var(--spacing-md);
   }
 
-  .data-add-card {
+  .data-edit-card {
     padding: var(--spacing-xl);
-  }
-
-  .checkbox-group {
-    gap: var(--spacing-sm);
-  }
-
-  .checkbox-label {
-    padding: var(--spacing-sm) var(--spacing-md);
   }
 }
 </style>
