@@ -43,6 +43,11 @@ class Settings(BaseSettings):
     VK_REDIRECT_URI: str = "asdasdasd"
     VK_CLIENT_SECRET: str = "asdasdds"
 
+    #GMAIL
+    MAILRU_EMAIL: str = "mannanovr70@gmail.com"
+    MAILRU_PASSWORD: str = "dtmi vwoi gdpa vsoe"
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int =587
     class Config:
         """импорт из файла среды"""
         env_file = ".env"

@@ -1,4 +1,7 @@
 """служба рассыдки почтовых сообщений"""#pylint: disable=E0401, W0718
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 import resend
 from mailing_service.schemas.message import EmailData
 from shared.config.base import settings
@@ -55,25 +58,40 @@ email_service = EmailService()
 class EmailServiceSync:
     """Синхронный класс службы для Celery"""
     def __init__(self):
-        resend.api_key = settings.RESEND_API_KEY
-        self.default_from = settings.RESEND_FROM_EMAIL
+        self.smtp_server = settings.SMTP_SERVER
+        self.smtp_port = settings.SMTP_PORT
+        self.login = settings.MAILRU_EMAIL
+        self.password = settings.MAILRU_PASSWORD
+        self.default_from = settings.MAILRU_EMAIL
 
     def send_email(self, email_data: EmailData) -> bool:
-        """Синхронная отправка email через Resend"""
+        """Синхронная отправка email через Mail.ru SMTP"""
         try:
-            params = {
-                "from": email_data.from_email or self.default_from,
-                "to": email_data.to,
-                "subject": email_data.subject,
-                "html": email_data.html,
-            }
+            receiver_email = email_data.to[0]
 
-            response = resend.Emails.send(params)
-            print(f"Email sent successfully: {response}")
+            # Создаем объект MIMEMultipart
+            msg = MIMEMultipart()
+            msg['From'] = self.default_from
+            msg['To'] = receiver_email
+            msg['Subject'] = email_data.subject
+
+            # Добавляем тело письма (HTML)
+            msg.attach(MIMEText(email_data.html, 'html'))
+
+            # Устанавливаем соединение с сервером
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server.starttls()  # Шифрование
+            server.login(self.login, self.password)
+
+            # Отправляем письмо
+            server.sendmail(self.default_from, receiver_email, msg.as_string())
+            server.quit()
+
+            print("Письмо успешно отправлено через Mail.ru!")
             return True
 
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            print(f"Ошибка при отправке письма через Mail.ru: {e}")
             return False
 
 email_service_sync = EmailServiceSync()
