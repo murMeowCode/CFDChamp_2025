@@ -13,9 +13,9 @@ export function useApiGet() {
         console.log(`🔄 GET ${endpoint}`, { params, headers: options.headers })
 
         try {
-          const response = await axios.get(endpoint, { 
+          const response = await axios.get(endpoint, {
             params,
-            headers: options.headers // передаем заголовки
+            headers: options.headers, // передаем заголовки
           })
           const duration = Date.now() - startTime
 

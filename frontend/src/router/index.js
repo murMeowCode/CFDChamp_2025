@@ -1,3 +1,4 @@
+import ResetPassword from '@/components/Forgot/ResetPassword.vue'
 import NotFound from '@/components/NotFound/NotFound.vue'
 import MyLogin from '@/views/Auth/MyLogin.vue'
 import MyRegistration from '@/views/Auth/MyRegistration.vue'
@@ -8,7 +9,8 @@ import One from '@/views/One/One.vue'
 import Three from '@/views/Three/Three.vue'
 import Two from '@/views/Two/Two.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-
+import { useUserStore } from '@/stores/useUserStore'
+import { storeToRefs } from 'pinia'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -46,11 +48,25 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: Mycabinet,
+      // beforeEnter: (to, from, next) => {
+      //   const { getAuth } = storeToRefs(useUserStore())
+
+      //   if (!getAuth.value) {
+      //     next('/login')
+      //   } else {
+      //     next()
+      //   }
+      // },
     },
     {
       path: '/forgot-password',
       name: 'forgot',
       component: MyForgotPassword,
+    },
+    {
+      path: '/reset-password',
+      name: 'ResetForgot',
+      component: ResetPassword,
     },
     {
       path: '/:any(.*)',

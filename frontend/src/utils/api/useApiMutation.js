@@ -6,7 +6,7 @@ const createMutation =
   (method) =>
   (url, options = {}) => {
     const toast = useNotificationsStore()
-    console.log(url,'url')
+    console.log(url, 'url')
     return useMutation({
       mutationFn: (data) => {
         return fetch(url, {
@@ -16,8 +16,7 @@ const createMutation =
             ...options.headers,
           },
           body: data ? JSON.stringify(data) : undefined,
-        })
-        .then(async (response) => {
+        }).then(async (response) => {
           if (!response.ok) {
             const error = await response.text()
             throw new Error(error || `HTTP error! status: ${response.status}`)

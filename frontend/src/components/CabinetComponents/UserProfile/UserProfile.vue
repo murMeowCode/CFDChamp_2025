@@ -1,343 +1,521 @@
 <template>
-  <div class="main-panel">
-    <!-- Заголовок профиля -->
-    <header class="profile-header">
-      <div class="bg-photo">
-        <img :src="ph1" alt="Background Photo" />
-        <div class="bg-overlay"></div>
-      </div>
-      <div class="avatar-photo">
-        <img :src="ph2" alt="User Avatar" />
-        <div class="avatar-status"></div>
-      </div>
-      <h1 class="user-name cyber-heading">{{ FIO }}</h1>
-      <p class="user-profession futurism-elegant">{{ Profession }}</p>
-      <blockquote class="user-quote futurism-elegant" v-if="Quote">"{{ Quote }}"</blockquote>
-      <div class="level-badge">
-        <span class="level-text cyber-mono">Уровень {{ Level }}</span>
-        <div class="level-progress">
-          <div class="progress-fill" :style="{ width: '65%' }"></div>
+  <div>
+    <div class="main-panel">
+      <!-- Заголовок профиля -->
+      <header class="profile-header">
+        <div class="bg-photo">
+          <img :src="ph1" alt="Background Photo" />
+          <div class="bg-overlay"></div>
         </div>
-      </div>
-      
-      <!-- Кнопка выхода -->
-      <button class="logout-btn cyber-dynamic" @click="handleLogout">
-        <span class="btn-icon">🚪</span>
-        <span class="btn-text">Выйти</span>
-      </button>
-    </header>
-
-    <!-- Персональная информация -->
-    <section class="personal-info">
-      <div class="section-header">
-        <h2 class="cyber-heading">Персональная информация</h2>
-        <div class="edit-toggle cyber-dynamic" @click="toggleEdit">
-          <span class="edit-icon">{{ isEditing ? '💾' : '✏️' }}</span>
-          <span>{{ isEditing ? 'Сохранить' : 'Изменить' }}</span>
+        <div class="avatar-photo">
+          <img :src="ph2" alt="User Avatar" />
+          <div class="avatar-status"></div>
         </div>
-      </div>
+        <h1 class="user-name cyber-heading">{{ FIO }}</h1>
 
-      <form @submit.prevent="toggleEdit" class="info-form">
-        <!-- Имя -->
-        <div class="form-group floating-label">
-          <input
-            :disabled="!isEditing"
-            type="text"
-            v-model="Name"
-            placeholder=" "
-            class="floating-input futurism-elegant"
-          />
-          <label class="cyber-dynamic">Имя</label>
-          <div class="input-decoration"></div>
+        <blockquote class="user-quote futurism-elegant" v-if="Quote">"{{ Quote }}"</blockquote>
+        <div class="level-badge">
+          <span class="level-text cyber-mono">Уровень {{ Level }}</span>
+          <div class="level-progress">
+            <div class="progress-fill" :style="{ width: '65%' }"></div>
+          </div>
         </div>
 
-        <!-- Профессия -->
-        <div class="form-group floating-label">
-          <input
-            :disabled="!isEditing"
-            type="text"
-            v-model="Profession"
-            placeholder=" "
-            class="floating-input futurism-elegant"
-          />
-          <label class="cyber-dynamic">Профессия</label>
-          <div class="input-decoration"></div>
+        <!-- Кнопка выхода -->
+        <button class="logout-btn cyber-dynamic" @click="handleLogout">
+          <span class="btn-icon">🚪</span>
+          <span class="btn-text">Выйти</span>
+        </button>
+      </header>
+
+      <!-- Персональная информация -->
+      <section class="personal-info">
+        <div class="section-header">
+          <h2 class="cyber-heading">Персональная информация</h2>
+          <div class="edit-toggle cyber-dynamic" @click="showModal">
+            <span class="edit-icon">{{ isEditing ? '💾' : '✏️' }}</span>
+            <span>{{ isEditing ? 'Сохранить' : 'Изменить' }}</span>
+          </div>
         </div>
 
-        <!-- Цитата -->
-        <div class="form-group floating-label">
-          <input
-            :disabled="!isEditing"
-            type="text"
-            v-model="Quote"
-            placeholder=" "
-            class="floating-input futurism-elegant"
-          />
-          <label class="cyber-dynamic">Цитата</label>
-          <div class="input-decoration"></div>
-        </div>
+        <form @submit.prevent="toggleEdit" class="info-form">
+          <!-- Имя -->
+          <div class="form-group floating-label">
+            <input
+              :disabled="!isEditing"
+              type="text"
+              v-model="formData.first_name"
+              placeholder=" "
+              class="floating-input futurism-elegant"
+            />
+            <label class="cyber-dynamic">Имя</label>
+            <div class="input-decoration"></div>
+          </div>
 
-        <!-- Контакты -->
-        <div class="form-group communication">
-          <label class="section-label cyber-dynamic">Контакты</label>
-          <div class="contacts-grid">
-            <div v-for="(contact, index) in contacts" :key="index" class="contact-item">
-              <div class="contact-item-content" v-if="isEditing">
-                <div class="contact-type-badge cyber-mono">{{ contact.type }}</div>
-                <input
-                  v-model="contact.value"
-                  :type="contact.type === 'email' ? 'email' : 'text'"
-                  :placeholder="`Введите ${contact.type}`"
-                  class="contact-input futurism-elegant"
-                />
-                <button type="button" class="remove-contact-btn cyber-dynamic" @click="removeContact(index)">
-                  🗑️
-                </button>
+          <!-- Фамилия -->
+          <div class="form-group floating-label">
+            <input
+              :disabled="!isEditing"
+              type="text"
+              v-model="formData.last_name"
+              placeholder=" "
+              class="floating-input futurism-elegant"
+            />
+            <label class="cyber-dynamic">Фамилия</label>
+            <div class="input-decoration"></div>
+          </div>
+
+          <!-- Профессия -->
+          <div class="ddd">
+            <div class="form-group floating-label">
+              <input
+                :disabled="!isEditing"
+                type="text"
+                :value="roleName"
+                placeholder=" "
+                class="floating-input futurism-elegant"
+                readonly
+              />
+              <label class="cyber-dynamic">Роль</label>
+              <div class="input-decoration"></div>
+            </div>
+
+            <button
+              v-if="dataUser.role === 2"
+              class="promote-btn cyber-dynamic"
+              @click="showPromotionModal"
+              :disabled="isPromoteLoading"
+            >
+              <template v-if="isPromoteLoading">
+                <CyberLoader size="small" variant="primary" />
+                <span>Отправка...</span>
+              </template>
+              <template v-else>
+                <span class="btn-icon">🚀</span>
+                <span>Повысить роль</span>
+              </template>
+            </button>
+          </div>
+
+          <!-- Цитата -->
+          <div class="form-group floating-label">
+            <input
+              :disabled="!isEditing"
+              type="text"
+              v-model="formData.quote"
+              placeholder=" "
+              class="floating-input futurism-elegant"
+            />
+            <label class="cyber-dynamic">Цитата</label>
+            <div class="input-decoration"></div>
+          </div>
+
+          <!-- Контакты -->
+          <div class="form-group communication">
+            <label class="section-label cyber-dynamic">Контакты</label>
+            <div class="contacts-grid">
+              <div class="contact-item">
+                <div class="contact-item-content" v-if="isEditing">
+                  <div class="contact-type-badge cyber-mono">Почта</div>
+                  <input
+                    v-model="formData.email"
+                    type="email"
+                    placeholder="Введите email"
+                    class="contact-input futurism-elegant"
+                  />
+                </div>
+                <div v-else class="contact-display">
+                  <span class="contact-type cyber-dynamic">Почта:</span>
+                  <span class="contact-value futurism-elegant">{{ formData.email }}</span>
+                </div>
               </div>
-              <div v-else class="contact-display">
-                <span class="contact-type cyber-dynamic">{{ contact.type }}:</span>
-                <span class="contact-value futurism-elegant">{{ contact.value }}</span>
+              <div class="contact-item">
+                <div class="contact-item-content" v-if="isEditing">
+                  <div class="contact-type-badge cyber-mono">Телефон</div>
+                  <input
+                    v-model="formData.phone"
+                    type="tel"
+                    placeholder="Введите телефон"
+                    class="contact-input futurism-elegant"
+                  />
+                </div>
+                <div v-else class="contact-display">
+                  <span class="contact-type cyber-dynamic">Телефон:</span>
+                  <span class="contact-value futurism-elegant">{{ formData.phone }}</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <button
-            v-if="isEditing"
-            type="button"
-            class="add-contact-btn cyber-dynamic"
-            @click="showContactModal = true"
-          >
-            <span class="btn-icon">+</span>
-            Добавить контакт
-          </button>
-        </div>
-
-        <!-- Дата и пол -->
-        <div class="form-row">
-          <div class="form-group floating-label half-width">
-            <input :disabled="!isEditing" type="date" v-model="BurthDay" class="floating-input futurism-elegant" />
-            <label class="cyber-dynamic">Дата рождения</label>
-            <div class="input-decoration"></div>
+          <!-- Дата рождения -->
+          <div class="form-row">
+            <div class="form-group floating-label half-width">
+              <input
+                :disabled="!isEditing"
+                type="date"
+                v-model="formData.birth_date"
+                class="floating-input futurism-elegant"
+              />
+              <label class="cyber-dynamic">Дата рождения</label>
+              <div class="input-decoration"></div>
+            </div>
           </div>
 
-          <div class="form-group floating-label half-width">
-            <select :disabled="!isEditing" v-model="selectedOption" class="floating-input futurism-elegant">
-              <option value="option1">Мужской</option>
-              <option value="option2">Женский</option>
-            </select>
-            <label class="cyber-dynamic">Пол</label>
-            <div class="input-decoration"></div>
-          </div>
-        </div>
-
-        <!-- Адрес -->
-        <div class="form-group floating-label">
-          <input
-            :disabled="!isEditing"
-            type="text"
-            v-model="Address"
-            placeholder=" "
-            class="floating-input futurism-elegant"
-          />
-          <label class="cyber-dynamic">Адрес</label>
-          <div class="input-decoration"></div>
-        </div>
-
-        <!-- О себе -->
-        <div class="form-group floating-label">
-          <textarea
-            :disabled="!isEditing"
-            v-model="AboutMe"
-            placeholder=" "
-            class="floating-input textarea futurism-elegant"
-          ></textarea>
-          <label class="cyber-dynamic">О себе</label>
-          <div class="input-decoration"></div>
-        </div>
-      </form>
-    </section>
-
-    <!-- Краткие данные -->
-    <section class="summary-info">
-      <div class="summary-header">
-        <h2 class="cyber-heading">Профиль</h2>
-        <div class="online-status cyber-dynamic">
-          <div class="status-dot"></div>
-          <span>Online</span>
-        </div>
-      </div>
-
-      <div class="profile-stats">
-        <div class="stat-item">
-          <div class="stat-value cyber-mono">{{ FIO.split(' ')[0] }}</div>
-          <div class="stat-label cyber-dynamic">Имя</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value cyber-mono">{{ DateBirthday }}</div>
-          <div class="stat-label cyber-dynamic">Дата рождения</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value cyber-mono">@{{ NickName }}</div>
-          <div class="stat-label cyber-dynamic">Никнейм</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value level-stat cyber-mono">{{ Level }}</div>
-          <div class="stat-label cyber-dynamic">Уровень</div>
-        </div>
-      </div>
-
-      <div class="achievements-section">
-        <h3 class="cyber-heading">Достижения</h3>
-        <div class="achievements-grid">
-          <UserAchive
-            v-for="(achive, index) in Achives.ACHIVES"
-            :key="index"
-            :Achive="achive"
-            class="achievement-item"
-          />
-        </div>
-      </div>
-    </section>
-
-    <!-- Модальное окно для добавления контакта -->
-    <div v-if="showContactModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <h3 class="cyber-heading">Добавить контакт</h3>
-        <div class="modal-form">
-          <div class="form-group floating-label">
-            <select v-model="newContactType" class="floating-input futurism-elegant">
-              <option value="email">Email</option>
-              <option value="tel">Телефон</option>
-              <option value="website">Сайт</option>
-            </select>
-            <label class="cyber-dynamic">Тип контакта</label>
-            <div class="input-decoration"></div>
-          </div>
-
+          <!-- Адрес -->
           <div class="form-group floating-label">
             <input
-              v-if="newContactType === 'email'"
-              type="email"
-              v-model="newContactValue"
+              :disabled="!isEditing"
+              type="text"
+              v-model="formData.address"
               placeholder=" "
               class="floating-input futurism-elegant"
             />
-            <input
-              v-else-if="newContactType === 'tel'"
-              type="tel"
-              v-model="newContactValue"
-              placeholder=" "
-              class="floating-input futurism-elegant"
-            />
-            <input
-              v-else-if="newContactType === 'website'"
-              type="url"
-              v-model="newContactValue"
-              placeholder=" "
-              class="floating-input futurism-elegant"
-            />
-            <label class="cyber-dynamic">Значение</label>
+            <label class="cyber-dynamic">Адрес</label>
             <div class="input-decoration"></div>
+          </div>
+
+          <!-- О себе -->
+          <div class="form-group floating-label">
+            <textarea
+              :disabled="!isEditing"
+              v-model="formData.about_me"
+              placeholder=" "
+              class="floating-input textarea futurism-elegant"
+            ></textarea>
+            <label class="cyber-dynamic">О себе</label>
+            <div class="input-decoration"></div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Краткие данные -->
+      <section class="summary-info">
+        <div class="summary-header">
+          <h2 class="cyber-heading">Профиль</h2>
+          <div class="online-status cyber-dynamic">
+            <div class="status-dot"></div>
+            <span>Online</span>
           </div>
         </div>
 
-        <div class="modal-buttons">
-          <button @click="addContact" :disabled="!newContactValue.trim()" class="btn-primary cyber-dynamic">
-            Добавить
-          </button>
-          <button @click="closeModal" class="btn-secondary cyber-dynamic">Отмена</button>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-value cyber-mono">{{ formData.first_name }}</div>
+            <div class="stat-label cyber-dynamic">Имя</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value cyber-mono">{{ formattedBirthDate }}</div>
+            <div class="stat-label cyber-dynamic">Дата рождения</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value cyber-mono">@{{ dataUser.username }}</div>
+            <div class="stat-label cyber-dynamic">Логин</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value level-stat cyber-mono">{{ Level }}</div>
+            <div class="stat-label cyber-dynamic">Уровень</div>
+          </div>
+        </div>
+
+        <div class="achievements-section">
+          <h3 class="cyber-heading">Достижения</h3>
+          <div class="achievements-grid">
+            <UserAchive
+              v-for="(achive, index) in Achives.ACHIVES"
+              :key="index"
+              :Achive="achive"
+              class="achievement-item"
+            />
+          </div>
+        </div>
+      </section>
+
+      <DynamicDialog />
+    </div>
+    
+    <!-- Глобальный лоадер для повышения роли -->
+    <div v-if="isPromoteLoading" class="global-promotion-loader">
+      <div class="loader-overlay">
+        <CyberLoader size="xlarge" variant="primary" :show-text="true" text="Повышение роли..." />
+        <div class="loader-subtext cyber-mono">
+          Обработка вашего запроса...
         </div>
       </div>
     </div>
+
+    <ReuestRol v-if="dataUser.role === 2 && !isPending" />
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import UserAchive from '../Achive/UserAchive.vue'
-import { useUserStore } from '@/stores/useUserStore'
 import ph1 from '@/components/CabinetComponents/img/Gori.jpg'
 import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
+import { computed, ref, watch, reactive } from 'vue'
+import UserAchive from '../Achive/UserAchive.vue'
+import ReuestRol from '../RoleRequest/ReuestRol.vue'
+import CyberLoader from '@/utils/Loader/CyberLoader.vue'
+import { useUserStore } from '@/stores/useUserStore'
 import { useAchivesStore } from '@/stores/useAchivesStore'
+import { useDialogServices } from '@/utils/Dialog/useDialogServices'
 import { storeToRefs } from 'pinia'
+import { useRequestsStore } from '@/stores/useRequestStore'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
+import DynamicDialog from 'primevue/dynamicdialog'
+import { useNotificationsStore } from '@/stores/useToastStore'
+import { useApiMutations } from '@/utils/api/useApiMutation'
+import { api8000 } from '@/utils/apiUrl/urlApi'
+
 const useAuStore = useAuthStore()
 const useUsStore = useUserStore()
 const router = useRouter()
+import { useApiGet } from '@/utils/api/useApiGet'
+const { getTokenAccsess } = storeToRefs(useAuthStore())
+const requestsStore = useRequestsStore()
 const { getUser } = storeToRefs(useUserStore())
 
-const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`
-const DateBirthday = getUser.value.birth_Date
-const NickName = getUser.value.username
+// Реактивные computed свойства
+const dataUser = computed(() => getUser.value || {})
 const Level = ref(1)
 
-const Profession = getUser.value.role
-const Quote = ref('Мужчина')
-const Email = getUser.value.email
-const Phone = getUser.value.phone
-const BurthDay = getUser.value.birth_Date
-const selectedOption = ref('Мужчина')
-const Address = getUser.value.address
-const AboutMe = ref('user.AboutMe')
+// Реактивная форма, которая автоматически обновляется при изменении данных в хранилище
+const formData = reactive({
+  first_name: computed(() => dataUser.value.first_name || ''),
+  last_name: computed(() => dataUser.value.last_name || ''),
+  email: computed(() => dataUser.value.email || ''),
+  phone: computed(() => dataUser.value.phone || ''),
+  birth_date: computed(() => dataUser.value.birth_date || ''),
+  address: computed(() => dataUser.value.address || ''),
+  quote: computed(() => dataUser.value.quote || ''),
+  about_me: computed(() => dataUser.value.about_me || '')
+})
 
+// Computed свойства для отображения
+const FIO = computed(() => {
+  const parts = [formData.first_name, formData.last_name, dataUser.value.middle_name].filter(Boolean)
+  return parts.join(' ') || 'Не указано'
+})
+
+const formattedBirthDate = computed(() => {
+  if (!formData.birth_date) return 'Не указана'
+  return new Date(formData.birth_date).toLocaleDateString('ru-RU')
+})
+
+const roleName = computed(() => {
+  const roles = {
+    1: 'Пользователь',
+    2: 'Модератор', 
+    3: 'Администратор',
+    4: 'Супер администратор'
+  }
+  return roles[dataUser.value.role] || 'Неизвестно'
+})
+
+const { showUpdateEmailPhone, showRoleRequestDialog } = useDialogServices()
+const { usePost } = useApiMutations()
+const useToas = useNotificationsStore()
 const Achives = useAchivesStore()
-
 const isEditing = ref(false)
+const isPromoteLoading = ref(false)
+const { useGet } = useApiGet()
 
-// Массив контактов для динамического управления
-const contacts = ref([
-  { type: 'email', value: Email },
-  { type: 'tel', value: Phone },
-])
+async function showModal() {
+  const result = showUpdateEmailPhone()
 
-const showContactModal = ref(false)
-const newContactType = ref('email')
-const newContactValue = ref('')
-
-function toggleEdit() {
-  if (isEditing.value) {
-    // Обновляем email и телефон из массива контактов при сохранении
-    const emailContact = contacts.value.find((c) => c.type === 'email')
-    const telContact = contacts.value.find((c) => c.type === 'tel')
-    Email.value = emailContact ? emailContact.value : ''
-    Phone.value = telContact ? telContact.value : ''
-    alert('Данные сохранены!')
+  if (result) {
+    console.log('Полученные данные:', result)
+    await submitContacts(result)
   }
-  isEditing.value = !isEditing.value
 }
 
-function addContact() {
-  if (newContactValue.value.trim()) {
-    contacts.value.push({
-      type: newContactType.value,
-      value: newContactValue.value.trim(),
+const roleMutation = usePost(`${api8000}/role-change/request`, {
+  headers: {
+    Authorization: `Bearer ${getTokenAccsess.value}`,
+  },
+  onSuccess: (data) => {
+    console.log('✅ Восстановление:', data)
+    useToas.success('Вы успешно подали заявку на повышение роли, ожидайте')
+  },
+  onError: (error) => {
+    console.error('❌ Ошибка :', error)
+    if (error.detail === 'User already has a pending role change request') {
+      useToas.error('Вы уже подали заявку на повышение роли, пожалуйста ожидайте')
+    } else {
+      useToas.error('Произошла ошибка при отправке заявки')
+    }
+  },
+})
+
+// Метод для показа модального окна повышения роли
+async function showPromotionModal() {
+  try {
+    isPromoteLoading.value = true
+    
+    // Имитация загрузки для демонстрации лоадера
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    await roleMutation.mutateAsync({
+      requested_role: dataUser.value.role + 1,
+      reason: 'Повышение полномочий',
     })
-    closeModal()
+  } catch (error) {
+    console.error('Ошибка при отправке запроса:', error)
+  } finally {
+    isPromoteLoading.value = false
   }
 }
 
-function removeContact(index) {
-  contacts.value.splice(index, 1)
+const submitContacts = async (data) => {
+  console.log('Отправка данных на сервер:', data)
 }
 
-function closeModal() {
-  showContactModal.value = false
-  newContactType.value = 'email'
-  newContactValue.value = ''
+async function toggleEdit() {
+  console.log(getTokenAccsess.value, 'ACSESSSSD')
+  // Ваша существующая логика
 }
 
 function handleLogout() {
-    // Здесь можно добавить логику выхода (очистка стора, токенов и т.д.)
-    console.log('Выход из системы')
-    useAuStore.removeToken()
-    useUsStore.removeUser()
-    router.push('/login') // Перенаправление на страницу входа
-  
+  console.log('Выход из системы')
+  useAuStore.removeToken()
+  useUsStore.removeUser()
+  router.push('/login')
 }
-</script>
 
+const {
+  data: userDataRaw,
+  isPending,
+  isSuccess,
+} = useGet(
+  `${api8000}/role-change/requests`,
+  {},
+  {
+    headers: {
+      Authorization: `Bearer ${getTokenAccsess.value}`,
+    },
+  },
+)
+
+watch(isSuccess, (success) => {
+  if (success && userDataRaw.value) {
+    requestsStore.setRequests(userDataRaw.value)
+    console.log('Данные запросов сохранены в store:', userDataRaw.value)
+  }
+})
+
+// Отслеживаем изменения в хранилище и обновляем локальное состояние
+watch(
+  dataUser,
+  (newUserData) => {
+    if (newUserData) {
+      console.log('Данные пользователя обновлены:', newUserData)
+      // formData автоматически обновится через computed свойства
+    }
+  },
+  { deep: true, immediate: true }
+)
+</script>
 <style scoped>
+/* Добавляем стили для глобального лоадера */
+.global-promotion-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-2xl);
+  background: var(--color-bg-elevated);
+  border-radius: var(--border-radius-2xl);
+  border: 1px solid var(--color-primary);
+  box-shadow:
+    0 0 50px rgba(var(--color-primary-rgb), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.loader-subtext {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  max-width: 200px;
+}
+
+/* Обновляем стили для кнопки с лоадером */
+.promote-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-muted);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  min-width: 140px;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.promote-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.promote-btn:not(:disabled):hover {
+  background: var(--color-primary-muted);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Анимация для кнопки при загрузке */
+.promote-btn:disabled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.ddd {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.ddd {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  justify-content: space-between;
+}
 .main-panel {
   height: 80vh;
   display: flex;
@@ -469,11 +647,42 @@ function handleLogout() {
   background-clip: text;
 }
 
+/* Стили для секции роли и кнопки */
+.role-promotion-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-xs) 0 var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .user-profession {
   color: var(--color-text-muted);
   font-style: italic;
-  margin: var(--spacing-xs) 0 var(--spacing-sm);
+  margin: 0;
   font-size: 1.1rem;
+}
+
+.promote-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-muted);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.promote-btn:hover {
+  background: var(--color-primary-muted);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .user-quote {
@@ -611,6 +820,7 @@ function handleLogout() {
 }
 
 .floating-label {
+  width: 100%;
   position: relative;
   margin-bottom: 0;
 }
@@ -667,11 +877,67 @@ function handleLogout() {
   width: 100%;
 }
 
+/* Стили для textarea */
 .textarea {
-  min-height: 100px;
-  resize: vertical;
+  min-height: 40px;
+  max-height: 200px;
+  resize: none; /* Запрещаем изменение размера */
+  overflow-y: auto; /* Добавляем скролл при необходимости */
+  line-height: 1.4;
+  padding-right: var(--spacing-md);
+  transition: all var(--transition-normal);
 }
 
+/* Автоматическое увеличение высоты */
+.textarea:focus {
+  max-height: 150px; /* Увеличиваем максимальную высоту при фокусе */
+}
+
+/* Скрываем скроллбар для красоты */
+.textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+
+.textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover);
+}
+
+/* Для Firefox */
+.textarea {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* Делаем textarea визуально неотличимой от input */
+.textarea.floating-input {
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border: none;
+  border-bottom: 2px solid var(--color-border);
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.textarea.floating-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+}
+
+.textarea.floating-input:disabled {
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-border);
+  background: transparent;
+}
 /* Contacts */
 .section-label {
   font-weight: var(--font-weight-semibold);
@@ -779,6 +1045,7 @@ function handleLogout() {
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Важно для корректной работы flex */
 }
 
 .summary-header {
@@ -786,6 +1053,7 @@ function handleLogout() {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-xl);
+  flex-shrink: 0; /* Запрещаем сжатие */
 }
 
 .summary-header h2 {
@@ -825,6 +1093,7 @@ function handleLogout() {
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-2xl);
+  flex-shrink: 0; /* Запрещаем сжатие */
 }
 
 .stat-item {
@@ -863,6 +1132,8 @@ function handleLogout() {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Ключевое исправление - позволяет секции сжиматься */
+  overflow: hidden; /* Скрываем переполнение */
 }
 
 .achievements-section h3 {
@@ -870,13 +1141,15 @@ function handleLogout() {
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-md);
   font-size: 1.1rem;
+  flex-shrink: 0; /* Запрещаем сжатие заголовка */
 }
 
 .achievements-grid {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  max-height: 400px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding-right: var(--spacing-xs);
 }
@@ -895,93 +1168,12 @@ function handleLogout() {
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-border);
   transition: all var(--transition-normal);
+  flex-shrink: 0; /* Запрещаем сжатие элементов */
 }
 
 .achievement-item:hover {
   transform: translateX(4px);
   border-color: var(--color-primary-muted);
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: var(--color-bg);
-  border-radius: var(--border-radius-2xl);
-  padding: var(--spacing-2xl);
-  width: 400px;
-  max-width: 90vw;
-  box-shadow: var(--shadow-2xl);
-  border: 1px solid var(--color-border);
-}
-
-.modal-content h3 {
-  margin: 0 0 var(--spacing-lg) 0;
-  color: var(--color-text);
-  font-weight: var(--font-weight-bold);
-  text-align: center;
-}
-
-.modal-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
-}
-
-.modal-buttons {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: flex-end;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--border-radius-lg);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  border: none;
-  transition: all var(--transition-normal);
-  width: auto;
-  margin: 0;
-}
-
-.btn-primary {
-  background: var(--color-primary);
-  color: var(--color-text-inverted);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-  background: var(--color-bg-muted);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-}
-
-.btn-secondary:hover {
-  background: var(--color-bg-subtle);
 }
 
 /* Responsive */
@@ -1010,6 +1202,7 @@ function handleLogout() {
     box-sizing: border-box;
     border-left: none;
     border-top: 1px solid var(--color-border);
+    min-height: auto;
   }
 
   .profile-stats {
@@ -1034,6 +1227,7 @@ function handleLogout() {
 
   .achievements-section {
     min-width: 0; /* Предотвращает выход за границы */
+    min-height: 200px; /* Фиксированная высота на мобильных */
   }
 
   .achievements-grid {
@@ -1090,6 +1284,17 @@ function handleLogout() {
   .logout-btn {
     width: calc(100% - var(--spacing-lg));
     margin: var(--spacing-lg) auto;
+  }
+
+  /* Адаптив для секции роли */
+  .role-promotion-section {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .promote-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -1151,5 +1356,92 @@ function handleLogout() {
     padding: var(--spacing-xs) var(--spacing-md);
     font-size: 0.9rem;
   }
+}
+
+/* КАСТОМНЫЕ СТИЛИ ДЛЯ DYNAMIC DIALOG ЗАТЕМНЕНИЯ */
+:global(.p-dialog-mask) {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+:global(.p-dialog) {
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  border-radius: var(--border-radius-2xl) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+:global(.p-dialog .p-dialog-header) {
+  background: var(--color-bg-elevated) !important;
+  border-top-left-radius: var(--border-radius-2xl) !important;
+  border-top-right-radius: var(--border-radius-2xl) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: var(--spacing-xl) !important;
+}
+
+:global(.p-dialog .p-dialog-content) {
+  background: var(--color-bg) !important;
+  border-bottom-left-radius: var(--border-radius-2xl) !important;
+  border-bottom-right-radius: var(--border-radius-2xl) !important;
+  padding: var(--spacing-xl) !important;
+}
+
+:global(.p-dialog .p-dialog-footer) {
+  background: var(--color-bg-elevated) !important;
+  border-bottom-left-radius: var(--border-radius-2xl) !important;
+  border-bottom-right-radius: var(--border-radius-2xl) !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding: var(--spacing-xl) !important;
+}
+
+:global(.p-dialog .p-dialog-header-icons) {
+  display: flex !important;
+  gap: var(--spacing-xs) !important;
+}
+
+:global(.p-dialog .p-dialog-header-icon) {
+  width: 2rem !important;
+  height: 2rem !important;
+  border-radius: var(--border-radius-full) !important;
+  border: none !important;
+  background: var(--color-bg-muted) !important;
+  color: var(--color-text) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+:global(.p-dialog .p-dialog-header-icon:hover) {
+  background: var(--color-primary) !important;
+  color: var(--color-text-inverted) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Анимация появления */
+:global(.p-dialog-enter-active) {
+  transition: all 0.3s ease-out !important;
+}
+
+:global(.p-dialog-enter-from) {
+  opacity: 0 !important;
+  transform: scale(0.9) translateY(-20px) !important;
+}
+
+:global(.p-dialog-enter-to) {
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+}
+
+:global(.p-dialog-leave-active) {
+  transition: all 0.2s ease-in !important;
+}
+
+:global(.p-dialog-leave-from) {
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+}
+
+:global(.p-dialog-leave-to) {
+  opacity: 0 !important;
+  transform: scale(0.9) translateY(-20px) !important;
 }
 </style>

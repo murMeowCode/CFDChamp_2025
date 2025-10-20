@@ -437,23 +437,21 @@ const handleSubmit = async () => {
     // await new Promise((resolve) => setTimeout(resolve, 2000))
     // await useAuth.legacyLogin(form)
     await useAuth.register(form)
-    
+
     toast.success('Вы успешно зарегестрировались')
 
     router.push({ name: 'login' })
     formSubmitted.value = false
   } catch (error) {
     console.error('Ошибка регистрации:', error)
-    if(error.Errors === 'User with this username already exists'){
+    if (error.Errors === 'User with this username already exists') {
       toast.error('Пользователь с таким логином уже существует')
     }
-    if(error.Errors === 'User with this email already exists'){
+    if (error.Errors === 'User with this email already exists') {
       toast.error('Пользователь с такой почтой уже существует')
-    }
-    else{
+    } else {
       toast.error('Ошибка регистрации, попробуйте позже')
     }
-    
   } finally {
     isSubmitting.value = false
   }

@@ -37,7 +37,7 @@
               }"
             >
               <i class="pi pi-user"></i>
-              Логин или Email
+              Логин
             </label>
             <div class="input-decoration"></div>
           </div>
@@ -266,11 +266,7 @@ const handleSubmit = async () => {
     // await new Promise((resolve) => setTimeout(resolve, 1500))
     // await useAuth.legacyLogin({ username: form.username, password: form.password })
     await useAuth.login({ username: form.username, password: form.password })
-   
-    useUser.setUser({
-      username: form.username,
-      password: form.password,
-    })
+
     toast.success('Вошли успешно')
     // Здесь будет реальный API вызов
     console.log('Вход выполнен:', {
@@ -285,7 +281,6 @@ const handleSubmit = async () => {
       errors.username = 'Неверный логин или пароль'
       errors.password = 'Неверный логин или пароль'
     } else {
-     
     }
   } finally {
     isSubmitting.value = false
@@ -389,8 +384,8 @@ const handleSocialLogin = (provider) => {
   font-size: 0.875rem;
   transition: all 0.2s ease;
   outline: none;
-  width: 90%;
-  height: 35px;
+  width: 100%;
+  height: 50px;
 }
 
 .floating-input:focus {

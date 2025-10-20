@@ -81,7 +81,7 @@
       <!-- Успешное сообщение -->
       <div v-if="isSuccess" class="success-message">
         <div class="success-icon">
-          <i class="pi pi-check-circle"></i>
+          <i class="pi pi-check"></i>
         </div>
         <div class="success-content">
           <h3 class="success-title">Письмо отправлено!</h3>
@@ -113,7 +113,9 @@
 import { ref, reactive, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useNotificationsStore } from '@/stores/useToastStore'
-
+import { useApiMutations } from '@/utils/api/useApiMutation'
+import { api8000 } from '@/utils/apiUrl/urlApi'
+const { usePost } = useApiMutations()
 const notifications = useNotificationsStore()
 
 // Состояние формы
@@ -179,6 +181,19 @@ const startCooldown = () => {
     }
   }, 1000)
 }
+const forgotMutation = usePost(`${api8000}/auth/forgot-password`, {
+  onSuccess: (data) => {
+    console.log('✅ Восстановление:', data)
+    // Успешная отправка
+    isSuccess.value = true
+    startCooldown()
+    notifications.success('Ссылка для восстановления отправлена на вашу почту', 'Проверьте email')
+  },
+  onError: (error) => {
+    console.error('❌ Ошибка восстановления пароля:', error)
+    notifications.error('Произошла ошибка при отправке ссылки', 'Попробуйте еще раз')
+  },
+})
 
 // Обработчик отправки формы
 const handleSubmit = async () => {
@@ -189,17 +204,13 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    // Имитация API запроса
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // Вызываем мутацию с данными формы
+    await forgotMutation.mutateAsync({ email: form.email })
 
-    // Успешная отправка
-    isSuccess.value = true
-    startCooldown()
-
-    notifications.success('Ссылка для восстановления отправлена на вашу почту', 'Проверьте email')
+    // onSuccess автоматически вызовется, так что тут ничего не нужно
   } catch (error) {
-    console.error('Ошибка восстановления:', error)
-    notifications.error('Произошла ошибка при отправке ссылки', 'Попробуйте еще раз')
+    // onError уже обработает ошибку, но можно добавить дополнительную логику
+    console.error('Ошибка в handleSubmit:', error)
   } finally {
     isSubmitting.value = false
   }
@@ -233,7 +244,7 @@ onUnmounted(() => {
 
 <style scoped>
 .forgot-password-container {
-  min-height: 80vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;

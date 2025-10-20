@@ -6,8 +6,10 @@ import App from './App.vue'
 import router from './router'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
-import axios from 'axios'
+import PrimeVue from 'primevue/config'
+
 import { createNotivue } from 'notivue'
+import DialogService from 'primevue/dialogservice'
 import 'notivue/notification.css' // Only needed if using built-in notifications
 import 'notivue/animations.css' // Only needed if using built-in animations
 import Toast from 'vue-toastification'
@@ -29,7 +31,7 @@ app.use(Toast, {
   maxToasts: 20,
   newestOnTop: true,
   position: 'top-center',
-  timeout: 5000,
+  timeout: 3000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
   pauseOnHover: true,
@@ -50,8 +52,8 @@ const queryClient = new QueryClient({
   },
 })
 app.use(notivue)
-
-  
+app.use(PrimeVue)
+app.use(DialogService)
 AOS.init({
   duration: 800,
   once: false,
