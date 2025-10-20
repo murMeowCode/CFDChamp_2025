@@ -245,20 +245,16 @@ const handleSubmit = async () => {
 
   try {
     // Имитация API запроса
-    await new Promise((resolve) => setTimeout(resolve, 1500))
 
     const formData = formatFormData()
-
+    console.log(formData, 'FormDATA')
     // Эмитим событие с данными
     emit('dataAdded', formData)
 
     // Сброс формы
     resetForm()
-
-    showMessage('Данные успешно добавлены!', 'success')
   } catch (error) {
     console.error('Ошибка при добавлении данных:', error)
-    showMessage('Произошла ошибка при добавлении данных', 'error')
   } finally {
     loading.value = false
   }
@@ -272,7 +268,6 @@ const resetForm = () => {
   selectedTypes.phone = false
   selectedTypes.email = false
 }
-
 
 // Watchers
 watch(

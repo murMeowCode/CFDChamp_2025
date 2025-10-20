@@ -384,8 +384,8 @@ const handleSocialLogin = (provider) => {
   font-size: 0.875rem;
   transition: all 0.2s ease;
   outline: none;
-  width: 90%;
-  height: 35px;
+  width: 100%;
+  height: 50px;
 }
 
 .floating-input:focus {
