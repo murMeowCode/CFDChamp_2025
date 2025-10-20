@@ -79,7 +79,9 @@ class RoleChangeService:
             return {"success": False, "error": "Request is not pending"}
 
         # Получаем пользователя
-        user = await self.db.get(AuthUser, role_request.username)
+        stmt = select(AuthUser).where(AuthUser.username == role_request.username)
+        result = await self.db.execute(stmt)
+        user = result.scalar_one_or_none()
         if not user:
             return {"success": False, "error": "User not found"}
 
