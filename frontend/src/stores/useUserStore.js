@@ -16,17 +16,28 @@ export const useUserStore = defineStore('user', () => {
     isauth.value = false
   }
   function setUser(newUser) {
-    user.value = newUser
+    if (!user.value) {
+      // Если пользователя нет, просто устанавливаем новые данные
+      user.value = newUser
+    } else {
+      // Если пользователь есть, объединяем данные
+      user.value = {
+        ...user.value,
+        ...newUser,
+      }
+    }
     isauth.value = true
-    localStorage.setItem('user', JSON.stringify(newUser))
-    console.log(user.value, 'fff')
+    localStorage.setItem('user', JSON.stringify(user.value))
+    console.log(user.value, 'USERVALUE')
     console.log(isauth.value, 'erty')
   }
-  function removeUser() {
+function removeUser() {
     user.value = null
-    isauth.value = false // ✅
-    console.log('sss')
-  }
+    isauth.value = false
+    localStorage.removeItem('user')
+    
+    console.log('Пользователь удален, хранилище очищено')
+}
   function updateUser(updatedFields) {
     if (user.value && typeof updatedFields === 'object') {
       user.value = { ...user.value, ...updatedFields }

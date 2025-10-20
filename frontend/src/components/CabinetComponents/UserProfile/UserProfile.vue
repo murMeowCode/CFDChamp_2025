@@ -19,7 +19,7 @@
           <div class="progress-fill" :style="{ width: '65%' }"></div>
         </div>
       </div>
-      
+
       <!-- Кнопка выхода -->
       <button class="logout-btn cyber-dynamic" @click="handleLogout">
         <span class="btn-icon">🚪</span>
@@ -90,7 +90,11 @@
                   :placeholder="`Введите ${contact.type}`"
                   class="contact-input futurism-elegant"
                 />
-                <button type="button" class="remove-contact-btn cyber-dynamic" @click="removeContact(index)">
+                <button
+                  type="button"
+                  class="remove-contact-btn cyber-dynamic"
+                  @click="removeContact(index)"
+                >
                   🗑️
                 </button>
               </div>
@@ -115,13 +119,22 @@
         <!-- Дата и пол -->
         <div class="form-row">
           <div class="form-group floating-label half-width">
-            <input :disabled="!isEditing" type="date" v-model="BurthDay" class="floating-input futurism-elegant" />
+            <input
+              :disabled="!isEditing"
+              type="date"
+              v-model="BurthDay"
+              class="floating-input futurism-elegant"
+            />
             <label class="cyber-dynamic">Дата рождения</label>
             <div class="input-decoration"></div>
           </div>
 
           <div class="form-group floating-label half-width">
-            <select :disabled="!isEditing" v-model="selectedOption" class="floating-input futurism-elegant">
+            <select
+              :disabled="!isEditing"
+              v-model="selectedOption"
+              class="floating-input futurism-elegant"
+            >
               <option value="option1">Мужской</option>
               <option value="option2">Женский</option>
             </select>
@@ -242,7 +255,11 @@
         </div>
 
         <div class="modal-buttons">
-          <button @click="addContact" :disabled="!newContactValue.trim()" class="btn-primary cyber-dynamic">
+          <button
+            @click="addContact"
+            :disabled="!newContactValue.trim()"
+            class="btn-primary cyber-dynamic"
+          >
             Добавить
           </button>
           <button @click="closeModal" class="btn-secondary cyber-dynamic">Отмена</button>
@@ -267,16 +284,16 @@ const useUsStore = useUserStore()
 const router = useRouter()
 const { getUser } = storeToRefs(useUserStore())
 
-const FIO = `${getUser.value.last_name} ${getUser.value.first_name} ${getUser.value.middle_Name}`
-const DateBirthday = getUser.value.birth_Date
+const FIO = `${getUser.value.first_name } ${getUser.value.last_name} ${getUser.value.middle_name}`
+const DateBirthday = getUser.value.birth_date
 const NickName = getUser.value.username
 const Level = ref(1)
-
+const Name = getUser.value.last_name
 const Profession = getUser.value.role
 const Quote = ref('Мужчина')
 const Email = getUser.value.email
 const Phone = getUser.value.phone
-const BurthDay = getUser.value.birth_Date
+const BurthDay = getUser.value.birth_date
 const selectedOption = ref('Мужчина')
 const Address = getUser.value.address
 const AboutMe = ref('user.AboutMe')
@@ -328,12 +345,11 @@ function closeModal() {
 }
 
 function handleLogout() {
-    // Здесь можно добавить логику выхода (очистка стора, токенов и т.д.)
-    console.log('Выход из системы')
-    useAuStore.removeToken()
-    useUsStore.removeUser()
-    router.push('/login') // Перенаправление на страницу входа
-  
+  // Здесь можно добавить логику выхода (очистка стора, токенов и т.д.)
+  console.log('Выход из системы')
+  useAuStore.removeToken()
+  useUsStore.removeUser()
+  router.push('/login') // Перенаправление на страницу входа
 }
 </script>
 

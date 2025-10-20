@@ -1,8 +1,7 @@
 <template>
   <div class="home" data-aos="zoom-out">
     <CardKarusel />
-    
-    
+
     <div v-if="userData">
       <h2>Привет, {{ userData.name }}!</h2>
     </div>
@@ -20,16 +19,20 @@ import { useUserStore } from '@/stores/useUserStore'
 const { getTokenAccsess } = storeToRefs(useAuthStore())
 const { useGet } = useApiGet()
 const useUser = useUserStore()
-const { 
+const {
   data: userDataRaw,
   isPending,
-  isSuccess 
-} = useGet(`${api8001}/profiles/me`, {}, {
-  headers: {
-    'Authorization': `Bearer ${getTokenAccsess.value}`,
+  isSuccess,
+} = useGet(
+  `${api8001}/profiles/me`,
+  {},
+  {
+    headers: {
+      Authorization: `Bearer ${getTokenAccsess.value}`,
+    },
+    withCredentials: true,
   },
-  withCredentials: true
-})
+)
 // Отслеживаем успешную загрузку
 watch(isSuccess, (success) => {
   if (success && userData.value) {
@@ -39,5 +42,4 @@ watch(isSuccess, (success) => {
 })
 // Используем computed для удобства
 const userData = computed(() => userDataRaw.value)
-
 </script>

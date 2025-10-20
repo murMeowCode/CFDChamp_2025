@@ -266,11 +266,8 @@ const handleSubmit = async () => {
     // await new Promise((resolve) => setTimeout(resolve, 1500))
     // await useAuth.legacyLogin({ username: form.username, password: form.password })
     await useAuth.login({ username: form.username, password: form.password })
-   
-    useUser.setUser({
-      username: form.username,
-      password: form.password,
-    })
+
+    
     toast.success('Вошли успешно')
     // Здесь будет реальный API вызов
     console.log('Вход выполнен:', {
@@ -285,7 +282,6 @@ const handleSubmit = async () => {
       errors.username = 'Неверный логин или пароль'
       errors.password = 'Неверный логин или пароль'
     } else {
-     
     }
   } finally {
     isSubmitting.value = false

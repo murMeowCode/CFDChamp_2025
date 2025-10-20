@@ -51,7 +51,6 @@ const queryClient = new QueryClient({
 })
 app.use(notivue)
 
-  
 AOS.init({
   duration: 800,
   once: false,
