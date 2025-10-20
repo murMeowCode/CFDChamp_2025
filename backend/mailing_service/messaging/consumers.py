@@ -2,9 +2,12 @@
 import json
 import logging
 import traceback
+import uuid
 import aio_pika
+from shared.database.database import AsyncSessionLocal
 from shared.messaging.consumers import BaseConsumer
 from mailing_service.celery_mail.tasks import process_notification_task
+from mailing_service.models.message import Message
 
 
 
@@ -76,6 +79,18 @@ class MailingConsumer(BaseConsumer):
         celery_data["subject"] = self._get_subject_by_type(notification_type, data)
         celery_data["content"] = self._get_content_by_type(notification_type, data)
         celery_data["html_content"] = self._create_html_content(notification_type, data)
+
+        async with AsyncSessionLocal() as db:
+            message = Message(
+                id = uuid.uuid4(),
+                user_id=user_id,
+                subject=celery_data["subject"],
+                content=celery_data["html_content"],
+                is_read=False
+            )
+            db.add(message)
+            await db.commit()
+            await db.refresh(message)
 
         # Отправляем задачу в Celery
         task = process_notification_task.delay(celery_data)

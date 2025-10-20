@@ -53,6 +53,7 @@ class LoginResponse(BaseModel):
     success: bool
     tokens: Optional[TokenPair] = None
     error: Optional[str] = None
+    user: UserResponse
 
 class ForgotPasswordRequest(BaseModel):
     """Запрос на восстановление"""

@@ -51,3 +51,29 @@ class EmailService:
         return await self.send_email(email_data)
 
 email_service = EmailService()
+
+class EmailServiceSync:
+    """Синхронный класс службы для Celery"""
+    def __init__(self):
+        resend.api_key = settings.RESEND_API_KEY
+        self.default_from = settings.RESEND_FROM_EMAIL
+
+    def send_email(self, email_data: EmailData) -> bool:
+        """Синхронная отправка email через Resend"""
+        try:
+            params = {
+                "from": email_data.from_email or self.default_from,
+                "to": email_data.to,
+                "subject": email_data.subject,
+                "html": email_data.html,
+            }
+
+            response = resend.Emails.send(params)
+            print(f"Email sent successfully: {response}")
+            return True
+
+        except Exception as e:
+            print(f"Failed to send email: {e}")
+            return False
+
+email_service_sync = EmailServiceSync()

@@ -1,4 +1,4 @@
-"""служба токенов"""#pylint: disable=E0611, E0401
+"""служба токенов"""#pylint: disable=E0611, E0401, C0121, W0718
 from datetime import datetime, timedelta
 import uuid
 import logging
@@ -143,7 +143,7 @@ class TokenService:
             # Проверяем наличие в БД
             stmt = select(RefreshToken).where(
                 RefreshToken.token == refresh_token,
-                RefreshToken.is_active is True
+                RefreshToken.is_active == True
             )
             result = await self.db.execute(stmt)
             db_token = result.scalar_one_or_none()

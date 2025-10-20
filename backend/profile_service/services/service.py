@@ -47,7 +47,8 @@ class ProfileService:
         profile = result.scalar_one_or_none()
 
         if profile and profile.avatar_filename:
-            profile.avatar_url = await self.file_service.get_avatar_url(profile.avatar_filename)
+            profile.avatar_filename = await self.file_service.get_avatar_url(
+                profile.avatar_filename)
 
         return profile
 
@@ -59,7 +60,8 @@ class ProfileService:
 
         for profile in profiles:
             if profile.avatar_filename:
-                profile.avatar_url = await self.file_service.get_avatar_url(profile.avatar_filename)
+                profile.avatar_filename = await self.file_service.get_avatar_url(
+                    profile.avatar_filename)
 
         return profiles
 
@@ -76,7 +78,8 @@ class ProfileService:
 
             # Обновляем URL аватарки
             if profile.avatar_filename:
-                profile.avatar_url = await self.file_service.get_avatar_url(profile.avatar_filename)
+                profile.avatar_filename = await self.file_service.get_avatar_url(
+                    profile.avatar_filename)
 
         return profile
 
@@ -99,7 +102,7 @@ class ProfileService:
             birth_date=profile_data.get("birth_date"),
             phone=profile_data.get("phone"),
             address=profile_data.get("address"),
-            avatar_url=profile_data.get("avatar_url")
+            avatar_filename=profile_data.get("avatar_url")
         )
 
         self.db.add(profile)
