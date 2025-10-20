@@ -4,6 +4,7 @@
       <div class="card-header">
         <h1 class="cyber-heading">Обновление пароля</h1>
         <p class="futurism-elegant">Создайте новый надежный пароль</p>
+        
       </div>
 
       <form @submit.prevent="handleSubmit" class="password-form">
@@ -19,12 +20,14 @@
               class="password-input"
               placeholder="Введите новый пароль"
               required
+              :disabled="!token || loading"
               @input="validatePassword"
             />
             <button
               type="button"
               class="password-toggle"
-              @click="showNewPassword = !showNewPassword"
+              :disabled="!token || loading"
+              @click="togglePasswordVisibility('new')"
             >
               <svg
                 width="20"
@@ -108,12 +111,14 @@
               class="password-input"
               placeholder="Повторите новый пароль"
               required
+              :disabled="!token || loading"
               @input="validatePasswordMatch"
             />
             <button
               type="button"
               class="password-toggle"
-              @click="showConfirmPassword = !showConfirmPassword"
+              :disabled="!token || loading"
+              @click="togglePasswordVisibility('confirm')"
             >
               <svg
                 width="20"
@@ -182,108 +187,186 @@
           </span>
           <span v-else>Поменять пароль</span>
         </button>
+
+        <div v-if="message" class="message" :class="messageType">
+          {{ message }}
+        </div>
       </form>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PasswordReset',
-  data() {
-    return {
-      form: {
-        newPassword: '',
-        confirmPassword: ''
-      },
-      showNewPassword: false,
-      showConfirmPassword: false,
-      loading: false,
-      passwordStrength: 0,
-      passwordRequirements: [
-        { id: 'length', text: 'Минимум 8 символов', valid: false },
-        { id: 'uppercase', text: 'Заглавная буква', valid: false },
-        { id: 'lowercase', text: 'Строчная буква', valid: false },
-        { id: 'number', text: 'Цифра', valid: false },
-        { id: 'special', text: 'Специальный символ', valid: false }
-      ]
-    }
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useApiMutations } from '@/utils/api/useApiMutation'
+import { useNotificationsStore } from '@/stores/useToastStore'
+import { api8000 } from '@/utils/apiUrl/urlApi'
+// Emits
+const emit = defineEmits(['passwordUpdated'])
+const {usePost} = useApiMutations()
+const notifications = useNotificationsStore()
+// Reactive state
+const token = ref(null)
+const form = reactive({
+  newPassword: '',
+  confirmPassword: ''
+})
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
+const loading = ref(false)
+const passwordStrength = ref(0)
+const message = ref('')
+const messageType = ref('')
+
+const passwordRequirements = ref([
+  { id: 'length', text: 'Минимум 8 символов', valid: false },
+  { id: 'uppercase', text: 'Заглавная буква', valid: false },
+  { id: 'lowercase', text: 'Строчная буква', valid: false },
+  { id: 'number', text: 'Цифра', valid: false },
+  { id: 'special', text: 'Специальный символ', valid: false }
+])
+
+// Computed properties
+const passwordsMatch = computed(() => {
+  return form.newPassword && form.confirmPassword && 
+         form.newPassword === form.confirmPassword
+})
+
+const isFormValid = computed(() => {
+  return token.value && passwordsMatch.value && passwordStrength.value >= 4 && !loading.value
+})
+
+const strengthBarStyle = computed(() => {
+  const width = (passwordStrength.value / 5) * 100
+  let background
+  
+  if (passwordStrength.value <= 2) {
+    background = 'var(--color-error)'
+  } else if (passwordStrength.value <= 3) {
+    background = 'var(--color-warning)'
+  } else {
+    background = 'var(--color-success)'
+  }
+  
+  return {
+    width: `${width}%`,
+    background: background
+  }
+})
+const resetMutation = usePost(`${api8000}/auth/reset-password`, {
+  onSuccess: (data) => {
+    console.log('✅ Восстановление:', data)
+    // Успешная отправка
+    isSuccess.value = true
+    startCooldown()
+    notifications.success('Вы успешно обновили пароль')
   },
-  computed: {
-    passwordsMatch() {
-      return this.form.newPassword && this.form.confirmPassword && 
-             this.form.newPassword === this.form.confirmPassword
-    },
-    isFormValid() {
-      return this.passwordsMatch && this.passwordStrength >= 4 && !this.loading
-    },
-    strengthBarStyle() {
-      const width = (this.passwordStrength / 5) * 100
-      let background
-      
-      if (this.passwordStrength <= 2) {
-        background = 'var(--color-error)'
-      } else if (this.passwordStrength <= 3) {
-        background = 'var(--color-warning)'
-      } else {
-        background = 'var(--color-success)'
-      }
-      
-      return {
-        width: `${width}%`,
-        background: background
-      }
-    }
+  onError: (error) => {
+    console.error('❌ Ошибка обновления пароля:', error)
+    notifications.error('Произошла ошибка при обновлении пароля', 'Попробуйте еще раз')
   },
-  methods: {
-    validatePassword() {
-      const password = this.form.newPassword
-      
-      // Проверка требований к паролю
-      this.passwordRequirements[0].valid = password.length >= 8
-      this.passwordRequirements[1].valid = /[A-Z]/.test(password)
-      this.passwordRequirements[2].valid = /[a-z]/.test(password)
-      this.passwordRequirements[3].valid = /\d/.test(password)
-      this.passwordRequirements[4].valid = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
-      
-      // Расчет силы пароля
-      this.passwordStrength = this.passwordRequirements.filter(req => req.valid).length
-    },
-    
-    validatePasswordMatch() {
-      // Реактивная валидация уже обрабатывается в computed свойствах
-    },
-    
-    async handleSubmit() {
-      if (!this.isFormValid) return
-      
-      this.loading = true
-      
-      try {
-        // Имитация API запроса
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
-        // Успешное обновление пароля
-        this.$emit('passwordUpdated', this.form.newPassword)
-        
-        // Сброс формы
-        this.form.newPassword = ''
-        this.form.confirmPassword = ''
-        this.passwordStrength = 0
-        this.passwordRequirements.forEach(req => req.valid = false)
-        
-        // Показать сообщение об успехе
-        alert('Пароль успешно обновлен!')
-        
-      } catch (error) {
-        console.error('Ошибка при обновлении пароля:', error)
-        alert('Произошла ошибка при обновлении пароля. Попробуйте еще раз.')
-      } finally {
-        this.loading = false
-      }
-    }
+})
+const maskedToken = computed(() => {
+  if (!token.value) return ''
+  // Показываем только первые и последние 4 символа токена для безопасности
+  return `${token.value.substring(0, 8)}...${token.value.substring(token.value.length - 4)}`
+})
+
+// Methods
+const extractTokenFromQuery = () => {
+  const urlParams = new URLSearchParams(window.location.search)
+  token.value = urlParams.get('token')
+  
+  if (!token.value) {
+    showMessage('Токен не найден в URL', 'error')
   }
 }
+
+const validateToken = async () => {
+  if (!token.value) return
+  
+  loading.value = true
+  try {
+    // Здесь должна быть проверка валидности токена на сервере
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    console.log('Токен валиден:', token.value)
+    
+  } catch (error) {
+    console.error('Ошибка проверки токена:', error)
+    showMessage('Токен недействителен или устарел', 'error')
+    token.value = null
+  } finally {
+    loading.value = false
+  }
+}
+
+const validatePassword = () => {
+  const password = form.newPassword
+  
+  // Проверка требований к паролю
+  passwordRequirements.value[0].valid = password.length >= 8
+  passwordRequirements.value[1].valid = /[A-Z]/.test(password)
+  passwordRequirements.value[2].valid = /[a-z]/.test(password)
+  passwordRequirements.value[3].valid = /\d/.test(password)
+  passwordRequirements.value[4].valid = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+  
+  // Расчет силы пароля
+  passwordStrength.value = passwordRequirements.value.filter(req => req.valid).length
+}
+
+const validatePasswordMatch = () => {
+  // Реактивная валидация уже обрабатывается в computed свойствах
+}
+
+const togglePasswordVisibility = (type) => {
+  if (type === 'new') {
+    showNewPassword.value = !showNewPassword.value
+  } else {
+    showConfirmPassword.value = !showConfirmPassword.value
+  }
+}
+
+const handleSubmit = async () => {
+  if (!isFormValid.value) return
+  
+  loading.value = true
+  message.value = ''
+  
+  try {
+     await resetMutation.mutateAsync({token:token.value,password:form.newPassword})
+    
+    // Сброс формы
+    form.newPassword = ''
+    form.confirmPassword = ''
+    passwordStrength.value = 0
+    passwordRequirements.value.forEach(req => req.valid = false)
+    
+    
+    
+  } catch (error) {
+    console.error('Ошибка при обновлении пароля:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+
+const showMessage = (text, type) => {
+  message.value = text
+  messageType.value = type
+  
+  setTimeout(() => {
+    message.value = ''
+    messageType.value = ''
+  }, 5000)
+}
+
+// Lifecycle
+onMounted(() => {
+  extractTokenFromQuery()
+  validateToken()
+})
 </script>
 
 <style scoped>
@@ -335,6 +418,28 @@ export default {
 .card-header p {
   color: var(--color-text-muted);
   font-size: 1.1rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.token-info {
+  background: var(--color-primary-soft);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-primary-muted);
+  margin-top: var(--spacing-md);
+}
+
+.token-error {
+  background: var(--color-error-soft);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-error);
+  margin-top: var(--spacing-md);
+}
+
+.error-message {
+  color: var(--color-error);
+  font-weight: 500;
 }
 
 .password-form {
@@ -381,6 +486,11 @@ export default {
   background: var(--color-bg-elevated);
 }
 
+.password-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .password-input::placeholder {
   color: var(--color-text-light);
   opacity: 0.7;
@@ -401,9 +511,14 @@ export default {
   border-radius: var(--border-radius-sm);
 }
 
-.password-toggle:hover {
+.password-toggle:hover:not(:disabled) {
   color: var(--color-primary);
   background: var(--color-primary-soft);
+}
+
+.password-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .password-strength {
@@ -512,7 +627,30 @@ export default {
   animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
+.message {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+  font-weight: 500;
+  margin-top: var(--spacing-md);
+}
+
+.message.success {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.message.error {
+  background: var(--color-error-soft);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
 
 /* Адаптивность */
 @media (max-width: 480px) {

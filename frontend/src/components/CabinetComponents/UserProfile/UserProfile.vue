@@ -128,6 +128,8 @@
             <label class="cyber-dynamic">Дата рождения</label>
             <div class="input-decoration"></div>
           </div>
+
+         
         </div>
 
         <!-- Адрес -->
@@ -178,7 +180,7 @@
         </div>
         <div class="stat-item">
           <div class="stat-value cyber-mono">@{{ NickName }}</div>
-          <div class="stat-label cyber-dynamic">Никнейм</div>
+          <div class="stat-label cyber-dynamic">Логин</div>
         </div>
         <div class="stat-item">
           <div class="stat-value level-stat cyber-mono">{{ Level }}</div>
@@ -216,14 +218,14 @@
 
           <div class="form-group floating-label">
             <input
-              v-if="newContactType === 'email'"
+              v-if="newContactType === 'Почта'"
               type="email"
               v-model="newContactValue"
               placeholder=" "
               class="floating-input futurism-elegant"
             />
             <input
-              v-else-if="newContactType === 'tel'"
+              v-else-if="newContactType === 'Телефон'"
               type="tel"
               v-model="newContactValue"
               placeholder=" "
@@ -271,7 +273,7 @@ const useUsStore = useUserStore()
 const router = useRouter()
 const { getUser } = storeToRefs(useUserStore())
 
-const FIO = `${getUser.value.first_name} ${getUser.value.last_name} ${getUser.value.middle_name}`
+const FIO = `${getUser.value.first_name } ${getUser.value.last_name} ${getUser.value.middle_name}`
 const DateBirthday = getUser.value.birth_date
 const NickName = getUser.value.username
 const Level = ref(1)
@@ -291,8 +293,8 @@ const isEditing = ref(false)
 
 // Массив контактов для динамического управления
 const contacts = ref([
-  { type: 'email', value: Email },
-  { type: 'tel', value: Phone },
+  { type: 'Почта', value: Email },
+  { type: 'Телефон', value: Phone },
 ])
 
 const showContactModal = ref(false)
@@ -838,6 +840,7 @@ function handleLogout() {
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Важно для корректной работы flex */
 }
 
 .summary-header {
@@ -845,6 +848,7 @@ function handleLogout() {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-xl);
+  flex-shrink: 0; /* Запрещаем сжатие */
 }
 
 .summary-header h2 {
@@ -884,6 +888,7 @@ function handleLogout() {
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-2xl);
+  flex-shrink: 0; /* Запрещаем сжатие */
 }
 
 .stat-item {
@@ -922,6 +927,8 @@ function handleLogout() {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Ключевое исправление - позволяет секции сжиматься */
+  overflow: hidden; /* Скрываем переполнение */
 }
 
 .achievements-section h3 {
@@ -929,13 +936,15 @@ function handleLogout() {
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-md);
   font-size: 1.1rem;
+  flex-shrink: 0; /* Запрещаем сжатие заголовка */
 }
 
 .achievements-grid {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  max-height: 400px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding-right: var(--spacing-xs);
 }
@@ -954,6 +963,7 @@ function handleLogout() {
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-border);
   transition: all var(--transition-normal);
+  flex-shrink: 0; /* Запрещаем сжатие элементов */
 }
 
 .achievement-item:hover {
@@ -1069,6 +1079,7 @@ function handleLogout() {
     box-sizing: border-box;
     border-left: none;
     border-top: 1px solid var(--color-border);
+    min-height: auto;
   }
 
   .profile-stats {
@@ -1093,6 +1104,7 @@ function handleLogout() {
 
   .achievements-section {
     min-width: 0; /* Предотвращает выход за границы */
+    min-height: 200px; /* Фиксированная высота на мобильных */
   }
 
   .achievements-grid {

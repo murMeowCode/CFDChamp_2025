@@ -81,7 +81,7 @@
       <!-- Успешное сообщение -->
       <div v-if="isSuccess" class="success-message">
         <div class="success-icon">
-          <i class="pi pi-check-circle"></i>
+          <i class="pi pi-check"></i>
         </div>
         <div class="success-content">
           <h3 class="success-title">Письмо отправлено!</h3>
@@ -205,7 +205,7 @@ const handleSubmit = async () => {
 
   try {
     // Вызываем мутацию с данными формы
-    await forgotMutation.mutateAsync(form.email)
+    await forgotMutation.mutateAsync({email: form.email})
 
     // onSuccess автоматически вызовется, так что тут ничего не нужно
   } catch (error) {
