@@ -37,7 +37,7 @@
               }"
             >
               <i class="pi pi-user"></i>
-              Логин или Email
+              Логин 
             </label>
             <div class="input-decoration"></div>
           </div>
@@ -267,7 +267,6 @@ const handleSubmit = async () => {
     // await useAuth.legacyLogin({ username: form.username, password: form.password })
     await useAuth.login({ username: form.username, password: form.password })
 
-    
     toast.success('Вошли успешно')
     // Здесь будет реальный API вызов
     console.log('Вход выполнен:', {

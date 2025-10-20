@@ -128,8 +128,6 @@
             <label class="cyber-dynamic">Дата рождения</label>
             <div class="input-decoration"></div>
           </div>
-
-         
         </div>
 
         <!-- Адрес -->
@@ -273,7 +271,7 @@ const useUsStore = useUserStore()
 const router = useRouter()
 const { getUser } = storeToRefs(useUserStore())
 
-const FIO = `${getUser.value.first_name } ${getUser.value.last_name} ${getUser.value.middle_name}`
+const FIO = `${getUser.value.first_name} ${getUser.value.last_name} ${getUser.value.middle_name}`
 const DateBirthday = getUser.value.birth_date
 const NickName = getUser.value.username
 const Level = ref(1)
@@ -672,11 +670,67 @@ function handleLogout() {
   width: 100%;
 }
 
+/* Стили для textarea */
 .textarea {
-  min-height: 100px;
-  resize: vertical;
+  min-height: 40px;
+  max-height: 200px;
+  resize: none; /* Запрещаем изменение размера */
+  overflow-y: auto; /* Добавляем скролл при необходимости */
+  line-height: 1.4;
+  padding-right: var(--spacing-md);
+  transition: all var(--transition-normal);
 }
 
+/* Автоматическое увеличение высоты */
+.textarea:focus {
+  max-height: 150px; /* Увеличиваем максимальную высоту при фокусе */
+}
+
+/* Скрываем скроллбар для красоты */
+.textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+
+.textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover);
+}
+
+/* Для Firefox */
+.textarea {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* Делаем textarea визуально неотличимой от input */
+.textarea.floating-input {
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border: none;
+  border-bottom: 2px solid var(--color-border);
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.textarea.floating-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+}
+
+.textarea.floating-input:disabled {
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-border);
+  background: transparent;
+}
 /* Contacts */
 .section-label {
   font-weight: var(--font-weight-semibold);

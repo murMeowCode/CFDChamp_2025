@@ -31,13 +31,13 @@ export const useUserStore = defineStore('user', () => {
     console.log(user.value, 'USERVALUE')
     console.log(isauth.value, 'erty')
   }
-function removeUser() {
+  function removeUser() {
     user.value = null
     isauth.value = false
     localStorage.removeItem('user')
-    
+
     console.log('Пользователь удален, хранилище очищено')
-}
+  }
   function updateUser(updatedFields) {
     if (user.value && typeof updatedFields === 'object') {
       user.value = { ...user.value, ...updatedFields }

@@ -29,7 +29,7 @@ app.use(Toast, {
   maxToasts: 20,
   newestOnTop: true,
   position: 'top-center',
-  timeout: 5000,
+  timeout: 2000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
   pauseOnHover: true,
