@@ -70,9 +70,16 @@
               v-if="getUser.role === 2"
               class="promote-btn cyber-dynamic"
               @click="showPromotionModal"
+              :disabled="isPromoteLoading"
             >
-              <span class="btn-icon">🚀</span>
-              <span>Повысить роль </span>
+              <template v-if="isPromoteLoading">
+                <CyberLoader size="small" variant="primary" />
+                <span>Отправка...</span>
+              </template>
+              <template v-else>
+                <span class="btn-icon">🚀</span>
+                <span>Повысить роль</span>
+              </template>
             </button>
           </div>
 
@@ -215,6 +222,17 @@
 
       <DynamicDialog />
     </div>
+    
+    <!-- Глобальный лоадер для повышения роли -->
+    <div v-if="isPromoteLoading" class="global-promotion-loader">
+      <div class="loader-overlay">
+        <CyberLoader size="xlarge" variant="primary" :show-text="true" text="Повышение роли..." />
+        <div class="loader-subtext cyber-mono">
+          Обработка вашего запроса...
+        </div>
+      </div>
+    </div>
+
     <ReuestRol v-if="getUser.role === 2 && !isPending" />
   </div>
 </template>
@@ -225,6 +243,7 @@ import ph2 from '@/components/CabinetComponents/img/TunTunTun.jpg'
 import { computed, ref, watch } from 'vue'
 import UserAchive from '../Achive/UserAchive.vue'
 import ReuestRol from '../RoleRequest/ReuestRol.vue'
+import CyberLoader from '@/utils/Loader/CyberLoader.vue'
 import { useUserStore } from '@/stores/useUserStore'
 import { useAchivesStore } from '@/stores/useAchivesStore'
 import { useDialogServices } from '@/utils/Dialog/useDialogServices'
@@ -236,12 +255,13 @@ import DynamicDialog from 'primevue/dynamicdialog'
 import { useNotificationsStore } from '@/stores/useToastStore'
 import { useApiMutations } from '@/utils/api/useApiMutation'
 import { api8000 } from '@/utils/apiUrl/urlApi'
+
 const useAuStore = useAuthStore()
 const useUsStore = useUserStore()
 const router = useRouter()
 import { useApiGet } from '@/utils/api/useApiGet'
 const { getTokenAccsess } = storeToRefs(useAuthStore())
-const reque = useRequestsStore()
+const requestsStore = useRequestsStore()
 const { getUser } = storeToRefs(useUserStore())
 const { showUpdateEmailPhone, showRoleRequestDialog } = useDialogServices()
 const { usePost } = useApiMutations()
@@ -261,7 +281,9 @@ const AboutMe = ref('user.AboutMe')
 const useToas = useNotificationsStore()
 const Achives = useAchivesStore()
 const isEditing = ref(false)
+const isPromoteLoading = ref(false) // Новое состояние для лоадера
 const { useGet } = useApiGet()
+
 // Массив контактов для динамического управления
 const contacts = ref([
   { type: 'Почта', value: Email },
@@ -274,14 +296,11 @@ async function showModal() {
   const result = showUpdateEmailPhone()
 
   if (result) {
-    // Обрабатываем данные из диалога
     console.log('Полученные данные:', result)
-    // { phone: '+79999999999', email: 'example@mail.com' }
-
-    // Здесь можно отправить данные на сервер
     await submitContacts(result)
   }
 }
+
 const roleMutation = usePost(`${api8000}/role-change/request`, {
   headers: {
     Authorization: `Bearer ${getTokenAccsess.value}`,
@@ -293,33 +312,48 @@ const roleMutation = usePost(`${api8000}/role-change/request`, {
   onError: (error) => {
     console.error('❌ Ошибка :', error)
     if (error.detail === 'User already has a pending role change request') {
+      useToas.error('Вы уже подали заявку на повышение роли, пожалуйста ожидайте')
+    } else {
+      useToas.error('Произошла ошибка при отправке заявки')
     }
-    useToas.error('Вы уже подали заявку на повышение роли, пожалуйста ожидайте')
   },
 })
+
 // Метод для показа модального окна повышения роли
+async function showPromotionModal() {
+  try {
+    isPromoteLoading.value = true
+    
+    // Имитация загрузки для демонстрации лоадера
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    await roleMutation.mutateAsync({
+      requested_role: getUser.value.role + 1,
+      reason: 'Повышение полномочий',
+    })
+  } catch (error) {
+    console.error('Ошибка при отправке запроса:', error)
+  } finally {
+    isPromoteLoading.value = false
+  }
+}
 
 const submitContacts = async (data) => {
-  // Ваша логика отправки данных
   console.log('Отправка данных на сервер:', data)
 }
 
 async function toggleEdit() {
   console.log(getTokenAccsess.value, 'ACSESSSSD')
-
-  await roleMutation.mutateAsync({
-    requested_role: getUser.value.role + 1,
-    reason: 'Повышение полномочий',
-  })
+  // Ваша существующая логика
 }
 
 function handleLogout() {
-  // Здесь можно добавить логику выхода (очистка стора, токенов и т.д.)
   console.log('Выход из системы')
   useAuStore.removeToken()
   useUsStore.removeUser()
-  router.push('/login') // Перенаправление на страницу входа
+  router.push('/login')
 }
+
 const {
   data: userDataRaw,
   isPending,
@@ -333,16 +367,116 @@ const {
     },
   },
 )
+
 watch(isSuccess, (success) => {
-  if (success && userData.value) {
-    reque.setRequests(userData.value)
-    console.log('Данные загружены:', userData.value.requests)
+  if (success && userDataRaw.value) {
+    requestsStore.setRequests(userDataRaw.value)
+    console.log('Данные запросов сохранены в store:', userDataRaw.value)
   }
 })
-const userData = computed(() => userDataRaw.value)
 </script>
 
 <style scoped>
+/* Добавляем стили для глобального лоадера */
+.global-promotion-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-2xl);
+  background: var(--color-bg-elevated);
+  border-radius: var(--border-radius-2xl);
+  border: 1px solid var(--color-primary);
+  box-shadow: 
+    0 0 50px rgba(var(--color-primary-rgb), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.loader-subtext {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  max-width: 200px;
+}
+
+/* Обновляем стили для кнопки с лоадером */
+.promote-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-muted);
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  min-width: 140px;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.promote-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.promote-btn:not(:disabled):hover {
+  background: var(--color-primary-muted);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Анимация для кнопки при загрузке */
+.promote-btn:disabled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.ddd {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-end;
+}
 .ddd {
   display: flex;
   width: 100%;
