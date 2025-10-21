@@ -218,7 +218,10 @@ const circumference = computed(() => 2 * Math.PI * 27)
   align-items: center;
   gap: var(--spacing-md);
 }
-
+.test-item.FAIL{
+  border-color: var(--color-error);
+  background: var(--color-error-soft);
+}
 .progress-text {
   color: var(--color-text-muted);
   font-size: 0.9rem;

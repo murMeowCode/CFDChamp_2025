@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useApiGet } from '@/utils/api/useApiGet'
+
+const { useGet } = useApiGet()
 
 export const useDashboardStore = defineStore('dashboard', () => {
   // State
@@ -9,6 +12,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const tablesData = ref([])
   const recentActivities = ref([])
   const lastUpdated = ref(null)
+  const error = ref(null)
 
   // Getters
   const getStats = computed(() => statsData.value)
@@ -17,160 +21,214 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const getActivities = computed(() => recentActivities.value)
   const getLastUpdated = computed(() => lastUpdated.value)
   const isLoading = computed(() => loading.value)
+  const getError = computed(() => error.value)
+
+  // API Queries
+  const {
+    data: dashboardData,
+    isPending: isDashboardLoading,
+    isSuccess: isDashboardSuccess,
+    error: dashboardError,
+    execute: fetchDashboardData
+  } = useGet(
+    `http://192.168.1.128:8000/statistics/dashboard`
+  )
+
+  // Обработка данных с сервера
+  const processDashboardData = (apiData) => {
+    try {
+      // Предполагаемая структура ответа API
+      // Адаптируйте под реальную структуру вашего API
+      const { stats, charts, tables, activities } = apiData
+
+      // Обработка статистики
+      statsData.value = stats?.map(item => ({
+        value: item.value?.toString() || '0',
+        label: item.label || 'Неизвестно',
+        icon: getIconByType(item.type),
+        type: getTypeByValue(item.value),
+        trend: item.trend ? {
+          value: item.trend.value,
+          direction: item.trend.direction
+        } : undefined
+      })) || []
+
+      // Обработка графиков
+      chartsData.value = charts?.map(chart => ({
+        title: chart.title || 'График',
+        type: chart.type || 'line',
+        data: chart.data || getDefaultChartData(chart.type)
+      })) || []
+
+      // Обработка таблиц
+      tablesData.value = tables?.map(table => ({
+        title: table.title || 'Таблица',
+        type: table.type || 'users',
+        data: table.data || {}
+      })) || []
+
+      // Обработка активностей
+      recentActivities.value = activities?.map(activity => ({
+        id: activity.id || Date.now(),
+        user: activity.user || 'Система',
+        action: activity.action || 'действие',
+        time: formatTime(activity.timestamp),
+        type: activity.type || 'info',
+        details: activity.details
+      })) || []
+
+      lastUpdated.value = new Date().toLocaleString('ru-RU')
+
+    } catch (err) {
+      console.error('Ошибка обработки данных:', err)
+      error.value = 'Ошибка обработки данных с сервера'
+      loadFallbackData()
+    }
+  }
+
+  // Вспомогательные функции
+  const getIconByType = (type) => {
+    const icons = {
+      users: 'fas fa-users',
+      revenue: 'fas fa-dollar-sign',
+      success: 'fas fa-chart-line',
+      error: 'fas fa-exclamation-triangle',
+      orders: 'fas fa-shopping-cart',
+      traffic: 'fas fa-network-wired'
+    }
+    return icons[type] || 'fas fa-chart-bar'
+  }
+
+  const getTypeByValue = (value) => {
+    if (typeof value === 'number') {
+      if (value > 80) return 'success'
+      if (value > 50) return 'warning'
+      return 'danger'
+    }
+    return 'default'
+  }
+
+  const getDefaultChartData = (type) => {
+    if (type === 'bar') {
+      return {
+        labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
+        datasets: [
+          {
+            label: 'Данные',
+            data: [0, 0, 0, 0, 0, 0],
+            backgroundColor: '#4299e1'
+          }
+        ]
+      }
+    }
+    
+    return {
+      labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+      datasets: [
+        {
+          label: 'Данные',
+          data: [0, 0, 0, 0, 0, 0, 0],
+          borderColor: '#4299e1',
+          backgroundColor: 'rgba(66, 153, 225, 0.1)'
+        }
+      ]
+    }
+  }
+
+  const formatTime = (timestamp) => {
+    if (!timestamp) return 'недавно'
+    
+    const now = new Date()
+    const time = new Date(timestamp)
+    const diffMs = now - time
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    
+    if (diffMins < 1) return 'только что'
+    if (diffMins < 60) return `${diffMins} минут назад`
+    if (diffHours < 24) return `${diffHours} часов назад`
+    
+    return time.toLocaleDateString('ru-RU')
+  }
+
+  // Fallback данные при ошибке API
+  const loadFallbackData = () => {
+    console.log('Загрузка fallback данных...')
+    
+    statsData.value = [
+      {
+        value: '0',
+        label: 'Всего пользователей',
+        icon: 'fas fa-users',
+        type: 'default'
+      },
+      {
+        value: '₽0',
+        label: 'Общий доход',
+        icon: 'fas fa-dollar-sign',
+        type: 'default'
+      },
+      {
+        value: '0%',
+        label: 'Успешных операций',
+        icon: 'fas fa-chart-line',
+        type: 'default'
+      },
+      {
+        value: '0',
+        label: 'Ошибок сегодня',
+        icon: 'fas fa-exclamation-triangle',
+        type: 'default'
+      }
+    ]
+
+    chartsData.value = [
+      {
+        title: 'Трафик за неделю',
+        type: 'line',
+        data: getDefaultChartData('line')
+      },
+      {
+        title: 'Доход по месяцам',
+        type: 'bar',
+        data: getDefaultChartData('bar')
+      }
+    ]
+
+    tablesData.value = [
+      {
+        title: 'Последние пользователи',
+        type: 'users',
+        data: {
+          users: []
+        }
+      }
+    ]
+
+    recentActivities.value = [
+      {
+        id: 1,
+        user: 'Система',
+        action: 'данные временно недоступны',
+        time: 'только что',
+        type: 'warning',
+        details: 'Используются локальные данные'
+      }
+    ]
+
+    lastUpdated.value = new Date().toLocaleString('ru-RU')
+  }
 
   // Actions
   const fetchData = async () => {
     loading.value = true
+    error.value = null
+    
     try {
-      // Имитация API запроса
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Обновляем данные
-      statsData.value = [
-        {
-          value: '1,356',
-          label: 'Всего пользователей',
-          icon: 'fas fa-users',
-          type: 'success',
-          trend: {
-            value: '+15%',
-            direction: 'up'
-          }
-        },
-        {
-          value: '₽135,670',
-          label: 'Общий доход',
-          icon: 'fas fa-dollar-sign',
-          type: 'default',
-          trend: {
-            value: '+10%',
-            direction: 'up'
-          }
-        },
-        {
-          value: '92%',
-          label: 'Успешных операций',
-          icon: 'fas fa-chart-line',
-          type: 'success'
-        },
-        {
-          value: '18',
-          label: 'Ошибок сегодня',
-          icon: 'fas fa-exclamation-triangle',
-          type: 'danger',
-          trend: {
-            value: '-8%',
-            direction: 'down'
-          }
-        }
-      ]
-
-      chartsData.value = [
-        {
-          title: 'Трафик за неделю',
-          type: 'line',
-          data: {
-            labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
-            datasets: [
-              {
-                label: 'Трафик',
-                data: [70, 65, 85, 75, 60, 50, 45],
-                borderColor: '#4299e1',
-                backgroundColor: 'rgba(66, 153, 225, 0.1)'
-              }
-            ]
-          }
-        },
-        {
-          title: 'Доход по месяцам',
-          type: 'bar',
-          data: {
-            labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
-            datasets: [
-              {
-                label: 'Доход',
-                data: [13000, 20000, 16000, 26000, 23000, 32000],
-                backgroundColor: '#48bb78'
-              },
-              {
-                label: 'Расход',
-                data: [8500, 12500, 10500, 15500, 13500, 19000],
-                backgroundColor: '#f56565'
-              }
-            ]
-          }
-        }
-      ]
-
-      tablesData.value = [
-        {
-          title: 'Последние пользователи',
-          type: 'users',
-          data: {
-            users: [
-              {
-                id: 1,
-                name: 'Иван Петров',
-                email: 'ivan@example.com',
-                avatar: '',
-                status: 'active',
-                joinDate: '2024-01-15',
-                activity: 85
-              },
-              {
-                id: 2,
-                name: 'Мария Сидорова',
-                email: 'maria@example.com',
-                avatar: '',
-                status: 'active',
-                joinDate: '2024-01-10',
-                activity: 92
-              },
-              {
-                id: 3,
-                name: 'Алексей Козлов',
-                email: 'alexey@example.com',
-                avatar: '',
-                status: 'active',
-                joinDate: '2024-01-05',
-                activity: 65
-              }
-            ]
-          }
-        }
-      ]
-
-      recentActivities.value = [
-        {
-          id: 1,
-          user: 'Иван Петров',
-          action: 'создал заказ #12345',
-          time: '5 минут назад',
-          type: 'success',
-          details: 'Сумма заказа: ₽15,000'
-        },
-        {
-          id: 2,
-          user: 'Мария Сидорова',
-          action: 'обновила профиль компании',
-          time: '12 минут назад',
-          type: 'info'
-        },
-        {
-          id: 3,
-          user: 'Алексей Козлов',
-          action: 'добавил новый товар',
-          time: '25 минут назад',
-          type: 'success',
-          details: 'Товар "Премиум пакет"'
-        }
-      ]
-
-      lastUpdated.value = new Date().toLocaleString('ru-RU')
-      
-    } catch (error) {
-      console.error('Ошибка загрузки данных:', error)
-      throw error
+      await fetchDashboardData()
+    } catch (err) {
+      console.error('Ошибка в fetchData:', err)
+      error.value = err.message || 'Ошибка загрузки данных'
     } finally {
       loading.value = false
     }
@@ -182,20 +240,36 @@ export const useDashboardStore = defineStore('dashboard', () => {
       charts: chartsData.value,
       tables: tablesData.value,
       activities: recentActivities.value,
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
+      source: 'dashboard-export'
     }
     
-    // Создаем и скачиваем файл
-    const dataStr = JSON.stringify(dataToExport, null, 2)
-    const dataBlob = new Blob([dataStr], { type: 'application/json' })
-    const url = URL.createObjectURL(dataBlob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `dashboard-export-${new Date().getTime()}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    try {
+      const dataStr = JSON.stringify(dataToExport, null, 2)
+      const dataBlob = new Blob([dataStr], { type: 'application/json' })
+      const url = URL.createObjectURL(dataBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `dashboard-export-${new Date().getTime()}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      
+      addActivity({
+        user: 'Система',
+        action: 'экспортировал данные dashboard',
+        type: 'success'
+      })
+    } catch (err) {
+      console.error('Ошибка экспорта:', err)
+      addActivity({
+        user: 'Система',
+        action: 'ошибка экспорта данных',
+        type: 'danger',
+        details: err.message
+      })
+    }
   }
 
   const addActivity = (activity) => {
@@ -216,6 +290,11 @@ export const useDashboardStore = defineStore('dashboard', () => {
     fetchData()
   }
 
+  // Сброс ошибки
+  const clearError = () => {
+    error.value = null
+  }
+
   return {
     // State
     loading,
@@ -224,6 +303,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     tablesData,
     recentActivities,
     lastUpdated,
+    error,
     
     // Getters
     getStats,
@@ -232,11 +312,13 @@ export const useDashboardStore = defineStore('dashboard', () => {
     getActivities,
     getLastUpdated,
     isLoading,
+    getError,
     
     // Actions
     fetchData,
     exportData,
     addActivity,
-    initializeData
+    initializeData,
+    clearError
   }
 })

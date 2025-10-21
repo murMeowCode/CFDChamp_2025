@@ -145,16 +145,7 @@
           <div class="sequence-preview">
             <pre class="sequence-text cyber-mono">{{ generatedSequence }}</pre>
           </div>
-          <div class="sequence-info">
-            <div class="info-item">
-              <span class="info-label">Количество чисел:</span>
-              <span class="info-value">{{ winNumbersCount }} чисел</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Диапазон:</span>
-              <span class="info-value">{{ rangeFrom }} - {{ rangeTo }}</span>
-            </div>
-          </div>
+          
         </div>
 
         <!-- Информация о скачанном файле -->
@@ -188,7 +179,7 @@
 <script setup>
 import { ref, computed, inject, provide } from 'vue'
 import { useApiMutations } from '@/utils/api/useApiMutation'
-import { api8000 } from '@/utils/apiUrl/urlApi'
+import { api8000, api8001 } from '@/utils/apiUrl/urlApi'
 import axios from 'axios'
 const {usePost} = useApiMutations()
 // Refs
@@ -323,23 +314,112 @@ const generateWeb = async () => {
   generationStatus.value = 'Генерация выигрышных чисел...'
   
   try {
-    // Имитация запроса к бэкенду для WEB генерации
-    await new Promise(resolve => setTimeout(resolve, 1000))
-     //await forgotMutation.mutateAsync({ email: form.email })
-     const response = await axios.post(`${api8000}/generate-file`, {length:sequenceLength.value})
-    console.log(response.data,'RESPONSE')
-    // Генерация выигрышных чисел
-    const winNumbers = generateWinNumbers(winNumbersCount.value, rangeFrom.value, rangeTo.value)
+    // Отправляем запрос на сервер с параметрами
+    const response = await axios.post(`${api8001}/generate/generate-winners`, {
+      count_of_winning_numbers: winNumbersCount.value,
+      max_number: rangeTo.value
+    })
+    
+    console.log('🎯 Ответ сервера для выигрышных чисел:', response.data)
+    
+    // Получаем данные из ответа сервера
+    const responseData = response.data
+    
+    // Извлекаем сгенерированные числа из ответа
+    let winNumbers = ''
+    
+    if (typeof responseData === 'object' && responseData !== null) {
+      // Если сервер возвращает объект с winning_tickets
+      if (responseData.winning_tickets) {
+        // Преобразуем строку "3,11,38" в форматированную строку "3 | 11 | 38"
+        winNumbers = responseData.winning_tickets
+          .split(',')
+          .map(num => num.trim())
+          .join(' | ')
+      } 
+      // Если сервер возвращает массив numbers
+      else if (responseData.numbers && Array.isArray(responseData.numbers)) {
+        winNumbers = responseData.numbers.join(' | ')
+      } 
+      // Если сервер возвращает последовательность
+      else if (responseData.sequence) {
+        winNumbers = responseData.sequence
+      } else {
+        // Если структура ответа неизвестна, генерируем локально
+        console.warn('⚠️ Неизвестная структура ответа сервера, генерируем локально')
+        winNumbers = generateWinNumbers(winNumbersCount.value, rangeFrom.value, rangeTo.value)
+      }
+    } else if (typeof responseData === 'string') {
+      // Если сервер возвращает строку
+      winNumbers = responseData
+    } else {
+      // Fallback на локальную генерацию
+      console.warn('⚠️ Неподдерживаемый формат ответа, генерируем локально')
+      winNumbers = generateWinNumbers(winNumbersCount.value, rangeFrom.value, rangeTo.value)
+    }
+    
     generatedSequence.value = winNumbers
     downloadedFile.value = null
     generationStatus.value = 'Выигрышные числа сгенерированы'
     
-    // Запускаем тестирование
-    await runTests()
+    // Если сервер возвращает ID последовательности, можно отправить на тестирование
+    if (responseData.id || responseData.sequence_id) {
+      const sequenceId = responseData.id || responseData.sequence_id
+      console.log('🆔 ID последовательности для тестов:', sequenceId)
+      
+      // Создаем бинарную последовательность для тестов из выигрышных чисел
+      let binarySequence = ''
+      if (responseData.winning_tickets) {
+        // Преобразуем выигрышные числа в бинарную последовательность
+        const numbers = responseData.winning_tickets.split(',').map(num => parseInt(num.trim()))
+        binarySequence = numbers.map(num => num.toString(2)).join('')
+      } else {
+        // Fallback - используем числа как есть
+        binarySequence = winNumbers.replace(/\s*\|\s*/g, '')
+      }
+      
+      // Отправляем на тестирование, если нужно
+      try {
+        const testResponse = await axios.post(`${api8000}/statistics/sequence`, {
+          sequence_id: responseData.id || responseData.sequence_id,
+          sequence: binarySequence
+        })
+        
+        console.log('📊 Результаты тестов для выигрышных чисел:', testResponse.data.tests_results)
+        
+        // Передаем результаты тестов в родительский компонент
+        if (setTestResults && testResponse.data.tests_results) {
+          setTestResults(testResponse.data.tests_results)
+        }
+        
+        // Запускаем тесты с полученными результатами
+        await runTests(testResponse.data.tests_results)
+        
+      } catch (testError) {
+        console.warn('⚠️ Не удалось получить результаты тестов:', testError)
+        // Продолжаем без тестов
+        generationStatus.value = 'Числа сгенерированы (тесты недоступны)'
+      }
+    } else {
+      // Если нет ID, просто показываем числа без тестов
+      console.log('ℹ️ ID последовательности не получен, тесты не запускаются')
+      generationStatus.value = 'Выигрышные числа сгенерированы'
+    }
     
   } catch (error) {
-    console.error('Ошибка генерации:', error)
-    generationStatus.value = 'Ошибка генерации'
+    console.error('❌ Ошибка генерации выигрышных чисел:', error)
+    
+    // Fallback на локальную генерацию при ошибке
+    try {
+      console.log('🔄 Используем локальную генерацию...')
+      const winNumbers = generateWinNumbers(winNumbersCount.value, rangeFrom.value, rangeTo.value)
+      generatedSequence.value = winNumbers
+      downloadedFile.value = null
+      generationStatus.value = 'Числа сгенерированы локально (сервер недоступен)'
+    } catch (fallbackError) {
+      console.error('❌ Ошибка локальной генерации:', fallbackError)
+      generationStatus.value = 'Ошибка генерации'
+    }
   } finally {
     isGenerating.value = false
   }
@@ -355,7 +435,7 @@ const generateTxt = async () => {
     // Генерация случайной последовательности
     const length = parseInt(sequenceLength.value)
     console.log(sequenceLength.value,'ДЛИНА')
-    const response = await axios.post(`${api8000}/generate-file`, {length:sequenceLength.value})
+    const response = await axios.post(`${api8001}/generate/generate-file`, {length:sequenceLength.value})
     console.log(response.data,'RESPONSE')
     
     // Получаем данные из ответа сервера
@@ -423,7 +503,7 @@ const generateTxt = async () => {
     generationStatus.value = 'Файл успешно скачан'
     
     // Отправляем ID и sequence на сервер для получения результатов тестов
-    const responseID = await axios.post(`http://192.168.1.128:8000/statistics/sequence`, {
+    const responseID = await axios.post(`${api8000}/statistics/sequence`, {
       sequence_id: sequenceId,
       sequence: sequence
     })

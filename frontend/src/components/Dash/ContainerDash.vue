@@ -6,8 +6,6 @@
     :tables="dashboardStore.getTables"
     :loading="dashboardStore.isLoading"
   >
-
-
     <!-- Слот для графиков -->
     <template #chart-line="{ data }">
       <LineChart :data="data" />
@@ -43,96 +41,76 @@
   </OneDash>
 </template>
 
-<script>
-import { onMounted } from 'vue'
+<script setup>
+import { computed, onMounted, ref, watch } from 'vue'
 import { useDashboardStore } from '@/stores/useDashStore'
 import OneDash from './OneDash.vue'
 import LineChart from '@/components/Charts/LineChart.vue'
 import BarChart from '@/components/Charts/BarChart.vue'
 import UsersTable from '../Charts/UsersTable.vue'
 import ActivityTimeline from '../Charts/ActivityTimeline.vue'
+import { useApiGet } from '@/utils/api/useApiGet'
+const {useGet} = useApiGet()
+const dashboardStore = useDashboardStore()
 
-export default {
-  name: 'DashboardContainer',
-  components: {
-    OneDash,
-    LineChart,
-    BarChart,
-    UsersTable,
-    ActivityTimeline
-  },
-  setup() {
-    const dashboardStore = useDashboardStore()
-    const dashboardTitle = 'Обзор системы'
+// Refs
+const dashboardTitle = ref('Обзор системы')
 
-    const refreshData = async () => {
-      try {
-        await dashboardStore.fetchData()
-        // Можно добавить уведомление об успехе
-        console.log('Данные успешно обновлены')
-      } catch (error) {
-        console.error('Ошибка загрузки данных:', error)
-        // Можно показать уведомление об ошибке
-      }
-    }
-
-    const handleAddUser = (userData) => {
-      console.log('Добавить пользователя:', userData)
-      dashboardStore.addActivity({
-        user: 'Система',
-        action: 'добавлен новый пользователь',
-        type: 'success',
-        details: `Пользователь: ${userData.name}`
-      })
-    }
-
-    const handleEditUser = (user) => {
-      console.log('Редактировать пользователя:', user)
-      dashboardStore.addActivity({
-        user: 'Администратор',
-        action: 'отредактировал профиль пользователя',
-        type: 'info',
-        details: `Пользователь: ${user.name}`
-      })
-    }
-
-    const handleDeleteUser = (user) => {
-      console.log('Удалить пользователя:', user)
-      dashboardStore.addActivity({
-        user: 'Администратор',
-        action: 'удалил пользователя',
-        type: 'danger',
-        details: `Пользователь: ${user.name}`
-      })
-    }
-
-    const addTestActivity = () => {
-      dashboardStore.addActivity({
-        user: 'Тестовая система',
-        action: 'выполнено тестовое действие',
-        type: 'warning',
-        details: 'Это тестовая активность для демонстрации'
-      })
-    }
-
-    onMounted(() => {
-      // Инициализируем данные при монтировании
-      if (dashboardStore.getStats.length === 0) {
-        dashboardStore.initializeData()
-      }
-    })
-
-    return {
-      dashboardStore,
-      dashboardTitle,
-      refreshData,
-      handleAddUser,
-      handleEditUser,
-      handleDeleteUser,
-      addTestActivity
-    }
+// Methods
+const refreshData = async () => {
+  try {
+    await dashboardStore.fetchData()
+    console.log('Данные успешно обновлены')
+  } catch (error) {
+    console.error('Ошибка загрузки данных:', error)
   }
 }
+
+const handleAddUser = (userData) => {
+  console.log('Добавить пользователя:', userData)
+  dashboardStore.addActivity({
+    user: 'Система',
+    action: 'добавлен новый пользователь',
+    type: 'success',
+    details: `Пользователь: ${userData.name}`
+  })
+}
+
+const handleEditUser = (user) => {
+  console.log('Редактировать пользователя:', user)
+  dashboardStore.addActivity({
+    user: 'Администратор',
+    action: 'отредактировал профиль пользователя',
+    type: 'info',
+    details: `Пользователь: ${user.name}`
+  })
+}
+
+const handleDeleteUser = (user) => {
+  console.log('Удалить пользователя:', user)
+  dashboardStore.addActivity({
+    user: 'Администратор',
+    action: 'удалил пользователя',
+    type: 'danger',
+    details: `Пользователь: ${user.name}`
+  })
+}
+
+const addTestActivity = () => {
+  dashboardStore.addActivity({
+    user: 'Тестовая система',
+    action: 'выполнено тестовое действие',
+    type: 'warning',
+    details: 'Это тестовая активность для демонстрации'
+  })
+}
+
+// Lifecycle
+onMounted(() => {
+  if (dashboardStore.getStats.length === 0) {
+    dashboardStore.initializeData()
+  }
+})
 </script>
 
 <style scoped>
@@ -166,7 +144,7 @@ export default {
 }
 
 .btn-primary {
-background: var(--color-vanilla-light);
+  background: var(--color-vanilla-light);
   color: var(--color-midnight);
   border-color: var(--color-midnight);
   box-shadow: var(--shadow-md);
