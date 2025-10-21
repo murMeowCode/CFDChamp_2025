@@ -2,7 +2,7 @@
   <div class="bar-chart">
     <div class="chart-header">
       <h4>{{ title }}</h4>
-      <div class="chart-controls">
+      <div class="chart-controls" v-if="showPeriodSelector">
         <select v-model="selectedPeriod" @change="handlePeriodChange" class="period-select">
           <option value="week">За неделю</option>
           <option value="month">За месяц</option>
@@ -15,19 +15,23 @@
     </div>
     <div class="chart-summary" v-if="summary">
       <div class="summary-item">
-        <span class="summary-label">Среднее:</span>
-        <span class="summary-value">{{ summary.average }}</span>
+        <span class="summary-label">Среднее 1:</span>
+        <span class="summary-value">{{ summary.avgOnes }}</span>
       </div>
       <div class="summary-item">
-        <span class="summary-label">Максимум:</span>
-        <span class="summary-value">{{ summary.max }}</span>
+        <span class="summary-label">Среднее 0:</span>
+        <span class="summary-value">{{ summary.avgZeros }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Всего последовательностей:</span>
+        <span class="summary-value">{{ summary.totalSequences }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted, computed } from 'vue'
 
 export default {
   name: 'BarChart',
@@ -51,6 +55,10 @@ export default {
     summary: {
       type: Object,
       default: null
+    },
+    showPeriodSelector: {
+      type: Boolean,
+      default: true
     }
   },
   setup(props) {
@@ -58,11 +66,32 @@ export default {
     const selectedPeriod = ref('month')
     let chartInstance = null
 
+    // Вычисляем summary на основе данных
+    const chartSummary = computed(() => {
+      if (!props.data.datasets || props.data.datasets.length === 0) {
+        return props.summary
+      }
+      
+      const onesDataset = props.data.datasets.find(d => d.label.includes('1'))
+      const zerosDataset = props.data.datasets.find(d => d.label.includes('0'))
+      
+      if (!onesDataset || !zerosDataset) return props.summary
+      
+      const avgOnes = onesDataset.data.reduce((a, b) => a + b, 0) / onesDataset.data.length
+      const avgZeros = zerosDataset.data.reduce((a, b) => a + b, 0) / zerosDataset.data.length
+      
+      return {
+        avgOnes: avgOnes.toFixed(2),
+        avgZeros: avgZeros.toFixed(2),
+        totalSequences: onesDataset.data.length
+      }
+    })
+
     const generateBarData = (period) => {
       const periods = {
         week: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
         month: ['Нед 1', 'Нед 2', 'Нед 3', 'Нед 4'],
-        year: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        year: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
       }
 
       const labels = periods[period] || periods.month
@@ -71,18 +100,18 @@ export default {
         labels,
         datasets: [
           {
-            label: 'Доход',
-            data: labels.map(() => Math.floor(Math.random() * 1000) + 500),
-            backgroundColor: '#48bb78',
-            borderColor: '#48bb78',
+            label: 'Среднее количество 1',
+            data: labels.map(() => Math.floor(Math.random() * 20) + 5),
+            backgroundColor: '#4299e1',
+            borderColor: '#4299e1',
             borderWidth: 1,
             borderRadius: 4
           },
           {
-            label: 'Расход',
-            data: labels.map(() => Math.floor(Math.random() * 800) + 300),
-            backgroundColor: '#f56565',
-            borderColor: '#f56565',
+            label: 'Среднее количество 0',
+            data: labels.map(() => Math.floor(Math.random() * 20) + 5),
+            backgroundColor: '#e53e3e',
+            borderColor: '#e53e3e',
             borderWidth: 1,
             borderRadius: 4
           }
@@ -115,6 +144,15 @@ export default {
                 usePointStyle: true,
                 padding: 15
               }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.dataset.label || ''
+                  const value = context.parsed.y
+                  return `${label}: ${value.toFixed(2)}`
+                }
+              }
             }
           },
           scales: {
@@ -123,15 +161,18 @@ export default {
               grid: {
                 color: 'rgba(0, 0, 0, 0.1)'
               },
-              ticks: {
-                callback: function(value) {
-                  return '₽' + value
-                }
+              title: {
+                display: true,
+                text: 'Среднее количество битов'
               }
             },
             x: {
               grid: {
                 display: false
+              },
+              title: {
+                display: true,
+                text: 'Диапазон длин последовательностей'
               }
             }
           }
@@ -160,7 +201,8 @@ export default {
     return {
       chartRef,
       selectedPeriod,
-      handlePeriodChange
+      handlePeriodChange,
+      chartSummary
     }
   }
 }
@@ -171,6 +213,7 @@ export default {
   background: white;
   border-radius: 8px;
   padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .chart-header {
