@@ -21,7 +21,7 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
 }
 
 .page-container {
-  
+  padding: 1rem;
   max-width: 1800px;
   margin: 0 auto;
 }
