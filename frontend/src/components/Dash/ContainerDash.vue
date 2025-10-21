@@ -6,23 +6,7 @@
     :tables="dashboardStore.getTables"
     :loading="dashboardStore.isLoading"
   >
-    <!-- Слот для действий -->
-    <template #actions>
-      <div class="actions-container">
-        <button 
-          class="btn btn-secondary" 
-          @click="dashboardStore.exportData"
-          :disabled="dashboardStore.isLoading"
-        >
-          <i class="fas fa-download"></i>
-          Экспорт
-        </button>
-        <div class="last-updated" v-if="dashboardStore.getLastUpdated">
-          <i class="fas fa-clock"></i>
-          Обновлено: {{ dashboardStore.getLastUpdated }}
-        </div>
-      </div>
-    </template>
+
 
     <!-- Слот для графиков -->
     <template #chart-line="{ data }">

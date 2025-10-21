@@ -5,9 +5,6 @@
       <h2 class="cyber-heading main-title">
         <span class="text-primary">АНАЛИЗ ФАЙЛОВ</span>
       </h2>
-      <p class="upload-subtitle futurism-elegant">
-        Загрузка и тестирование файлов на безопасность
-      </p>
     </div>
 
     <!-- Основной контейнер -->

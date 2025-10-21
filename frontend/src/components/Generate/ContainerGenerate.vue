@@ -5,9 +5,6 @@
       <h2 class="cyber-heading main-title">
         <span class="text-primary">ГЕНЕРАТОР ПОСЛЕДОВАТЕЛЬНОСТЕЙ</span>
       </h2>
-      <p class="generator-subtitle futurism-elegant">
-        Создание криптографически безопасных последовательностей
-      </p>
     </div>
 
     <!-- Основной контейнер -->
