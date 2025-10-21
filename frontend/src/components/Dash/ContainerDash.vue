@@ -10,17 +10,6 @@
     <template #actions>
       <div class="actions-container">
         <button 
-          class="btn btn-primary" 
-          @click="refreshData"
-          :disabled="dashboardStore.isLoading"
-        >
-          <i 
-            class="fas" 
-            :class="dashboardStore.isLoading ? 'fa-spinner fa-spin' : 'fa-sync-alt'"
-          ></i>
-          {{ dashboardStore.isLoading ? 'Загрузка...' : 'Обновить' }}
-        </button>
-        <button 
           class="btn btn-secondary" 
           @click="dashboardStore.exportData"
           :disabled="dashboardStore.isLoading"
@@ -193,8 +182,8 @@ export default {
 }
 
 .btn-primary {
-  background: var(--color-primary);
-  color: var(--color-vanilla);
+background: var(--color-vanilla-light);
+  color: var(--color-midnight);
   border-color: var(--color-midnight);
   box-shadow: var(--shadow-md);
 }
