@@ -1,14 +1,20 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useStarStore } from '@/stores/useStartStore'
 import BtnStar from '@/components/BTN/BtnStar.vue'
 import MyRandom from '@/components/Random/MyRandom.vue'
+import { storeToRefs } from 'pinia'
 
 const visibleComponents = ref([])
 const isAnimating = ref(false)
 const videoRef = ref(null)
 const isVideoLoaded = ref(false)
 const isVideoPlaying = ref(false)
-const currentProgress = ref(0) // Добавляем отдельный счетчик прогресса
+const currentProgress = ref(0)
+
+// Инициализируем хранилище
+const dataStore = useStarStore()
+const { componentsData } = storeToRefs(dataStore) // Исправлено: используем правильное имя состояния
 
 // Массив для отслеживания занятых позиций
 const occupiedPositions = ref([])
@@ -24,7 +30,6 @@ const isPositionOccupied = (newPos, existingPositions) => {
     const existingLeft = parseInt(pos.left)
     const existingTop = parseInt(pos.top)
     
-    // Проверяем пересечение по осям X и Y
     const horizontalOverlap = 
       newLeft < existingLeft + componentWidth && 
       newLeft + componentWidth > existingLeft
@@ -77,6 +82,30 @@ const getRandomPosition = () => {
   }
 }
 
+// Функция для получения данных компонента из хранилища
+const getComponentData = (index) => {
+  // Получаем данные из хранилища
+  const data = componentsData.value
+  
+  // Если в хранилище есть данные, используем их
+  if (data && data.length > 0) {
+    const dataIndex = index % data.length // Циклически используем данные
+    return data[dataIndex]
+  }
+  
+  // Fallback данные, если в хранилище ничего нет
+  return {
+    title: `Компонент ${index + 1}`,
+    description: `Это описание для компонента ${index + 1}`,
+    features: [
+      `Функция ${index + 1}.1`,
+      `Функция ${index + 1}.2`,
+      `Функция ${index + 1}.3`,
+      `Функция ${index + 1}.4`
+    ]
+  }
+}
+
 // Управление видео
 const startVideo = async () => {
   if (videoRef.value && !isVideoPlaying.value) {
@@ -118,16 +147,14 @@ const showMultipleRandom = async () => {
   isAnimating.value = true
   visibleComponents.value = []
   occupiedPositions.value = []
-  currentProgress.value = 0 // Сбрасываем прогресс
+  currentProgress.value = 0
   
   const totalComponents = 10
   
   for (let i = 0; i < totalComponents; i++) {
-    // Обновляем прогресс при начале показа нового компонента
     currentProgress.value = i + 1
     
     if (i > 0) {
-      // Ждем исчезновения предыдущего компонента
       await new Promise(resolve => {
         const checkDisappearance = () => {
           if (visibleComponents.value.length === 0 || 
@@ -143,18 +170,16 @@ const showMultipleRandom = async () => {
       await new Promise(resolve => setTimeout(resolve, 500))
     }
     
+    // Получаем данные из хранилища вместо генерации
+    const componentData = getComponentData(i)
+    
     const newComponent = {
       id: Date.now() + i,
       visible: true,
       position: getRandomPosition(),
-      title: `Компонент ${i + 1}`,
-      description: `Это описание для компонента ${i + 1}`,
-      features: [
-        `Функция ${i + 1}.1`,
-        `Функция ${i + 1}.2`,
-        `Функция ${i + 1}.3`,
-        `Функция ${i + 1}.4`
-      ],
+      title: componentData.title,
+      description: componentData.description,
+      features: componentData.features,
       timer: null
     }
     
@@ -181,10 +206,8 @@ const showMultipleRandom = async () => {
     }, 3000)
   }
   
-  // Ждем завершения последней анимации
   await new Promise(resolve => setTimeout(resolve, 4000))
   
-  // Сбрасываем прогресс при завершении
   currentProgress.value = 0
   isAnimating.value = false
   stopVideo()
@@ -194,7 +217,7 @@ const showMultipleRandom = async () => {
 const pauseAnimation = () => {
   if (isAnimating.value) {
     isAnimating.value = false
-    currentProgress.value = 0 // Сбрасываем прогресс
+    currentProgress.value = 0
     
     visibleComponents.value.forEach(component => {
       if (component.timer) {
@@ -211,6 +234,7 @@ const pauseAnimation = () => {
 // Жизненный цикл
 onMounted(() => {
   console.log('Компонент монтирован - видео готово к запуску')
+  console.log('Данные из хранилища:', componentsData.value)
 })
 
 onUnmounted(() => {
@@ -242,15 +266,6 @@ onUnmounted(() => {
             Ваш браузер не поддерживает видео
           </div>
         </video>
-        
-        <!-- Состояние когда видео не играет -->
-        <div v-if="!isVideoPlaying && !isAnimating" class="video-idle-state">
-          <div class="idle-message">
-            <h3>Готов к генерации</h3>
-            <p>Нажмите кнопку ниже чтобы запустить анимацию</p>
-            <p class="animation-info">Компоненты будут появляться по одному и исчезать через 3 секунды</p>
-          </div>
-        </div>
       </div>
       
       <!-- Компоненты поверх видео -->
@@ -296,32 +311,7 @@ onUnmounted(() => {
         size="medium"
         :disabled="isAnimating"
         @click="showMultipleRandom"
-      />
-      
-      <BtnStar 
-        v-if="isAnimating"
-        variant="outline" 
-        text="Остановить" 
-        size="small"
-        @click="pauseAnimation"
-        class="stop-button"
-      />
-    </div>
-    
-    <!-- Дополнительная информация -->
-    <div v-if="isAnimating" class="animation-stats">
-      <div class="stat-item">
-        <span class="stat-label">Текущий компонент:</span>
-        <span class="stat-value">{{ currentProgress }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Видимых на экране:</span>
-        <span class="stat-value">{{ visibleComponents.filter(c => c.visible).length }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Всего показано:</span>
-        <span class="stat-value">{{ currentProgress }}/10</span>
-      </div>
+      /> 
     </div>
   </div>
 </template>
@@ -365,39 +355,6 @@ onUnmounted(() => {
   height: 100%;
   object-fit: cover;
   object-position: center;
-}
-
-/* Состояние ожидания */
-.video-idle-state {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  background: rgba(12, 12, 46, 0.9);
-}
-
-.idle-message {
-  text-align: center;
-  color: white;
-  padding: 20px;
-  max-width: 80%;
-}
-
-.idle-message h3 {
-  margin-bottom: 10px;
-  font-size: 24px;
-  color: #6366f1;
-}
-
-.animation-info {
-  font-size: 14px !important;
-  opacity: 0.6 !important;
-  margin-top: 10px !important;
 }
 
 /* Улучшенный прогресс анимации */
@@ -450,36 +407,6 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
-/* Статистика анимации */
-.animation-stats {
-  display: flex;
-  gap: 20px;
-  margin-top: 15px;
-  padding: 15px 20px;
-  background: rgba(99, 102, 241, 0.08);
-  border-radius: 12px;
-  border: 1px solid rgba(99, 102, 241, 0.15);
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.stat-label {
-  font-size: 12px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.stat-value {
-  font-size: 16px;
-  font-weight: 700;
-  color: #6366f1;
-}
-
 /* Стили для компонентов */
 .random-item {
   position: absolute;
@@ -511,14 +438,30 @@ onUnmounted(() => {
   margin-top: 20px;
 }
 
-.stop-button {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+/* Информация об источнике данных */
+.data-source-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
 }
 
-.stop-button:hover {
-  background: rgba(239, 68, 68, 0.2);
+.info-badge {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.data-stats {
+  font-size: 12px;
+  color: #6b7280;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
 }
 
 /* Анимации */
@@ -555,11 +498,6 @@ onUnmounted(() => {
 
 /* Адаптивность */
 @media (max-width: 768px) {
-  .animation-stats {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
   .animation-progress {
     min-width: 160px;
     padding: 10px 12px;
@@ -568,6 +506,10 @@ onUnmounted(() => {
   .progress-details {
     flex-direction: column;
     gap: 2px;
+  }
+  
+  .data-source-info {
+    text-align: center;
   }
 }
 </style>
