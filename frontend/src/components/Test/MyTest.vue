@@ -2,9 +2,9 @@
   <div class="file-upload-container">
     <!-- Заголовок -->
     <div class="upload-header">
-      <h2 class="cyber-heading main-title">
+ 
         <span class="text-primary">АНАЛИЗ ФАЙЛОВ</span>
-      </h2>
+     
     </div>
 
     <!-- Основной контейнер -->
@@ -117,7 +117,11 @@
 </template>
 
 <script setup>
+import { api8000 } from '@/utils/apiUrl/urlApi'
 import { ref, inject } from 'vue'
+import { useApiMutations } from '@/utils/api/useApiMutation'
+import { useNotificationsStore } from '@/stores/useToastStore'
+import axios from 'axios'
 
 // Refs
 const fileInput = ref(null)
@@ -128,9 +132,28 @@ const uploadProgress = ref(0)
 const isAnalyzing = ref(false)
 const analysisComplete = ref(false)
 const waitingForTests = ref(false)
+const { usePost } = useApiMutations()
 
 // Инъекция функций управления тестами из главного компонента
-const { startTests, updateTestProgress, completeTest, completeAllTests } = inject('testControls')
+const { startTests, updateTestProgress, completeTest, completeAllTests, setTestResults } = inject('testControls')
+const notifications = useNotificationsStore()
+
+// Мутация для загрузки файла
+const serverFileMutation = usePost(`${api8000}/statistics/file`, { 
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+  onSuccess: (data) => {
+    console.log('✅ Файл успешно загружен:', data)
+    isUploading.value = false
+    waitingForTests.value = true
+  },
+  onError: (error) => {
+    console.error('❌ Ошибка загрузки файла:', error)
+    isUploading.value = false
+    notifications.error('Ошибка при загрузке файла', 'Попробуйте еще раз')
+  },
+})
 
 // Методы
 const triggerFileInput = () => {
@@ -183,69 +206,105 @@ const startAnalysis = async () => {
   
   // 1. Загрузка файла на сервер
   isUploading.value = true
-  await uploadFileToServer()
+  const serverData = await uploadFileToServer()
   
   // 2. Ожидание запуска тестов на бэкенде
-  isUploading.value = false
   waitingForTests.value = true
-  
-  // Имитация ожидания запуска тестов на сервере
   await new Promise(resolve => setTimeout(resolve, 1500))
   
-  // 3. Запуск визуализации тестов
+  // 3. ПЕРЕДАЕМ ДАННЫЕ ТЕСТОВ В РОДИТЕЛЬСКИЙ КОМПОНЕНТ
+  if (serverData.tests_results && setTestResults) {
+    setTestResults(serverData.tests_results)
+  }
+  
+  // 4. Запуск визуализации тестов с реальными данными
   waitingForTests.value = false
   isAnalyzing.value = true
   
-  // Запуск тестов с прогресс-барами
-  await runFileTests()
+  // Запуск тестов с реальными данными
+  await runFileTests(serverData.tests_results)
 }
 
 const uploadFileToServer = async () => {
-  for (let i = 0; i <= 100; i += 10) {
-    await new Promise(resolve => setTimeout(resolve, 100))
-    uploadProgress.value = i
+  if (!uploadedFile.value) return
+  
+  try {
+    const formData = new FormData()
+    formData.append('file', uploadedFile.value)
+
+    // Прогресс загрузки
+    const progressInterval = setInterval(() => {
+      if (uploadProgress.value < 90) {
+        uploadProgress.value += 10
+      }
+    }, 200)
+    
+    // Отправка файла
+    const response = await axios.post(`${api8000}/statistics/file`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    
+    clearInterval(progressInterval)
+    uploadProgress.value = 100
+
+    console.log('Данные с сервера:', response.data)
+    
+    return response.data
+    
+  } catch (error) {
+    console.error('❌ Ошибка загрузки файла:', error)
+    isUploading.value = false
+    throw error
   }
 }
 
-const runFileTests = async () => {
+const runFileTests = async (testsResults) => {
   // Запускаем тесты через инъекцию из главного компонента
   startTests()
   
-  // Тест 1: Проверка целостности
-  for (let i = 0; i <= 100; i += 10) {
-    await new Promise(resolve => setTimeout(resolve, 80))
-    updateTestProgress(1, i)
-  }
-  completeTest(1, 'Целостность файла подтверждена', true)
+  // Список тестов с русскими названиями и задержками
+  const tests = [
+    { key: 'frequency', name: 'Частотный тест', delay: 80 },
+    { key: 'runs', name: 'Тест серий', delay: 90 },
+    { key: 'poker', name: 'Покер-тест', delay: 70 },
+    { key: 'serial', name: 'Последовательный тест', delay: 85 },
+    { key: 'longest_runs', name: 'Тест самых длинных серий', delay: 75 },
+    { key: 'cumulative_sums', name: 'Тест кумулятивных сумм', delay: 80 },
+    { key: 'autocorrelation', name: 'Тест автокорреляции', delay: 90 },
+    { key: 'matrix_rank', name: 'Тест ранга матрицы', delay: 70 }
+  ]
   
-  // Тест 2: Анализ безопасности
-  for (let i = 0; i <= 100; i += 10) {
-    await new Promise(resolve => setTimeout(resolve, 90))
-    updateTestProgress(2, i)
+  // Запускаем каждый тест
+  for (let i = 0; i < tests.length; i++) {
+    const { key, name, delay } = tests[i]
+    const testData = testsResults?.[key]
+    
+    // Прогресс для текущего теста
+    for (let j = 0; j <= 100; j += 10) {
+      await new Promise(resolve => setTimeout(resolve, delay))
+      updateTestProgress(i + 1, j)
+    }
+    
+    // Формируем сообщение на основе данных теста
+    let message = name
+    let success = false
+    
+    if (testData) {
+      message += `: ${testData.result}`
+      if (testData.p_value !== null && testData.p_value !== undefined) {
+        message += ` (p-value: ${testData.p_value})`
+      }
+      
+      // Определяем успешность теста
+      success = testData.result === 'PASS' || testData.result === 'SKIP'
+    } else {
+      message += ': Данные недоступны'
+    }
+    
+    completeTest(i + 1, message, success)
   }
-  const securityResult = Math.random() > 0.1 // 90% безопасных файлов
-  completeTest(2, securityResult ? 'Угроз не обнаружено' : 'Обнаружены потенциальные угрозы', securityResult)
-  
-  // Тест 3: Проверка совместимости
-  for (let i = 0; i <= 100; i += 10) {
-    await new Promise(resolve => setTimeout(resolve, 70))
-    updateTestProgress(3, i)
-  }
-  completeTest(3, 'Формат файла поддерживается', true)
-  
-  // Тест 4: Статистический анализ
-  for (let i = 0; i <= 100; i += 10) {
-    await new Promise(resolve => setTimeout(resolve, 85))
-    updateTestProgress(4, i)
-  }
-  completeTest(4, 'Статистические данные собраны', true)
-  
-  // Тест 5: Финальная верификация
-  for (let i = 0; i <= 100; i += 10) {
-    await new Promise(resolve => setTimeout(resolve, 75))
-    updateTestProgress(5, i)
-  }
-  completeTest(5, 'Анализ завершен успешно', true)
   
   // Завершаем все тесты
   completeAllTests()
@@ -270,6 +329,7 @@ const resetUpload = () => {
 </script>
 
 <style scoped>
+/* Стили остаются без изменений */
 .file-upload-container {
   width: 100%;
   margin: 0 auto;

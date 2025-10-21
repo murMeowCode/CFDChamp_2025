@@ -11,11 +11,8 @@ const createMutation =
       mutationFn: (data) => {
         return fetch(url, {
           method: method.toUpperCase(),
-          headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-          },
-          body: data ? JSON.stringify(data) : undefined,
+          headers: options.headers, // Берем ТОЛЬКО переданные заголовки
+          body: data ? data : undefined, // Не преобразуем в JSON - отправляем как есть
         }).then(async (response) => {
           if (!response.ok) {
             const error = await response.text()

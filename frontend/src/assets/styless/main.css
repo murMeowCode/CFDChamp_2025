@@ -108,7 +108,16 @@ h3 {
   --color-text-muted: #2d3a5a; /* Темно-синий */
   --color-text-inverted: #f0e7d5; /* Vanilla Cream */
   --color-text-light: #4a5678; /* Светло-синий */
-
+--color-skip: #ffa500;          /* Оранжевый/желтый для пропущенных */
+  --color-skip-soft: rgba(255, 165, 0, 0.1);
+  --color-skip-rgb: 255, 165, 0;
+  --color-info: #17a2b8;
+  --color-info-soft: rgba(23, 162, 184, 0.1);
+  
+  /* Другие цвета для сравнения */
+  --color-success: #28a745;       /* Зеленый */
+  --color-error: #dc3545;         /* Красный */
+  --color-warning: #ffc107;       /* Желтый */
   /* Границы */
   --color-border: #d8cfc0; /* Светло-кремовый */
   --color-border-hover: #212842; /* Midnight Indigo при ховере */

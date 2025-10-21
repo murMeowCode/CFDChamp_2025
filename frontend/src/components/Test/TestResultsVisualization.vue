@@ -47,24 +47,37 @@
         v-for="test in tests"
         :key="test.id"
         class="test-item"
-        :class="test.status"
+        :class="test.serverData.result"
       >
         <div class="test-icon">
           <span v-if="test.status === 'pending'">⏳</span>
-          <span v-else-if="test.status === 'running'">⚡</span>
-          <span v-else-if="test.status === 'success'">✅</span>
-          <span v-else-if="test.status === 'error'">❌</span>
+          <span v-else-if="test.serverData.result === 'running'">⚡</span>
+          <span v-else-if="test.serverData.result === 'PASS'">✅</span>
+          <span v-else-if="test.serverData.result === 'WARNING'">❌</span>
+          <span v-else-if="test.serverData.result === 'SKIP'">⏭️</span>
         </div>
         <div class="test-content">
           <div class="test-header">
             <span class="test-name cyber-mono">{{ test.name }}</span>
-            <span class="test-duration cyber-mono" v-if="test.duration">
-              {{ test.duration }}мс
-            </span>
+            <div class="test-status-info">
+              <span class="test-duration cyber-mono" v-if="test.duration && test.status !== 'skip'">
+                {{ test.duration }}мс
+              </span>
+              <span class="test-skip-badge" v-if="test.status === 'skip'">
+                ПРОПУЩЕНО
+              </span>
+            </div>
           </div>
           <p class="test-description futurism-elegant">
             {{ test.description }}
           </p>
+          
+          <!-- Причина пропуска -->
+          <div class="skip-reason" v-if="test.status === 'skip' && test.skipReason">
+            <span class="skip-reason-text cyber-mono">
+                📝 {{ test.skipReason }}
+            </span>
+          </div>
           
           <!-- Прогресс-бар для каждого теста -->
           <div class="test-progress-container">
@@ -82,8 +95,8 @@
             <!-- Результат теста -->
             <div 
               class="test-result"
-              v-if="test.result"
-              :class="test.status"
+              v-if="test.result && test.status !== 'skip'"
+              :class="test.serverData.result"
             >
               <span class="result-text cyber-mono">{{ test.result }}</span>
             </div>
@@ -107,10 +120,25 @@
             <span class="summary-count cyber-mono">{{ failedTests }}</span>
             <span class="summary-label cyber-mono">ОШИБОК</span>
           </div>
-          <div class="summary-item">
-            <span class="summary-count cyber-mono">{{ totalTime }}мс</span>
-            <span class="summary-label cyber-mono">ВРЕМЯ</span>
+          <div class="summary-item skip" v-if="skippedTests > 0">
+            <span class="summary-count cyber-mono">{{ skippedTests }}</span>
+            <span class="summary-label cyber-mono">ПРОПУЩЕНО</span>
           </div>
+          <div class="summary-item total">
+            <span class="summary-count cyber-mono">{{ totalTests }}</span>
+            <span class="summary-label cyber-mono">ВСЕГО</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Информация о пропущенных тестах -->
+      <div class="skip-info" v-if="skippedTests > 0">
+        <div class="skip-info-icon">ℹ️</div>
+        <div class="skip-info-content">
+          <p class="skip-info-text cyber-mono">
+            <strong>Пропущено тестов: {{ skippedTests }}</strong><br>
+            Некоторые тесты требуют более длинной последовательности для анализа
+          </p>
         </div>
       </div>
 
@@ -150,15 +178,15 @@ const emit = defineEmits(['repeat-analysis'])
 // Вычисляемые свойства
 const totalTests = computed(() => props.tests.length)
 const completedTests = computed(() => 
-  props.tests.filter(test => test.status === 'success' || test.status === 'error').length
+  props.tests.filter(test => 
+    test.status === 'success' || test.status === 'error' || test.status === 'skip'
+  ).length
 )
 const testsProgress = computed(() => (completedTests.value / totalTests.value) * 100)
-const passedTests = computed(() => props.tests.filter(test => test.status === 'success').length)
-const failedTests = computed(() => props.tests.filter(test => test.status === 'error').length)
-const totalTime = computed(() => 
-  props.tests.reduce((total, test) => total + (test.duration || 0), 0)
-)
-
+const passedTests = computed(() => props.tests.filter(test => test.serverData.result === 'PASS').length)
+const failedTests = computed(() => props.tests.filter(test => test.serverData.result === 'WARNING').length)
+const skippedTests = computed(() => props.tests.filter(test => test.serverData.result === 'SKIP').length) // ИСПРАВЛЕНО: было 'skipped'
+console.log(props.tests)
 const circumference = computed(() => 2 * Math.PI * 27)
 </script>
 
@@ -169,7 +197,8 @@ const circumference = computed(() => 2 * Math.PI * 27)
   padding: var(--spacing-xl);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-sm);
-  height: 100%;
+  height: auto;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
 }
@@ -181,6 +210,7 @@ const circumference = computed(() => 2 * Math.PI * 27)
   margin-bottom: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
   padding-bottom: var(--spacing-md);
+  flex-shrink: 0;
 }
 
 .tests-progress {
@@ -234,28 +264,8 @@ const circumference = computed(() => 2 * Math.PI * 27)
   flex-direction: column;
   gap: var(--spacing-md);
   flex: 1;
-  overflow-y: auto;
-  max-height: 400px;
-  padding-right: var(--spacing-xs);
-}
-
-/* Стили для скроллбара */
-.tests-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.tests-list::-webkit-scrollbar-track {
-  background: var(--color-bg-subtle);
-  border-radius: var(--border-radius-full);
-}
-
-.tests-list::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--border-radius-full);
-}
-
-.tests-list::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
+  overflow: visible;
+  padding-right: 0;
 }
 
 .test-item {
@@ -289,6 +299,11 @@ const circumference = computed(() => 2 * Math.PI * 27)
   background: var(--color-error-soft);
 }
 
+.test-item.SKIP {
+  border-color: var(--color-skip);
+  background: var(--color-skip-soft);
+}
+
 .test-icon {
   font-size: 1.2rem;
   display: flex;
@@ -317,9 +332,26 @@ const circumference = computed(() => 2 * Math.PI * 27)
   line-height: 1.2;
 }
 
+.test-status-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+}
+
 .test-duration {
   color: var(--color-text-muted);
   font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.test-skip-badge {
+  background: var(--color-skip);
+  color: var(--color-text-inverted);
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
   white-space: nowrap;
 }
 
@@ -328,6 +360,20 @@ const circumference = computed(() => 2 * Math.PI * 27)
   margin: 0;
   font-size: 0.8rem;
   line-height: 1.3;
+}
+
+.skip-reason {
+  margin-top: 4px;
+  padding: 6px 10px;
+  background: rgba(var(--color-skip-rgb), 0.1);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--color-skip);
+}
+
+.skip-reason-text {
+  color: var(--color-skip);
+  font-size: 0.75rem;
+  line-height: 1.2;
 }
 
 .test-progress-container {
@@ -382,12 +428,17 @@ const circumference = computed(() => 2 * Math.PI * 27)
   text-align: center;
 }
 
-.test-result.success {
+.test-result.PASS {
   background: var(--color-success);
   color: var(--color-text-inverted);
 }
-
-.test-result.error {
+.test-result.SKIP {
+  border-color: var(--color-skip);
+  background: var(--color-skip-soft);
+ 
+  color: var(--color-text);
+}
+.test-result.WARNING {
   background: var(--color-error);
   color: var(--color-text-inverted);
 }
@@ -396,6 +447,7 @@ const circumference = computed(() => 2 * Math.PI * 27)
   margin-top: var(--spacing-lg);
   padding-top: var(--spacing-lg);
   border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .results-header {
@@ -409,6 +461,7 @@ const circumference = computed(() => 2 * Math.PI * 27)
 .results-summary {
   display: flex;
   gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 .summary-item {
@@ -433,6 +486,16 @@ const circumference = computed(() => 2 * Math.PI * 27)
   background: var(--color-error-soft);
 }
 
+.summary-item.skip {
+  border-color: var(--color-skip);
+  background: var(--color-skip-soft);
+}
+
+.summary-item.total {
+  border-color: var(--color-border);
+  background: var(--color-bg-elevated);
+}
+
 .summary-count {
   font-size: 1.2rem;
   font-weight: var(--font-weight-bold);
@@ -447,10 +510,45 @@ const circumference = computed(() => 2 * Math.PI * 27)
   color: var(--color-error);
 }
 
+.summary-item.skip .summary-count {
+  color: var(--color-skip);
+}
+
+.summary-item.total .summary-count {
+  color: var(--color-text);
+}
+
 .summary-label {
   color: var(--color-text-muted);
   font-size: 0.7rem;
   text-align: center;
+}
+
+.skip-info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-info-soft);
+  border: 1px solid var(--color-info);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.skip-info-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.skip-info-content {
+  flex: 1;
+}
+
+.skip-info-text {
+  color: var(--color-info);
+  font-size: 0.8rem;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .results-actions {
@@ -506,6 +604,7 @@ const circumference = computed(() => 2 * Math.PI * 27)
 @media (max-width: 768px) {
   .tests-visualization {
     padding: var(--spacing-lg);
+    min-height: 450px;
   }
   
   .tests-header {
@@ -530,14 +629,15 @@ const circumference = computed(() => 2 * Math.PI * 27)
     gap: var(--spacing-xs);
   }
   
-  .tests-list {
-    max-height: 300px;
+  .test-status-info {
+    align-items: flex-start;
   }
 }
 
 @media (max-width: 480px) {
   .tests-visualization {
     padding: var(--spacing-md);
+    min-height: 400px;
   }
   
   .results-summary {
@@ -565,6 +665,12 @@ const circumference = computed(() => 2 * Math.PI * 27)
   .repeat-button {
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.9rem;
+  }
+  
+  .skip-info {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
   }
 }
 </style>

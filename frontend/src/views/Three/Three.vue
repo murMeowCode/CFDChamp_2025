@@ -8,8 +8,8 @@ import TestResultsVisualization from '@/components/Test/TestResultsVisualization
 const tests = ref([
   {
     id: 1,
-    name: 'ПРОВЕРКА ДЛИНЫ',
-    description: 'Верификация корректности длины последовательности',
+    name: 'ЧАСТОТНЫЙ ТЕСТ',
+    description: 'Анализ распределения частот символов',
     status: 'pending',
     progress: 0,
     duration: null,
@@ -17,8 +17,8 @@ const tests = ref([
   },
   {
     id: 2,
-    name: 'ТЕСТ ЭНТРОПИИ',
-    description: 'Анализ случайности и энтропии последовательности',
+    name: 'ТЕСТ СЕРИЙ',
+    description: 'Проверка последовательностей одинаковых символов',
     status: 'pending',
     progress: 0,
     duration: null,
@@ -26,8 +26,8 @@ const tests = ref([
   },
   {
     id: 3,
-    name: 'СТАТИСТИЧЕСКИЙ АНАЛИЗ',
-    description: 'Проверка статистических свойств',
+    name: 'ПОКЕР-ТЕСТ',
+    description: 'Анализ комбинаций символов',
     status: 'pending',
     progress: 0,
     duration: null,
@@ -35,8 +35,44 @@ const tests = ref([
   },
   {
     id: 4,
-    name: 'ПРОВЕРКА УНИКАЛЬНОСТИ',
-    description: 'Анализ уникальности символов',
+    name: 'ПОСЛЕДОВАТЕЛЬНЫЙ ТЕСТ',
+    description: 'Проверка последовательностей символов',
+    status: 'pending',
+    progress: 0,
+    duration: null,
+    result: null
+  },
+  {
+    id: 5,
+    name: 'ТЕСТ САМЫХ ДЛИННЫХ СЕРИЙ',
+    description: 'Анализ максимальных последовательностей',
+    status: 'pending',
+    progress: 0,
+    duration: null,
+    result: null
+  },
+  {
+    id: 6,
+    name: 'ТЕСТ КУМУЛЯТИВНЫХ СУММ',
+    description: 'Проверка накопленных сумм',
+    status: 'pending',
+    progress: 0,
+    duration: null,
+    result: null
+  },
+  {
+    id: 7,
+    name: 'ТЕСТ АВТОКОРРЕЛЯЦИИ',
+    description: 'Анализ корреляции последовательности',
+    status: 'pending',
+    progress: 0,
+    duration: null,
+    result: null
+  },
+  {
+    id: 8,
+    name: 'ТЕСТ РАНГА МАТРИЦЫ',
+    description: 'Проверка ранга бинарной матрицы',
     status: 'pending',
     progress: 0,
     duration: null,
@@ -94,6 +130,120 @@ const resetAnalysis = () => {
   isAnalyzing.value = false
 }
 
+// НОВАЯ ФУНКЦИЯ: Обновление данных тестов из дочернего компонента
+const setTestResults = (serverResults) => {
+  console.log('📊 Получены данные тестов с сервера:', serverResults)
+  
+  // Маппинг ключей сервера на ID тестов
+  const testMapping = {
+    'frequency': 1,      // Частотный тест
+    'runs': 2,           // Тест серий
+    'poker': 3,          // Покер-тест
+    'serial': 4,         // Последовательный тест
+    'longest_runs': 5,   // Тест самых длинных серий
+    'cumulative_sums': 6, // Тест кумулятивных сумм
+    'autocorrelation': 7, // Тест автокорреляции
+    'matrix_rank': 8     // Тест ранга матрицы
+  }
+  
+  let hasSkippedTests = false
+  let hasCompletedTests = false
+  
+  // Обновляем тесты данными с сервера
+  Object.entries(serverResults).forEach(([testKey, testData]) => {
+    const testId = testMapping[testKey]
+    if (testId) {
+      const test = tests.value.find(t => t.id === testId)
+      if (test) {
+        // Сохраняем исходные данные с сервера
+        test.serverData = testData
+        
+        // Формируем понятное сообщение для пользователя
+        let resultMessage = ''
+        let status = 'pending'
+        let skipReason = ''
+        
+        if (testData) {
+          if (testData.result === 'SKIP') {
+            // Тест пропущен из-за короткой последовательности
+            resultMessage = 'Пропущен'
+            status = 'skip'
+            skipReason = 'короткая последовательность'
+            hasSkippedTests = true
+            hasCompletedTests = true
+          } else if (testData.result === 'PASS') {
+            // Тест пройден успешно
+            resultMessage = 'Пройден'
+            if (testData.p_value !== null && testData.p_value !== undefined) {
+              resultMessage += ` (p-value: ${testData.p_value.toFixed(4)})`
+            }
+            status = 'success'
+            hasCompletedTests = true
+          } else if (testData.result === 'FAIL') {
+            // Тест не пройден
+            resultMessage = 'Не пройден'
+            if (testData.p_value !== null && testData.p_value !== undefined) {
+              resultMessage += ` (p-value: ${testData.p_value.toFixed(4)})`
+            }
+            status = 'error'
+            hasCompletedTests = true
+          } else {
+            // Неизвестный статус
+            resultMessage = testData.result || 'Неизвестный статус'
+            status = 'pending'
+          }
+        } else {
+          resultMessage = 'Данные недоступны'
+          status = 'pending'
+        }
+        
+        // Обновляем результат теста
+        test.result = resultMessage
+        test.status = status
+        test.skipReason = skipReason // Добавляем причину пропуска
+        
+        // Если тест пропущен, устанавливаем прогресс 100%
+        if (status === 'skip') {
+          test.progress = 100
+        }
+        
+        // Добавляем длительность если есть
+        if (testData && testData.duration) {
+          test.duration = testData.duration
+        }
+      }
+    }
+  })
+  
+  console.log('✅ Тесты обновлены данными с сервера')
+  
+  // Проверяем, все ли тесты завершены
+  const allTestsCompleted = tests.value.every(test => 
+    test.status === 'success' || test.status === 'error' || test.status === 'skip'
+  )
+  
+  // Если все тесты завершены, обновляем флаги
+  if (allTestsCompleted && hasCompletedTests) {
+    analysisComplete.value = true
+    isAnalyzing.value = false
+    console.log('🎯 Все тесты завершены, анализ окончен')
+  }
+  
+  // Проверяем, есть ли пропущенные тесты
+  const skippedTests = tests.value.filter(test => test.status === 'skip')
+  if (skippedTests.length > 0) {
+    console.log(`ℹ️ Пропущено тестов: ${skippedTests.length} (короткая последовательность)`)
+  }
+  
+  // Логируем итоговую статистику
+  const passedTests = tests.value.filter(test => test.status === 'success').length
+  const failedTests = tests.value.filter(test => test.status === 'error').length
+  const totalCompleted = tests.value.filter(test => 
+    test.status === 'success' || test.status === 'error' || test.status === 'skip'
+  ).length
+  
+  console.log(`📈 Итоговая статистика: ${passedTests} пройдено, ${failedTests} ошибок, ${skippedTests.length} пропущено, ${totalCompleted}/${tests.value.length} завершено`)
+}
 // Передаем функции в дочерние компоненты
 provide('testControls', {
   tests,
@@ -101,7 +251,8 @@ provide('testControls', {
   updateTestProgress,
   completeTest,
   completeAllTests,
-  resetAnalysis
+  resetAnalysis,
+  setTestResults // ДОБАВЛЯЕМ ЭТУ ФУНКЦИЮ
 })
 </script>
 
@@ -126,7 +277,6 @@ provide('testControls', {
     </div>
   </div>
 </template>
-
 <style scoped>
 .two-column-layout {
   display: grid;
