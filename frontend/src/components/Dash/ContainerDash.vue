@@ -6,20 +6,18 @@
     :tables="tablesData"
     :loading="isLoading"
   >
-    <!-- Слот для графиков -->
-    <template #chart-bar="{ data }">
-      <!-- Передаем data, а не chartsData -->
-      <BarChart :data="data" :title="data.title" />
+    <!-- Слот для линейных графиков -->
+    <template #chart-line="{ chart }">
+      <LineChart 
+        :data="chart.data" 
+        :title="chart.title"
+        :footer-text="chart.footerText"
+      />
     </template>
 
-    <!-- Слот для таблиц -->
-    <template #table-users="{ data }">
-      <UsersTable 
-        :data="data" 
-        @add-user="handleAddUser"
-        @edit-user="handleEditUser"
-        @delete-user="handleDeleteUser"
-      />
+    <!-- Слот для гистограмм -->
+    <template #chart-bar="{ chart }">
+      <BarChart :data="chart.data" :title="chart.title" />
     </template>
 
     <!-- Кастомный контент -->
@@ -62,34 +60,24 @@ const activities = ref([])
 const lastUpdated = ref(null)
 
 // API запросы
-// Запрос для статистики
 const {
   data: statsResponse,
   isPending: statsLoading,
   error: statsError,
-  // Убираем execute и refresh, так как useGet автоматически выполняет запрос
 } = useGet(
   `${api8000}/statistics/dashboard/overview`,
   {},
-  {
-    withCredentials: true,
-  }
-  // Убираем { immediate: false } - пусть запрос выполняется автоматически
+  { withCredentials: true }
 )
 
-// Запрос для графиков и таблиц
 const {
   data: chartsTablesResponse,
   isPending: chartsTablesLoading,
   error: chartsTablesError,
-  // Убираем execute и refresh
 } = useGet(
   `${api8001}/generate/dashboard/generations`,
   {},
-  {
-    withCredentials: true,
-  }
-  // Убираем { immediate: false } - пусть запрос выполняется автоматически
+  { withCredentials: true }
 )
 
 // Computed свойства для данных
@@ -97,11 +85,8 @@ const statsData = computed(() => {
   if (!statsResponse.value) return getDefaultStats()
   
   const apiStats = statsResponse.value
-  
-  // Создаем массив только с нужными полями
   const requiredStats = []
   
-  // Обрабатываем avg_sequence_length
   if (apiStats.avg_sequence_length !== undefined) {
     requiredStats.push({
       value: typeof apiStats.avg_sequence_length === 'number' 
@@ -113,7 +98,6 @@ const statsData = computed(() => {
     })
   }
   
-  // Обрабатываем avg_success_rate
   if (apiStats.avg_success_rate !== undefined) {
     requiredStats.push({
       value: typeof apiStats.avg_success_rate === 'number' 
@@ -125,7 +109,6 @@ const statsData = computed(() => {
     })
   }
   
-  // Обрабатываем total_sequences
   if (apiStats.total_sequences !== undefined) {
     requiredStats.push({
       value: apiStats.total_sequences?.toString() || '0',
@@ -135,32 +118,123 @@ const statsData = computed(() => {
     })
   }
   
-  
-  
-  // Если нет нужных данных, возвращаем дефолтные
   return requiredStats.length > 0 ? requiredStats : getDefaultStats()
 })
 
-// В computed свойствах добавьте преобразование данных для гистограммы
+// ИСПРАВЛЕННЫЙ computed для графиков
 const chartsData = computed(() => {
-  if (!chartsTablesResponse.value) return getDefaultCharts()
+  const charts = []
   
-  const apiData = chartsTablesResponse.value
-  
-  // Преобразуем bit_distribution в формат для гистограммы
-  const bitDistributionChart = {
-    title: 'Распределение битов по длинам последовательностей',
-    type: 'bar',
-    data: transformBitDistribution(apiData.bit_distribution)
+  // 1. Добавляем линейный график с данными seed
+  if (chartsTablesResponse.value && chartsTablesResponse.value.data) {
+    const seedChart = createSeedLineChart(chartsTablesResponse.value.data)
+    if (seedChart) {
+      charts.push(seedChart)
+    }
   }
   
-  // Добавляем другие графики если есть
-  const otherCharts = apiData.charts || []
+  // 2. Добавляем гистограмму из bit_distribution
+  if (chartsTablesResponse.value && chartsTablesResponse.value.bit_distribution) {
+    const bitDistributionChart = {
+      title: 'Распределение битов по длинам последовательностей',
+      type: 'bar',
+      data: transformBitDistribution(chartsTablesResponse.value.bit_distribution)
+    }
+    charts.push(bitDistributionChart)
+  }
   
-  return [bitDistributionChart, ...otherCharts]
+  // 3. Добавляем другие графики из API если есть
+  if (chartsTablesResponse.value && chartsTablesResponse.value.charts) {
+    charts.push(...chartsTablesResponse.value.charts)
+  }
+  
+  // 4. Если нет графиков, возвращаем дефолтные
+  if (charts.length === 0) {
+    return getDefaultCharts()
+  }
+  
+  console.log('📈 Итоговые графики:', charts)
+  return charts
 })
 
-// Функция для преобразования bit_distribution в формат Chart.js
+// Функция для создания линейного графика seed значений
+const createSeedLineChart = (data) => {
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    console.warn('⚠️ Нет данных для создания линейного графика seed')
+    return null
+  }
+  
+  try {
+    // Сортируем данные по дате (от старых к новым)
+    const sortedData = [...data].sort((a, b) => 
+      new Date(a.created_at) - new Date(b.created_at)
+    )
+    
+    // Извлекаем seed значения и даты
+    const seedValues = sortedData.map(item => {
+      const seed = parseFloat(item.seed)
+      return isNaN(seed) ? 0 : seed
+    })
+    
+    const labels = sortedData.map(item => {
+      const date = new Date(item.created_at)
+      return date.toLocaleTimeString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    })
+    
+    // Рассчитываем математическое ожидание (среднее значение)
+    const meanValue = seedValues.reduce((sum, val) => sum + val, 0) / seedValues.length
+    
+    console.log('📊 Данные для линейного графика:', {
+      labels,
+      seedValues,
+      meanValue
+    })
+    
+    return {
+      title: 'Динамика Seed значений',
+      type: 'line',
+      footerText: `Математическое ожидание: ${meanValue.toFixed(6)}`,
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Seed значения',
+            data: seedValues,
+            borderColor: '#4299e1',
+            backgroundColor: 'rgba(66, 153, 225, 0.1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#4299e1',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          },
+          {
+            label: 'Математическое ожидание',
+            data: Array(seedValues.length).fill(meanValue),
+            borderColor: '#e53e3e',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            tension: 0,
+            fill: false,
+            pointRadius: 0
+          }
+        ]
+      }
+    }
+  } catch (error) {
+    console.error('❌ Ошибка создания линейного графика:', error)
+    return null
+  }
+}
+
+// Функция для преобразования bit_distribution
 const transformBitDistribution = (bitDistribution) => {
   if (!bitDistribution || !Array.isArray(bitDistribution)) {
     return getDefaultChartData('bar')
@@ -170,29 +244,23 @@ const transformBitDistribution = (bitDistribution) => {
   const avgOnesData = bitDistribution.map(item => item.avg_ones)
   const avgZerosData = bitDistribution.map(item => item.avg_zeros)
   
-  console.log('📊 Данные для гистограммы:', {
-    labels,
-    avgOnesData,
-    avgZerosData
-  })
-  
   return {
     labels,
     datasets: [
       {
         label: 'Среднее количество 1',
         data: avgOnesData,
-        backgroundColor: '#4299e1', // Синий для единиц
+        backgroundColor: '#4299e1',
         borderColor: '#4299e1',
         borderWidth: 1,
         borderRadius: 4,
-        barPercentage: 0.6, // Ширина столбцов
-        categoryPercentage: 0.8 // Расстояние между группами
+        barPercentage: 0.6,
+        categoryPercentage: 0.8
       },
       {
         label: 'Среднее количество 0',
         data: avgZerosData,
-        backgroundColor: '#e53e3e', // Красный для нулей
+        backgroundColor: '#e53e3e',
         borderColor: '#e53e3e',
         borderWidth: 1,
         borderRadius: 4,
@@ -222,7 +290,7 @@ const isLoading = computed(() => statsLoading.value || chartsTablesLoading.value
 
 const error = computed(() => statsError.value || chartsTablesError.value)
 
-// Watchers для обработки данных
+// Watchers
 watch(statsResponse, (newData) => {
   if (newData) {
     console.log('📊 Статистика загружена:', newData)
@@ -238,6 +306,7 @@ watch(statsResponse, (newData) => {
 watch(chartsTablesResponse, (newData) => {
   if (newData) {
     console.log('📈 Графики и таблицы загружены:', newData)
+    console.log('📈 Данные для линейного графика:', newData.data)
     addActivity({
       user: 'Система',
       action: 'графики и таблицы обновлены',
@@ -260,38 +329,7 @@ watch([statsError, chartsTablesError], ([statsErr, chartsErr]) => {
 
 // Methods
 const refreshData = () => {
-  // Перезагружаем страницу для простоты, или можно пересоздать компонент
   window.location.reload()
-}
-
-const handleAddUser = (userData) => {
-  console.log('Добавить пользователя:', userData)
-  addActivity({
-    user: 'Система',
-    action: 'добавлен новый пользователь',
-    type: 'success',
-    details: `Пользователь: ${userData.name}`
-  })
-}
-
-const handleEditUser = (user) => {
-  console.log('Редактировать пользователя:', user)
-  addActivity({
-    user: 'Администратор',
-    action: 'отредактировал профиль пользователя',
-    type: 'info',
-    details: `Пользователь: ${user.name}`
-  })
-}
-
-const handleDeleteUser = (user) => {
-  console.log('Удалить пользователя:', user)
-  addActivity({
-    user: 'Администратор',
-    action: 'удалил пользователя',
-    type: 'danger',
-    details: `Пользователь: ${user.name}`
-  })
 }
 
 const addTestActivity = () => {
@@ -310,30 +348,12 @@ const addActivity = (activity) => {
     ...activity
   })
   
-  // Ограничиваем количество записей
   if (activities.value.length > 10) {
     activities.value = activities.value.slice(0, 10)
   }
 }
 
 // Вспомогательные функции
-const getIconByType = (type) => {
-  const icons = {
-    users: 'fas fa-users',
-    revenue: 'fas fa-dollar-sign',
-    success: 'fas fa-chart-line',
-    error: 'fas fa-exclamation-triangle',
-    orders: 'fas fa-shopping-cart',
-    traffic: 'fas fa-network-wired',
-    total_users: 'fas fa-users',
-    total_income: 'fas fa-dollar-sign',
-    success_rate: 'fas fa-chart-line',
-    errors_today: 'fas fa-exclamation-triangle',
-    default: 'fas fa-chart-bar'
-  }
-  return icons[type] || icons.default
-}
-
 const getTypeByValue = (value) => {
   if (typeof value === 'number') {
     if (value > 80) return 'success'
@@ -341,22 +361,6 @@ const getTypeByValue = (value) => {
     return 'danger'
   }
   return 'default'
-}
-
-const formatLabel = (key) => {
-  const labels = {
-    total_users: 'Всего пользователей',
-    total_income: 'Общий доход',
-    success_rate: 'Успешных операций',
-    errors_today: 'Ошибок сегодня',
-    users: 'Пользователи',
-    revenue: 'Доход',
-    success: 'Успешные операции',
-    error: 'Ошибки'
-  }
-  return labels[key] || key.split('_').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1)
-  ).join(' ')
 }
 
 // Дефолтные данные
@@ -389,61 +393,82 @@ const getDefaultStats = () => [
 
 const getDefaultCharts = () => [
   {
-    title: 'Трафик за неделю',
+    title: 'Динамика Seed значений',
     type: 'line',
-    data: getDefaultChartData('line')
+    data: getDefaultLineChartData()
   },
   {
-    title: 'Доход по месяцам',
+    title: 'Распределение битов',
     type: 'bar',
-    data: getDefaultChartData('bar')
+    data: getDefaultBarChartData()
   }
 ]
 
-const getDefaultTables = () => [
-  {
-    title: 'Последние пользователи',
-    type: 'users',
-    data: {
-      users: []
-    }
-  }
-]
-
-const getDefaultChartData = (type) => {
-  if (type === 'bar') {
-    return {
-      labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
-      datasets: [
-        {
-          label: 'Данные',
-          data: [0, 0, 0, 0, 0, 0],
-          backgroundColor: '#4299e1'
-        }
-      ]
-    }
-  }
-  
+const getDefaultLineChartData = () => {
   return {
-    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+    labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
     datasets: [
       {
-        label: 'Данные',
-        data: [0, 0, 0, 0, 0, 0, 0],
+        label: 'Seed значения',
+        data: [0.005, 0.006, 0.007, 0.008, 0.009, 0.010],
         borderColor: '#4299e1',
-        backgroundColor: 'rgba(66, 153, 225, 0.1)'
+        backgroundColor: 'rgba(66, 153, 225, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      },
+      {
+        label: 'Математическое ожидание',
+        data: [0.0075, 0.0075, 0.0075, 0.0075, 0.0075, 0.0075],
+        borderColor: '#e53e3e',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        tension: 0,
+        fill: false
       }
     ]
   }
 }
 
+const getDefaultBarChartData = () => {
+  return {
+    labels: ['10-20', '21-30', '31-40', '41-50', '51-60'],
+    datasets: [
+      {
+        label: 'Среднее количество 1',
+        data: [5, 8, 12, 15, 18],
+        backgroundColor: '#4299e1'
+      },
+      {
+        label: 'Среднее количество 0',
+        data: [5, 7, 8, 10, 12],
+        backgroundColor: '#e53e3e'
+      }
+    ]
+  }
+}
+
+const getDefaultChartData = (type) => {
+  return type === 'bar' ? getDefaultBarChartData() : getDefaultLineChartData()
+}
+
+const getDefaultTables = () => [
+  {
+    title: 'Последние пользователи',
+    type: 'users',
+    data: { users: [] }
+  }
+]
+
 // Lifecycle
 onMounted(() => {
-  // Запросы выполняются автоматически через useGet
-  console.log('🚀 Dashboard компонент загружен, запросы выполняются автоматически')
+  console.log('🚀 Dashboard компонент загружен')
 })
 </script>
+
 <style scoped>
+/* Стили остаются без изменений */
 .actions-container {
   display: flex;
   align-items: center;
@@ -492,20 +517,6 @@ onMounted(() => {
   box-shadow: var(--shadow-lg);
 }
 
-.btn-secondary {
-  background: var(--color-vanilla-light);
-  color: var(--color-midnight);
-  border-color: var(--color-vanilla-dark);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--color-vanilla);
-  border-color: var(--color-midnight-light);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
 .btn-accent {
   background: var(--color-midnight-medium);
   color: var(--color-vanilla);
@@ -518,11 +529,6 @@ onMounted(() => {
   border-color: var(--color-midnight-light);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
-}
-
-.btn-sm {
-  padding: 6px 12px;
-  font-size: 12px;
 }
 
 .last-updated {
@@ -570,7 +576,6 @@ onMounted(() => {
   background-clip: text;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .actions-container {
     flex-direction: column;
@@ -594,7 +599,6 @@ onMounted(() => {
   }
 }
 
-/* Анимации */
 .btn {
   position: relative;
   overflow: hidden;
@@ -615,7 +619,6 @@ onMounted(() => {
   left: 100%;
 }
 
-/* Специфичные стили для состояний */
 .btn:active {
   transform: translateY(0);
 }
@@ -624,7 +627,6 @@ onMounted(() => {
   background: var(--color-midnight);
 }
 
-/* Иконки */
 .btn i {
   font-size: 0.9em;
   transition: transform var(--transition-fast);
@@ -643,7 +645,6 @@ onMounted(() => {
   100% { transform: rotate(360deg); }
 }
 
-/* Стили для disabled состояний */
 .btn:disabled {
   background: var(--color-bg-muted);
   color: var(--color-text-muted);
