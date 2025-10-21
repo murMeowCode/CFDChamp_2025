@@ -4,6 +4,7 @@ import { useStarStore } from '@/stores/useStartStore'
 import BtnStar from '@/components/BTN/BtnStar.vue'
 import MyRandom from '@/components/Random/MyRandom.vue'
 import { storeToRefs } from 'pinia'
+import MyLinerRegister from '@/components/LineRegister/MyLinerRegister.vue'
 
 const visibleComponents = ref([])
 const isAnimating = ref(false)
@@ -246,72 +247,77 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="one" data-aos="zoom-in">
-    <div class="random-container">
-      <!-- Видеофон -->
-      <div class="video-background">
-        <video
-          ref="videoRef"
-          muted
-          loop
-          playsinline
-          preload="metadata" 
-          @loadeddata="onVideoLoad"
-          @error="onVideoError"
-          class="background-video"
-          :class="{ 'video-playing': isVideoPlaying }"
-        >
-          <source src="@/assets/Space.mp4" type="video/mp4">
-          <div class="video-fallback">
-            Ваш браузер не поддерживает видео
+  <div>
+    <div class="one" data-aos="zoom-in">
+      <div class="random-container">
+        <!-- Видеофон -->
+        <div class="video-background">
+          <video
+            ref="videoRef"
+            muted
+            loop
+            playsinline
+            preload="metadata" 
+            @loadeddata="onVideoLoad"
+            @error="onVideoError"
+            class="background-video"
+            :class="{ 'video-playing': isVideoPlaying }"
+          >
+            <!-- <source src="@/assets/Space.mp4" type="video/mp4"> -->
+            <div class="video-fallback">
+              Ваш браузер не поддерживает видео
+            </div>
+          </video>
+        </div>
+        
+        <!-- Компоненты поверх видео -->
+        <TransitionGroup name="stagger">
+          <MyRandom 
+            v-for="component in visibleComponents" 
+            :key="component.id"
+            :title="component.title"
+            :description="component.description"
+            :features="component.features"
+            :class="['random-item', { 'visible': component.visible }]"
+            :style="component.position"
+          />
+        </TransitionGroup>
+        
+        <!-- Индикатор загрузки видео -->
+        <div v-if="!isVideoLoaded && !isVideoPlaying" class="video-loading">
+          Загрузка фона...
+        </div>
+        
+        <!-- Счетчик и прогресс -->
+        <div v-if="isAnimating" class="animation-progress">
+          <div class="progress-text">
+            Прогресс: {{ currentProgress }}/10
           </div>
-        </video>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              :style="{ width: (currentProgress / 10) * 100 + '%' }"
+            ></div>
+          </div>
+          <div class="progress-details">
+            <span class="detail-item">Текущий: {{ currentProgress }}</span>
+            <span class="detail-item">Видимых: {{ visibleComponents.filter(c => c.visible).length }}</span>
+          </div>
+        </div>
       </div>
       
-      <!-- Компоненты поверх видео -->
-      <TransitionGroup name="stagger">
-        <MyRandom 
-          v-for="component in visibleComponents" 
-          :key="component.id"
-          :title="component.title"
-          :description="component.description"
-          :features="component.features"
-          :class="['random-item', { 'visible': component.visible }]"
-          :style="component.position"
-        />
-      </TransitionGroup>
-      
-      <!-- Индикатор загрузки видео -->
-      <div v-if="!isVideoLoaded && !isVideoPlaying" class="video-loading">
-        Загрузка фона...
-      </div>
-      
-      <!-- Счетчик и прогресс -->
-      <div v-if="isAnimating" class="animation-progress">
-        <div class="progress-text">
-          Прогресс: {{ currentProgress }}/10
-        </div>
-        <div class="progress-bar">
-          <div 
-            class="progress-fill" 
-            :style="{ width: (currentProgress / 10) * 100 + '%' }"
-          ></div>
-        </div>
-        <div class="progress-details">
-          <span class="detail-item">Текущий: {{ currentProgress }}</span>
-          <span class="detail-item">Видимых: {{ visibleComponents.filter(c => c.visible).length }}</span>
-        </div>
+      <div class="controls">
+        <BtnStar 
+          variant="secondary" 
+          :text="isAnimating ? `Генерация... (${currentProgress}/10)` : 'Запустить последовательность'" 
+          size="medium"
+          :disabled="isAnimating"
+          @click="showMultipleRandom"
+        /> 
       </div>
     </div>
-    
-    <div class="controls">
-      <BtnStar 
-        variant="secondary" 
-        :text="isAnimating ? `Генерация... (${currentProgress}/10)` : 'Запустить последовательность'" 
-        size="medium"
-        :disabled="isAnimating"
-        @click="showMultipleRandom"
-      /> 
+    <div>
+      <MyLinerRegister/>
     </div>
   </div>
 </template>
