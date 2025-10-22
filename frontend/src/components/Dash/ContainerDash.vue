@@ -1,57 +1,23 @@
 <template>
   <OneDash
     :title="dashboardTitle"
-    :stats="dashboardStore.getStats"
-    :charts="dashboardStore.getCharts"
-    :tables="dashboardStore.getTables"
-    :loading="dashboardStore.isLoading"
+    :stats="statsData"
+    :charts="chartsData"
+    :tables="tablesData"
+    :loading="isLoading"
   >
-    <!-- Слот для действий -->
-    <template #actions>
-      <div class="actions-container">
-        <button 
-          class="btn btn-primary" 
-          @click="refreshData"
-          :disabled="dashboardStore.isLoading"
-        >
-          <i 
-            class="fas" 
-            :class="dashboardStore.isLoading ? 'fa-spinner fa-spin' : 'fa-sync-alt'"
-          ></i>
-          {{ dashboardStore.isLoading ? 'Загрузка...' : 'Обновить' }}
-        </button>
-        <button 
-          class="btn btn-secondary" 
-          @click="dashboardStore.exportData"
-          :disabled="dashboardStore.isLoading"
-        >
-          <i class="fas fa-download"></i>
-          Экспорт
-        </button>
-        <div class="last-updated" v-if="dashboardStore.getLastUpdated">
-          <i class="fas fa-clock"></i>
-          Обновлено: {{ dashboardStore.getLastUpdated }}
-        </div>
-      </div>
-    </template>
-
-    <!-- Слот для графиков -->
-    <template #chart-line="{ data }">
-      <LineChart :data="data" />
-    </template>
-
-    <template #chart-bar="{ data }">
-      <BarChart :data="data" />
-    </template>
-
-    <!-- Слот для таблиц -->
-    <template #table-users="{ data }">
-      <UsersTable 
-        :data="data" 
-        @add-user="handleAddUser"
-        @edit-user="handleEditUser"
-        @delete-user="handleDeleteUser"
+    <!-- Слот для линейных графиков -->
+    <template #chart-line="{ chart }">
+      <LineChart 
+        :data="chart.data" 
+        :title="chart.title"
+        :footer-text="chart.footerText"
       />
+    </template>
+
+    <!-- Слот для гистограмм -->
+    <template #chart-bar="{ chart }">
+      <BarChart :data="chart.data" :title="chart.title" />
     </template>
 
     <!-- Кастомный контент -->
@@ -59,115 +25,461 @@
       <div class="recent-activity">
         <div class="custom-header">
           <h3>Последняя активность</h3>
-          <button class="btn btn-accent" @click="addTestActivity">
-            <i class="fas fa-plus"></i>
-            Тест
-          </button>
+          <div class="header-actions">
+            <button class="btn btn-accent" @click="addTestActivity">
+              <i class="fas fa-plus"></i>
+              Тест
+            </button>
+            <button class="btn btn-primary" @click="refreshData" :disabled="isLoading">
+              <i class="fas fa-sync-alt" :class="{ 'fa-spin': isLoading }"></i>
+              Обновить
+            </button>
+          </div>
         </div>
-        <ActivityTimeline :activities="dashboardStore.getActivities" />
+        <ActivityTimeline :activities="activities" />
       </div>
     </template>
   </OneDash>
 </template>
 
-<script>
-import { onMounted } from 'vue'
-import { useDashboardStore } from '@/stores/useDashStore'
+<script setup>
+import { computed, onMounted, ref, watch } from 'vue'
 import OneDash from './OneDash.vue'
 import LineChart from '@/components/Charts/LineChart.vue'
 import BarChart from '@/components/Charts/BarChart.vue'
 import UsersTable from '../Charts/UsersTable.vue'
 import ActivityTimeline from '../Charts/ActivityTimeline.vue'
+import { useApiGet } from '@/utils/api/useApiGet'
+import { api8000, api8001 } from '@/utils/apiUrl/urlApi'
 
-export default {
-  name: 'DashboardContainer',
-  components: {
-    OneDash,
-    LineChart,
-    BarChart,
-    UsersTable,
-    ActivityTimeline
-  },
-  setup() {
-    const dashboardStore = useDashboardStore()
-    const dashboardTitle = 'Обзор системы'
+const { useGet } = useApiGet()
 
-    const refreshData = async () => {
-      try {
-        await dashboardStore.fetchData()
-        // Можно добавить уведомление об успехе
-        console.log('Данные успешно обновлены')
-      } catch (error) {
-        console.error('Ошибка загрузки данных:', error)
-        // Можно показать уведомление об ошибке
-      }
-    }
+// Refs
+const dashboardTitle = ref('Обзор системы')
+const activities = ref([])
+const lastUpdated = ref(null)
 
-    const handleAddUser = (userData) => {
-      console.log('Добавить пользователя:', userData)
-      dashboardStore.addActivity({
-        user: 'Система',
-        action: 'добавлен новый пользователь',
-        type: 'success',
-        details: `Пользователь: ${userData.name}`
-      })
-    }
+// API запросы
+const {
+  data: statsResponse,
+  isPending: statsLoading,
+  error: statsError,
+} = useGet(
+  `${api8000}/statistics/dashboard/overview`,
+  {},
+  { withCredentials: true }
+)
 
-    const handleEditUser = (user) => {
-      console.log('Редактировать пользователя:', user)
-      dashboardStore.addActivity({
-        user: 'Администратор',
-        action: 'отредактировал профиль пользователя',
-        type: 'info',
-        details: `Пользователь: ${user.name}`
-      })
-    }
+const {
+  data: chartsTablesResponse,
+  isPending: chartsTablesLoading,
+  error: chartsTablesError,
+} = useGet(
+  `${api8001}/generate/dashboard/generations`,
+  {},
+  { withCredentials: true }
+)
 
-    const handleDeleteUser = (user) => {
-      console.log('Удалить пользователя:', user)
-      dashboardStore.addActivity({
-        user: 'Администратор',
-        action: 'удалил пользователя',
-        type: 'danger',
-        details: `Пользователь: ${user.name}`
-      })
-    }
-
-    const addTestActivity = () => {
-      dashboardStore.addActivity({
-        user: 'Тестовая система',
-        action: 'выполнено тестовое действие',
-        type: 'warning',
-        details: 'Это тестовая активность для демонстрации'
-      })
-    }
-
-    onMounted(() => {
-      // Инициализируем данные при монтировании
-      if (dashboardStore.getStats.length === 0) {
-        dashboardStore.initializeData()
-      }
+// Computed свойства для данных
+const statsData = computed(() => {
+  if (!statsResponse.value) return getDefaultStats()
+  
+  const apiStats = statsResponse.value
+  const requiredStats = []
+  
+  if (apiStats.avg_sequence_length !== undefined) {
+    requiredStats.push({
+      value: typeof apiStats.avg_sequence_length === 'number' 
+        ? apiStats.avg_sequence_length.toFixed(2) 
+        : apiStats.avg_sequence_length.toString(),
+      label: 'Средняя длина последовательности',
+      icon: 'fas fa-ruler',
+      type: getTypeByValue(apiStats.avg_sequence_length)
     })
+  }
+  
+  if (apiStats.avg_success_rate !== undefined) {
+    requiredStats.push({
+      value: typeof apiStats.avg_success_rate === 'number' 
+        ? `${(apiStats.avg_success_rate * 100).toFixed(1)}%`
+        : apiStats.avg_success_rate.toString(),
+      label: 'Средняя успешность тестов',
+      icon: 'fas fa-chart-line',
+      type: getTypeByValue(apiStats.avg_success_rate)
+    })
+  }
+  
+  if (apiStats.total_sequences !== undefined) {
+    requiredStats.push({
+      value: apiStats.total_sequences?.toString() || '0',
+      label: 'Всего последовательностей',
+      icon: 'fas fa-list-ol',
+      type: getTypeByValue(apiStats.total_sequences)
+    })
+  }
+  
+  return requiredStats.length > 0 ? requiredStats : getDefaultStats()
+})
 
-    return {
-      dashboardStore,
-      dashboardTitle,
-      refreshData,
-      handleAddUser,
-      handleEditUser,
-      handleDeleteUser,
-      addTestActivity
+// ИСПРАВЛЕННЫЙ computed для графиков
+const chartsData = computed(() => {
+  const charts = []
+  
+  // 1. Добавляем линейный график с данными seed
+  if (chartsTablesResponse.value && chartsTablesResponse.value.data) {
+    const seedChart = createSeedLineChart(chartsTablesResponse.value.data)
+    if (seedChart) {
+      charts.push(seedChart)
     }
   }
+  
+  // 2. Добавляем гистограмму из bit_distribution
+  if (chartsTablesResponse.value && chartsTablesResponse.value.bit_distribution) {
+    const bitDistributionChart = {
+      title: 'Распределение битов по длинам последовательностей',
+      type: 'bar',
+      data: transformBitDistribution(chartsTablesResponse.value.bit_distribution)
+    }
+    charts.push(bitDistributionChart)
+  }
+  
+  // 3. Добавляем другие графики из API если есть
+  if (chartsTablesResponse.value && chartsTablesResponse.value.charts) {
+    charts.push(...chartsTablesResponse.value.charts)
+  }
+  
+  // 4. Если нет графиков, возвращаем дефолтные
+  if (charts.length === 0) {
+    return getDefaultCharts()
+  }
+  
+  console.log('📈 Итоговые графики:', charts)
+  return charts
+})
+
+// Функция для создания линейного графика seed значений
+const createSeedLineChart = (data) => {
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    console.warn('⚠️ Нет данных для создания линейного графика seed')
+    return null
+  }
+  
+  try {
+    // Сортируем данные по дате (от старых к новым)
+    const sortedData = [...data].sort((a, b) => 
+      new Date(a.created_at) - new Date(b.created_at)
+    )
+    
+    // Извлекаем seed значения и даты
+    const seedValues = sortedData.map(item => {
+      const seed = parseFloat(item.seed)
+      return isNaN(seed) ? 0 : seed
+    })
+    
+    const labels = sortedData.map(item => {
+      const date = new Date(item.created_at)
+      return date.toLocaleTimeString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    })
+    
+    // Рассчитываем математическое ожидание (среднее значение)
+    const meanValue = seedValues.reduce((sum, val) => sum + val, 0) / seedValues.length
+    
+    console.log('📊 Данные для линейного графика:', {
+      labels,
+      seedValues,
+      meanValue
+    })
+    
+    return {
+      title: 'Динамика Seed значений',
+      type: 'line',
+      footerText: `Математическое ожидание: ${meanValue.toFixed(6)}`,
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Seed значения',
+            data: seedValues,
+            borderColor: '#4299e1',
+            backgroundColor: 'rgba(66, 153, 225, 0.1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#4299e1',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          },
+          {
+            label: 'Математическое ожидание',
+            data: Array(seedValues.length).fill(meanValue),
+            borderColor: '#e53e3e',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            tension: 0,
+            fill: false,
+            pointRadius: 0
+          }
+        ]
+      }
+    }
+  } catch (error) {
+    console.error('❌ Ошибка создания линейного графика:', error)
+    return null
+  }
 }
+
+// Функция для преобразования bit_distribution
+const transformBitDistribution = (bitDistribution) => {
+  if (!bitDistribution || !Array.isArray(bitDistribution)) {
+    return getDefaultChartData('bar')
+  }
+  
+  const labels = bitDistribution.map(item => item.length_range)
+  const avgOnesData = bitDistribution.map(item => item.avg_ones)
+  const avgZerosData = bitDistribution.map(item => item.avg_zeros)
+  
+  return {
+    labels,
+    datasets: [
+      {
+        label: 'Среднее количество 1',
+        data: avgOnesData,
+        backgroundColor: '#4299e1',
+        borderColor: '#4299e1',
+        borderWidth: 1,
+        borderRadius: 4,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8
+      },
+      {
+        label: 'Среднее количество 0',
+        data: avgZerosData,
+        backgroundColor: '#e53e3e',
+        borderColor: '#e53e3e',
+        borderWidth: 1,
+        borderRadius: 4,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8
+      }
+    ]
+  }
+}
+
+const tablesData = computed(() => {
+  if (!chartsTablesResponse.value) return getDefaultTables()
+  
+  const apiTables = chartsTablesResponse.value.tables || []
+  if (Array.isArray(apiTables)) {
+    return apiTables.map(table => ({
+      title: table.title || 'Таблица',
+      type: table.type || 'users',
+      data: table.data || {}
+    }))
+  }
+  
+  return getDefaultTables()
+})
+
+const isLoading = computed(() => statsLoading.value || chartsTablesLoading.value)
+
+const error = computed(() => statsError.value || chartsTablesError.value)
+
+// Watchers
+watch(statsResponse, (newData) => {
+  if (newData) {
+    console.log('📊 Статистика загружена:', newData)
+    lastUpdated.value = new Date().toLocaleString('ru-RU')
+    addActivity({
+      user: 'Система',
+      action: 'статистика обновлена',
+      type: 'success'
+    })
+  }
+})
+
+watch(chartsTablesResponse, (newData) => {
+  if (newData) {
+    console.log('📈 Графики и таблицы загружены:', newData)
+    console.log('📈 Данные для линейного графика:', newData.data)
+    addActivity({
+      user: 'Система',
+      action: 'графики и таблицы обновлены',
+      type: 'success'
+    })
+  }
+})
+
+watch([statsError, chartsTablesError], ([statsErr, chartsErr]) => {
+  if (statsErr || chartsErr) {
+    console.error('❌ Ошибки загрузки:', { statsErr, chartsErr })
+    addActivity({
+      user: 'Система',
+      action: 'ошибка загрузки данных',
+      type: 'danger',
+      details: statsErr?.message || chartsErr?.message
+    })
+  }
+})
+
+// Methods
+const refreshData = () => {
+  window.location.reload()
+}
+
+const addTestActivity = () => {
+  addActivity({
+    user: 'Тестовая система',
+    action: 'выполнено тестовое действие',
+    type: 'warning',
+    details: 'Это тестовая активность для демонстрации'
+  })
+}
+
+const addActivity = (activity) => {
+  activities.value.unshift({
+    id: Date.now(),
+    time: 'только что',
+    ...activity
+  })
+  
+  if (activities.value.length > 10) {
+    activities.value = activities.value.slice(0, 10)
+  }
+}
+
+// Вспомогательные функции
+const getTypeByValue = (value) => {
+  if (typeof value === 'number') {
+    if (value > 80) return 'success'
+    if (value > 50) return 'warning'
+    return 'danger'
+  }
+  return 'default'
+}
+
+// Дефолтные данные
+const getDefaultStats = () => [
+  {
+    value: '0',
+    label: 'Всего пользователей',
+    icon: 'fas fa-users',
+    type: 'default'
+  },
+  {
+    value: '₽0',
+    label: 'Общий доход',
+    icon: 'fas fa-dollar-sign',
+    type: 'default'
+  },
+  {
+    value: '0%',
+    label: 'Успешных операций',
+    icon: 'fas fa-chart-line',
+    type: 'default'
+  },
+  {
+    value: '0',
+    label: 'Ошибок сегодня',
+    icon: 'fas fa-exclamation-triangle',
+    type: 'default'
+  }
+]
+
+const getDefaultCharts = () => [
+  {
+    title: 'Динамика Seed значений',
+    type: 'line',
+    data: getDefaultLineChartData()
+  },
+  {
+    title: 'Распределение битов',
+    type: 'bar',
+    data: getDefaultBarChartData()
+  }
+]
+
+const getDefaultLineChartData = () => {
+  return {
+    labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00'],
+    datasets: [
+      {
+        label: 'Seed значения',
+        data: [0.005, 0.006, 0.007, 0.008, 0.009, 0.010],
+        borderColor: '#4299e1',
+        backgroundColor: 'rgba(66, 153, 225, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      },
+      {
+        label: 'Математическое ожидание',
+        data: [0.0075, 0.0075, 0.0075, 0.0075, 0.0075, 0.0075],
+        borderColor: '#e53e3e',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        tension: 0,
+        fill: false
+      }
+    ]
+  }
+}
+
+const getDefaultBarChartData = () => {
+  return {
+    labels: ['10-20', '21-30', '31-40', '41-50', '51-60'],
+    datasets: [
+      {
+        label: 'Среднее количество 1',
+        data: [5, 8, 12, 15, 18],
+        backgroundColor: '#4299e1'
+      },
+      {
+        label: 'Среднее количество 0',
+        data: [5, 7, 8, 10, 12],
+        backgroundColor: '#e53e3e'
+      }
+    ]
+  }
+}
+
+const getDefaultChartData = (type) => {
+  return type === 'bar' ? getDefaultBarChartData() : getDefaultLineChartData()
+}
+
+const getDefaultTables = () => [
+  {
+    title: 'Последние пользователи',
+    type: 'users',
+    data: { users: [] }
+  }
+]
+
+// Lifecycle
+onMounted(() => {
+  console.log('🚀 Dashboard компонент загружен')
+})
 </script>
 
 <style scoped>
+/* Стили остаются без изменений */
 .actions-container {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
   flex-wrap: wrap;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
 }
 
 .btn {
@@ -193,8 +505,8 @@ export default {
 }
 
 .btn-primary {
-  background: var(--color-primary);
-  color: var(--color-vanilla);
+  background: var(--color-vanilla-light);
+  color: var(--color-midnight);
   border-color: var(--color-midnight);
   box-shadow: var(--shadow-md);
 }
@@ -203,20 +515,6 @@ export default {
   background: var(--color-dark);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
-}
-
-.btn-secondary {
-  background: var(--color-vanilla-light);
-  color: var(--color-midnight);
-  border-color: var(--color-vanilla-dark);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--color-vanilla);
-  border-color: var(--color-midnight-light);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .btn-accent {
@@ -231,11 +529,6 @@ export default {
   border-color: var(--color-midnight-light);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
-}
-
-.btn-sm {
-  padding: 6px 12px;
-  font-size: 12px;
 }
 
 .last-updated {
@@ -283,18 +576,11 @@ export default {
   background-clip: text;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .actions-container {
     flex-direction: column;
     align-items: stretch;
     gap: var(--spacing-sm);
-  }
-  
-  .last-updated {
-    order: -1;
-    justify-content: center;
-    text-align: center;
   }
   
   .custom-header {
@@ -303,12 +589,16 @@ export default {
     align-items: flex-start;
   }
   
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
   .btn {
     justify-content: center;
   }
 }
 
-/* Анимации */
 .btn {
   position: relative;
   overflow: hidden;
@@ -329,7 +619,6 @@ export default {
   left: 100%;
 }
 
-/* Специфичные стили для состояний */
 .btn:active {
   transform: translateY(0);
 }
@@ -338,7 +627,6 @@ export default {
   background: var(--color-midnight);
 }
 
-/* Иконки */
 .btn i {
   font-size: 0.9em;
   transition: transform var(--transition-fast);
@@ -348,7 +636,15 @@ export default {
   transform: scale(1.1);
 }
 
-/* Стили для disabled состояний */
+.fa-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .btn:disabled {
   background: var(--color-bg-muted);
   color: var(--color-text-muted);
