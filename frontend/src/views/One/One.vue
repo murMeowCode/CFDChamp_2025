@@ -5,17 +5,83 @@ import BtnStar from '@/components/BTN/BtnStar.vue'
 import MyRandom from '@/components/Random/MyRandom.vue'
 import { storeToRefs } from 'pinia'
 import MyLinerRegister from '@/components/LineRegister/MyLinerRegister.vue'
+import '@/assets/fonts/fonts.css'
 
 const visibleComponents = ref([])
 const isAnimating = ref(false)
-const videoRef = ref(null)
-const isVideoLoaded = ref(false)
-const isVideoPlaying = ref(false)
+const spaceVideoRef = ref(null)
+const sunVideoRef = ref(null)
+const isSpaceVideoLoaded = ref(false)
+const isSunVideoLoaded = ref(false)
+const isSpaceVideoPlaying = ref(false)
+const isSunVideoPlaying = ref(false)
 const currentProgress = ref(0)
+const currentVideo = ref('space') // 'space' или 'sun'
+const startSdvig = ref(false)
+const showMuteButton = ref(false) // Добавляем состояние для показа кнопки
+
+// Аудио ссылки и состояния
+const audioRefs = {
+  1: ref(null),
+  2: ref(null),
+  3: ref(null),
+  4: ref(null)
+}
+
+const audioStates = {
+  1: ref(false),
+  2: ref(false),
+  3: ref(false),
+  4: ref(false)
+}
+
+// Добавьте эти переменные для анимации числа
+const showNumber = ref(false)
+const numberPosition = ref({ y: '50%', opacity: 1 })
+
+// Функция для заглушения всех аудио
+const muteAllAudio = () => {
+  stopAllAudio()
+  console.log('Все аудио заглушены')
+  showMuteButton.value = false // Скрываем кнопку после нажатия
+}
+
+// Функция для показа числа
+const showCenterNumber = () => {
+  showNumber.value = true
+  numberPosition.value = { y: '50%', opacity: 1 }
+  console.log("OK")
+  // Через секунду начинаем анимацию исчезновения
+  setTimeout(() => {
+    numberPosition.value = { y: '400%', opacity: 0 }
+    
+    // После завершения анимации скрываем элемент
+    setTimeout(() => {
+      showNumber.value = false
+    }, 1000)
+  }, 1000)
+}
+
+// Добавьте переменную для отслеживания первого показа
+const isFirstSunPlay = ref(true)
+
+// Обработчик начала воспроизведения Sun видео
+const onSunVideoPlay = () => {
+  console.log('Sun видео началось')
+  
+  // Показываем число только при первом запуске
+  if (isFirstSunPlay.value) {
+    console.log('Первый запуск Sun видео, показываем число')
+    showCenterNumber()
+    isFirstSunPlay.value = false
+  }
+}
+
+const chislo = ref(0xB211)
 
 // Инициализируем хранилище
 const dataStore = useStarStore()
-const { componentsData } = storeToRefs(dataStore) // Исправлено: используем правильное имя состояния
+const { componentsData } = storeToRefs(dataStore)
 
 // Массив для отслеживания занятых позиций
 const occupiedPositions = ref([])
@@ -85,16 +151,13 @@ const getRandomPosition = () => {
 
 // Функция для получения данных компонента из хранилища
 const getComponentData = (index) => {
-  // Получаем данные из хранилища
   const data = componentsData.value
   
-  // Если в хранилище есть данные, используем их
   if (data && data.length > 0) {
-    const dataIndex = index % data.length // Циклически используем данные
+    const dataIndex = index % data.length
     return data[dataIndex]
   }
   
-  // Fallback данные, если в хранилище ничего нет
   return {
     title: `Компонент ${index + 1}`,
     description: `Это описание для компонента ${index + 1}`,
@@ -107,48 +170,197 @@ const getComponentData = (index) => {
   }
 }
 
-// Управление видео
-const startVideo = async () => {
-  if (videoRef.value && !isVideoPlaying.value) {
+// Управление аудио
+const playAudio = async (audioNumber) => {
+  const audioRef = audioRefs[audioNumber]
+  const audioState = audioStates[audioNumber]
+  
+  if (audioRef.value && !audioState.value) {
     try {
-      await videoRef.value.play()
-      isVideoPlaying.value = true
-      console.log('Видео запущено')
+      audioRef.value.currentTime = 0
+      await audioRef.value.play()
+      audioState.value = true
+      console.log(`Аудио ${audioNumber} запущено`)
     } catch (error) {
-      console.log('Ошибка воспроизведения видео:', error)
-      isVideoPlaying.value = false
+      console.log(`Ошибка воспроизведения аудио ${audioNumber}:`, error)
+      audioState.value = false
     }
   }
 }
 
-const stopVideo = () => {
-  if (videoRef.value && isVideoPlaying.value) {
-    videoRef.value.pause()
-    videoRef.value.currentTime = 0
-    isVideoPlaying.value = false
-    console.log('Видео остановлено')
+const stopAudio = (audioNumber) => {
+  const audioRef = audioRefs[audioNumber]
+  const audioState = audioStates[audioNumber]
+  
+  if (audioRef.value) {
+    audioRef.value.pause()
+    audioRef.value.currentTime = 0
+    audioState.value = false
   }
 }
 
-const onVideoLoad = () => {
-  isVideoLoaded.value = true
-  console.log('Видео загружено')
+const stopAllAudio = () => {
+  Object.keys(audioRefs).forEach(audioNumber => {
+    stopAudio(audioNumber)
+  })
+  console.log('Все аудио остановлены')
 }
 
-const onVideoError = () => {
-  console.error('Ошибка загрузки видео')
-  isVideoLoaded.value = false
+// Обработчики окончания аудио
+const onAudioEnded = (audioNumber) => {
+  audioStates[audioNumber].value = false
+  console.log(`Аудио ${audioNumber} завершено`)
+  if(showMuteButton.value){
+  switch (audioNumber)
+  {
+    
+    case 1:
+      
+    playAudio(2); 
+
+    window.scrollTo({
+    top: 900,
+    behavior: 'smooth'})
+    setTimeout(() => {
+    startSdvig.value = true
+    }, 2000)
+    break;
+    case 2: playAudio(3); 
+    window.scrollTo({
+    top: 0,
+    behavior: 'smooth'})
+    break;
+    case 3: playAudio(4); break;
+  }
+}
+}
+
+// Управление видео
+const startSpaceVideo = async () => {
+  if (spaceVideoRef.value && !isSpaceVideoPlaying.value) {
+    try {
+      // Скрываем солнце, показываем космос
+      currentVideo.value = 'space'
+      await spaceVideoRef.value.play()
+      isSpaceVideoPlaying.value = true
+      console.log('Space видео запущено')
+    } catch (error) {
+      console.log('Ошибка воспроизведения Space видео:', error)
+      isSpaceVideoPlaying.value = false
+    }
+  }
+}
+
+const startSunVideo = async () => {
+  if (sunVideoRef.value && !isSunVideoPlaying.value) {
+    try {
+      // Скрываем космос, показываем солнце
+      currentVideo.value = 'sun'
+      await sunVideoRef.value.play()
+      isSunVideoPlaying.value = true
+      console.log('Sun видео запущено')
+      
+      // ВСЕГДА показываем число при запуске Sun видео
+      if (isFirstSunPlay.value) {
+        console.log('Показываем число')
+        showCenterNumber()
+        isFirstSunPlay.value = false
+      }
+    } catch (error) {
+      console.log('Ошибка воспроизведения Sun видео:', error)
+      isSunVideoPlaying.value = false
+    }
+  }
+}
+
+const stopAllVideos = () => {
+  if (spaceVideoRef.value) {
+    spaceVideoRef.value.pause()
+    spaceVideoRef.value.currentTime = 0
+    isSpaceVideoPlaying.value = false
+  }
+  if (sunVideoRef.value) {
+    sunVideoRef.value.pause()
+    sunVideoRef.value.currentTime = 0
+    isSunVideoPlaying.value = false
+  }
+  console.log('Все видео остановлены')
+}
+
+// Обработчики загрузки видео
+const onSpaceVideoLoad = () => {
+  isSpaceVideoLoaded.value = true
+  console.log('Space видео загружено')
+}
+
+const onSunVideoLoad = () => {
+  isSunVideoLoaded.value = true
+  console.log('Sun видео загружено')
+}
+
+const onVideoError = (videoType) => {
+  console.error(`Ошибка загрузки ${videoType} видео`)
+  if (videoType === 'space') {
+    isSpaceVideoLoaded.value = false
+  } else {
+    isSunVideoLoaded.value = false
+  }
+}
+
+const showFlash = ref(false)
+
+const onSpaceVideoEnded = () => {
+  console.log('Space видео закончилось, запускаем Sun видео')
+  isSpaceVideoPlaying.value = false
+  
+  // Показываем красную вспышку
+  showFlash.value = true
+  setTimeout(() => {
+    showFlash.value = false
+    startSunVideo()
+  }, 300)
+}
+
+const onSunVideoEnded = () => {
+  console.log('Sun видео закончилось, зацикливаем его')
+  // Зацикливаем Sun видео
+  if (sunVideoRef.value) {
+    sunVideoRef.value.currentTime = 0
+    sunVideoRef.value.play().catch(error => {
+      console.log('Ошибка при перезапуске Sun видео:', error)
+    })
+  }
 }
 
 const showMultipleRandom = async () => {
   if (isAnimating.value) return
   
-  await startVideo()
+  // ПОКАЗЫВАЕМ КНОПКУ ЗАГЛУШЕНИЯ
+  showMuteButton.value = true
+  
+  // ЗАПУСКАЕМ ПЕРВОЕ АУДИО ПРИ НАЧАЛЕ АНИМАЦИИ
+  await playAudio(1)
+  
+  setTimeout(async () => {
+    if( showMuteButton.value) {
+    window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })}
+    
+  // СБРОСИТЬ ФЛАГ ПЕРЕД КАЖДЫМ ЗАПУСКОМ
+  isFirstSunPlay.value = true
+  
+  // Запускаем Space видео
+  await startSpaceVideo()
   
   isAnimating.value = true
   visibleComponents.value = []
   occupiedPositions.value = []
   currentProgress.value = 0
+  
+  // Ждем завершения анимации числа перед показом компонентов
+  await new Promise(resolve => setTimeout(resolve, 2100))
   
   const totalComponents = 10
   
@@ -171,7 +383,6 @@ const showMultipleRandom = async () => {
       await new Promise(resolve => setTimeout(resolve, 500))
     }
     
-    // Получаем данные из хранилища вместо генерации
     const componentData = getComponentData(i)
     
     const newComponent = {
@@ -211,14 +422,18 @@ const showMultipleRandom = async () => {
   
   currentProgress.value = 0
   isAnimating.value = false
-  stopVideo()
+  // Не останавливаем видео - Sun видео продолжает зацикленно играть
+}, 9000)
 }
 
-// Останавливаем анимацию принудительно
+
+
+// Сбросьте флаг при остановке анимации
 const pauseAnimation = () => {
   if (isAnimating.value) {
     isAnimating.value = false
     currentProgress.value = 0
+    isFirstSunPlay.value = true // Сбрасываем флаг
     
     visibleComponents.value.forEach(component => {
       if (component.timer) {
@@ -228,101 +443,264 @@ const pauseAnimation = () => {
     
     visibleComponents.value = []
     occupiedPositions.value = []
-    stopVideo()
+    stopAllVideos()
+    stopAllAudio() // Останавливаем все аудио
+    showMuteButton.value = false // Скрываем кнопку при остановке
   }
 }
 
 // Жизненный цикл
 onMounted(() => {
-  console.log('Компонент монтирован - видео готово к запуску')
+  console.log('Компонент монтирован - видео готовы к запуску')
   console.log('Данные из хранилища:', componentsData.value)
 })
 
 onUnmounted(() => {
   pauseAnimation()
-  if (videoRef.value) {
-    videoRef.value.src = ''
+  if (spaceVideoRef.value) {
+    spaceVideoRef.value.src = ''
+  }
+  if (sunVideoRef.value) {
+    sunVideoRef.value.src = ''
   }
 })
 </script>
 
 <template>
-  <div>
-    <div class="one" data-aos="zoom-in">
-      <div class="random-container">
-        <!-- Видеофон -->
-        <div class="video-background">
-          <video
-            ref="videoRef"
-            muted
-            loop
-            playsinline
-            preload="metadata" 
-            @loadeddata="onVideoLoad"
-            @error="onVideoError"
-            class="background-video"
-            :class="{ 'video-playing': isVideoPlaying }"
-          >
-            <!-- <source src="@/assets/Space.mp4" type="video/mp4"> -->
-            <div class="video-fallback">
-              Ваш браузер не поддерживает видео
-            </div>
-          </video>
+  <div class="one" data-aos="zoom-in">
+    <!-- Аудио элементы -->
+    <audio
+      :ref="audioRefs[1]"
+      preload="auto"
+      @ended="onAudioEnded(1)"
+      @error="console.error('Ошибка загрузки аудио 1')"
+    >
+      <source src="@/assets/audio/1.mp3" type="audio/mpeg">
+      Ваш браузер не поддерживает аудио элементы.
+    </audio>
+    
+    <audio
+      :ref="audioRefs[2]"
+      preload="auto"
+      @ended="onAudioEnded(2)"
+      @error="console.error('Ошибка загрузки аудио 2')"
+    >
+      <source src="@/assets/audio/2.mp3" type="audio/mpeg">
+      Ваш браузер не поддерживает аудио элементы.
+    </audio>
+    
+    <audio
+      :ref="audioRefs[3]"
+      preload="auto"
+      @ended="onAudioEnded(3)"
+      @error="console.error('Ошибка загрузки аудио 3')"
+    >
+      <source src="@/assets/audio/3.mp3" type="audio/mpeg">
+      Ваш браузер не поддерживает аудио элементы.
+    </audio>
+    
+    <audio
+      :ref="audioRefs[4]"
+      preload="auto"
+      @ended="onAudioEnded(4)"
+      @error="console.error('Ошибка загрузки аудио 4')"
+    >
+      <source src="@/assets/audio/4.mp3" type="audio/mpeg">
+      Ваш браузер не поддерживает аудио элементы.
+    </audio>
+    
+    <div class="random-container">
+      <!-- Видеофоны -->
+      <div class="video-background">
+        <!-- Space видео (первое) -->
+        <video
+          ref="spaceVideoRef"
+          muted
+          playsinline
+          preload="auto"
+          @loadeddata="onSpaceVideoLoad"
+          @error="onVideoError('space')"
+          @ended="onSpaceVideoEnded"
+          class="background-video space-video"
+          :class="{ 
+            'video-playing': isSpaceVideoPlaying,
+            'video-visible': currentVideo === 'space',
+            'video-hidden': currentVideo !== 'space'
+          }"
+        >
+          <source src="@/assets/Space.mp4" type="video/mp4">
+        </video>
+        
+        <div 
+          v-if="showFlash"
+          class="video-transition-overlay"
+        ></div>
+
+        <!-- Sun видео (второе, зацикленное) -->
+        <video
+          ref="sunVideoRef"
+          muted
+          loop
+          playsinline
+          preload="auto"
+          @loadeddata="onSunVideoLoad"
+          @error="onVideoError('sun')"
+          @ended="onSunVideoEnded"
+          @play="onSunVideoPlay" 
+          class="background-video sun-video"
+          :class="{ 
+            'video-playing': isSunVideoPlaying,
+            'video-visible': currentVideo === 'sun',
+            'video-hidden': currentVideo !== 'sun'
+          }"
+        >
+          <source src="@/assets/Sun.mp4" type="video/mp4">
+        </video>
+        
+        <!-- Анимированное число -->
+        <div 
+          v-if="showNumber"
+          class="center-number"
+          :style="{
+            transform: `translate(-50%, ${numberPosition.y})`,
+            opacity: numberPosition.opacity
+          }"
+        >
+          {{chislo.toString(2).toUpperCase()}}
         </div>
         
-        <!-- Компоненты поверх видео -->
-        <TransitionGroup name="stagger">
-          <MyRandom 
-            v-for="component in visibleComponents" 
-            :key="component.id"
-            :title="component.title"
-            :description="component.description"
-            :features="component.features"
-            :class="['random-item', { 'visible': component.visible }]"
-            :style="component.position"
-          />
-        </TransitionGroup>
-        
-        <!-- Индикатор загрузки видео -->
-        <div v-if="!isVideoLoaded && !isVideoPlaying" class="video-loading">
-          Загрузка фона...
+        <!-- Индикаторы состояния видео -->
+        <div v-if="!isSpaceVideoLoaded && !isSpaceVideoPlaying" class="video-loading">
+          <div class="loading-spinner"></div>
+          Загрузка Space видео...
         </div>
         
-        <!-- Счетчик и прогресс -->
-        <div v-if="isAnimating" class="animation-progress">
-          <div class="progress-text">
-            Прогресс: {{ currentProgress }}/10
-          </div>
-          <div class="progress-bar">
-            <div 
-              class="progress-fill" 
-              :style="{ width: (currentProgress / 10) * 100 + '%' }"
-            ></div>
-          </div>
-          <div class="progress-details">
-            <span class="detail-item">Текущий: {{ currentProgress }}</span>
-            <span class="detail-item">Видимых: {{ visibleComponents.filter(c => c.visible).length }}</span>
-          </div>
+        <div v-else-if="!isSunVideoLoaded && !isSunVideoPlaying && currentVideo === 'sun'" class="video-loading">
+          <div class="loading-spinner"></div>
+          Загрузка Sun видео...
         </div>
       </div>
       
-      <div class="controls">
-        <BtnStar 
-          variant="secondary" 
-          :text="isAnimating ? `Генерация... (${currentProgress}/10)` : 'Запустить последовательность'" 
-          size="medium"
-          :disabled="isAnimating"
-          @click="showMultipleRandom"
-        /> 
+      <!-- Компоненты поверх видео -->
+      <TransitionGroup name="stagger">
+        <MyRandom 
+          v-for="component in visibleComponents" 
+          :key="component.id"
+          :title="component.title"
+          :description="component.description"
+          :features="component.features"
+          :class="['random-item', { 'visible': component.visible }]"
+          :style="component.position"
+        />
+      </TransitionGroup>
+      
+      <!-- Счетчик и прогресс -->
+      <div v-if="isAnimating" class="animation-progress">
+        <div class="progress-text">
+          Прогресс: {{ currentProgress }}/10
+        </div>
+        <div class="progress-bar">
+          <div 
+            class="progress-fill" 
+            :style="{ width: (currentProgress / 10) * 100 + '%' }"
+          ></div>
+        </div>
+        <div class="progress-details">
+          <span class="detail-item">Текущий: {{ currentProgress }}</span>
+          <span class="detail-item">Видимых: {{ visibleComponents.filter(c => c.visible).length }}</span>
+          <span class="detail-item" :class="{ 
+            'video-space': currentVideo === 'space',
+            'video-sun': currentVideo === 'sun'
+          }">
+            Видео: {{ currentVideo === 'space' ? 'Space' : 'Sun' }}
+          </span>
+          <!-- Индикаторы аудио -->
+          <span 
+            v-for="i in 4" 
+            :key="i"
+            class="detail-item audio-indicator"
+            :class="{ 'audio-playing': audioStates[i].value }"
+          >
+            Аудио{{ i }}: {{ audioStates[i].value ? '▶' : '⏸' }}
+          </span>
+        </div>
       </div>
     </div>
+    
+    <div class="controls">
+      <BtnStar 
+        variant="secondary" 
+        :text="isAnimating ? `Генерация... (${currentProgress}/10)` : 'Запустить последовательность'" 
+        size="medium"
+        :disabled="isAnimating"
+        @click="showMultipleRandom"
+      />
+
+      <!-- Кнопка заглушения Android -->
+      <button 
+        v-if="showMuteButton"
+        class="mute-android-button"
+        @click="muteAllAudio"
+      >
+        <span class="button-icon">🔇</span>
+        Заглушить Android
+      </button>
+    </div>
     <div>
-      <MyLinerRegister/>
+      <MyLinerRegister
+        :chislo="chislo"
+        :startSdvig="startSdvig"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
+.center-number {
+  position: absolute;
+  top: 250px;
+  left: 50%;
+  font-size: 40px;
+  font-weight: 900;
+  color: white;
+  z-index: 5;
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  font-family: 'Atmospheric', sans-serif;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.video-transition-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle,rgba(255, 236, 94, 0.811) 0%, rgba(0, 0, 0, 0) 50%);
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  animation: redFlash 0.6s ease-in-out;
+}
+
+@keyframes redFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
 .one {
   position: relative;
   min-height: 70vh;
@@ -361,6 +739,56 @@ onUnmounted(() => {
   height: 100%;
   object-fit: cover;
   object-position: center;
+  transition: opacity 0.8s ease-in-out;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.space-video,
+.sun-video {
+  opacity: 1;
+}
+
+.video-visible {
+  opacity: 1;
+  z-index: 1;
+}
+
+.video-hidden {
+  opacity: 0;
+  z-index: 0;
+}
+
+/* Индикаторы состояния видео */
+.video-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Улучшенный прогресс анимации */
@@ -369,11 +797,11 @@ onUnmounted(() => {
   top: 10px;
   left: 10px;
   background: rgba(0, 0, 0, 0.85);
-  color: white;
+  color: rgb(255, 255, 255);
   padding: 12px 16px;
   border-radius: 10px;
   z-index: 4;
-  min-width: 180px;
+  min-width: 200px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -402,7 +830,8 @@ onUnmounted(() => {
 
 .progress-details {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
   font-size: 11px;
   opacity: 0.7;
 }
@@ -411,6 +840,21 @@ onUnmounted(() => {
   padding: 2px 6px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 4px;
+}
+
+.detail-item.video-space {
+  background: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.detail-item.video-sun {
+  background: rgba(234, 179, 8, 0.3);
+  color: #eab308;
+}
+
+.detail-item.audio-indicator.audio-playing {
+  background: rgba(34, 197, 94, 0.3);
+  color: #22c55e;
 }
 
 /* Стили для компонентов */
@@ -442,32 +886,42 @@ onUnmounted(() => {
   gap: 15px;
   align-items: center;
   margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-/* Информация об источнике данных */
-.data-source-info {
+/* Кнопка заглушения Android */
+.mute-android-button {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 8px;
-  margin-top: 15px;
-}
-
-.info-badge {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Rajdhani', sans-serif;
   font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-.data-stats {
-  font-size: 12px;
-  color: #6b7280;
-  background: rgba(99, 102, 241, 0.1);
-  padding: 4px 12px;
-  border-radius: 12px;
+.mute-android-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.mute-android-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.button-icon {
+  font-size: 16px;
 }
 
 /* Анимации */
@@ -505,7 +959,7 @@ onUnmounted(() => {
 /* Адаптивность */
 @media (max-width: 768px) {
   .animation-progress {
-    min-width: 160px;
+    min-width: 180px;
     padding: 10px 12px;
   }
   
@@ -513,9 +967,15 @@ onUnmounted(() => {
     flex-direction: column;
     gap: 2px;
   }
-  
-  .data-source-info {
-    text-align: center;
+
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mute-android-button {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
